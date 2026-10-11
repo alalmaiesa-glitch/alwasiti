@@ -1,0 +1,27 @@
+{
+  "release": "alWasiti v1.4 Hardening Candidate",
+  "files": {
+    "CONTENT-LICENSES.md": "4881e63de82316bfa0685510f4d7fbc4571fe033110b78a84488cf9a31beb34a",
+    "LICENSES/base64-js-LICENSE": "5b37224c080cdcc97c871ada971c224e9926370fe74f11b539aa1cf9f3b1aca1",
+    "LICENSES/clone-LICENSE": "3fb0857ef0133928cf72c88dfc464e931486e88778961eedec25585e2321507f",
+    "LICENSES/fast-deep-equal-LICENSE": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a",
+    "LICENSES/fontkit-MIT.txt": "45b1a96e61f78668bc2335e3304d925882d80b2ae9063a47fc93de22b1a23d0e",
+    "LICENSES/pako-LICENSE": "3bc404ffa7888053253eedcc5a667619aa08dc1be0bea400e5ff28c51602180f",
+    "LICENSES/restructure-LICENSE": "c0df7f551401f8f80197ff31bf69b8cd23727d127423403282514d242a3ab132",
+    "LICENSES/tiny-inflate-LICENSE": "c0df7f551401f8f80197ff31bf69b8cd23727d127423403282514d242a3ab132",
+    "LICENSES/tslib-CopyrightNotice.txt": "da16ddb65f8ca390998fb99223d0112498b56b45784d00afd77ff8ce1ac4de8b",
+    "LICENSES/tslib-LICENSE.txt": "210b19e543130388c68654b7497e967119ce17145f66ab7d85688fbd70f08751",
+    "LICENSES/unicode-properties-LICENSE": "43439dbd4f43837aadab215cdbe5a422cc6323a50c4ea84d8d6bbc3671666a1d",
+    "LICENSES/unicode-trie-LICENSE": "43439dbd4f43837aadab215cdbe5a422cc6323a50c4ea84d8d6bbc3671666a1d",
+    "README.md": "9a0fbd84b0c5891fc2e4f740ba7fab9761e349acf223d8af293d9346a091ff07",
+    "SECURITY.md": "64597af86ff09033882297dd68dde141793d7bc7e3ae894c528e5270d3c73de6",
+    "THIRD-PARTY-NOTICES.md": "f1b441215671f5f72855b9518b54b49217a00eaa2c7d468b9cc3bbfc6ba9f80f",
+    "app.js": "2f48327958a4c8c3f45cf5a5ca46e0a2da8263aa534dd1856fdbd9a18f633085",
+    "fontkit-browser.js": "5696cdeea9317d7990e4ece288af3efcbde80ce971fb45c953e29eee4361f721",
+    "index.html": "3f8f3b80b65c7defcdbd33f4fa198443f261c255da4a08075b507d9eae9076cb",
+    "privacy.html": "e869140023ff5f761a741da7f2b43cb6f71071606de61880614841f47ec96ebc",
+    "styles.css": "cce8972c2d0dbe570869b3ba5707d1705b32f8f37bef2baa117ccbd924d46b2a",
+    "terms.html": "890dca31343c338eca9427c121dafea0e33877741365aa5d5452ebc0e2c84d73",
+    "vercel.json": "44004a44a641b4808f58bd3cdc80d331b0b194f162428145e9b695da16d39cc8"
+  }
+}

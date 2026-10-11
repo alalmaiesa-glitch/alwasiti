@@ -1,5 +1,12 @@
-dist/
+*.log
+__pycache__/
+.pytest_cache/
 node_modules/
 .env
 .env.*
+!.env.example
 .DS_Store
+tests/*.svg
+tests/*.png
+tests/project.json
+tests/*.pyc

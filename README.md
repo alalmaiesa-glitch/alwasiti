@@ -1,14 +1,18 @@
-# الواسطي | alWasiti — V1.4 Hardening
+# الواسطي | alWasiti
 
-هذه النسخة **غير معتمدة للإنتاج**. نُقلت لقطة V1.4 الأصلية إلى `snapshot/*.part` مع فحص SHA-256 صارم، ثم تُستخرج الملفات المستقلة أثناء البناء إلى `dist/` باستخدام `node build.mjs`.
+استوديو التصميم العربي الحديث — مجاني ومدعوم بإعلانات خارج المحرر.
 
-## الاختبار
+## V1.4 Production Hardening
+**NOT APPROVED.** Branch `hardening/v1.4` is a release candidate. No production promotion or merge until all release gates score at least 9/10.
 
-```bash
-node build.mjs
-node tests/smoke.mjs
-```
+### Source layout
+- `app/index.html`, `app/styles.css`, `app/app.js` — editable application source.
+- `app/fontkit-browser.js` — vendored Fontkit bundle, integrity-checked, with third-party notices in `app/LICENSES`.
+- `app/RELEASE-SHA256.json` — SHA-256 manifest for release assets.
+- `tests/acceptance.py` — 50 Playwright Chromium browser tests.
+- `tests/smoke.mjs` — structural/integrity checks.
+- `dist/` — generated and excluded from Git.
 
-الاختبارات البنيوية آلية، ولكنها لا تغني عن الاختبارات الوظيفية والـ E2E والمتصفحات المتعددة والتحقق من تراخيص التوزيع وموثوقية تحميل الخطوط قبل تجاوز بوابة ≥9/10 لكل محور.
+Run `npm test` for structural tests. CI runs browser acceptance on the hardening branch.
 
-> لا تُنشر هذه النسخة فوق alwasiti.vercel.app حتى الاعتماد.
+Production: https://alwasiti.vercel.app/ (intentionally unchanged)
