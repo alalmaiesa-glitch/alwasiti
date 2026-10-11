@@ -7,7 +7,7 @@ root=Path(__file__).resolve().parents[1]/'app'
 html=(root/'index.html').read_text()
 html=re.sub(r'<link[^>]+(?:fonts.googleapis.com|fonts.gstatic.com)[^>]*>', '', html)
 html=html.replace('<link rel="stylesheet" href="./styles.css">', '<style>'+(root/'styles.css').read_text()+'</style>')
-html=re.sub(r'<script src="\\./(?:fontkit-browser|app)\\.js"></script>', '', html)
+html=html.replace('<script src="./fontkit-browser.js"></script>','').replace('<script src="./app.js"></script>','')
 js=(root/'app.js').read_text();vendor=(root/'fontkit-browser.js').read_text()
 count=0
 with sync_playwright() as p:
