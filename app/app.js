@@ -377,10 +377,10 @@
     return expandedViewBox(`<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-label="${brand}" ${interactive?'id="editableLogoSvg"':''}><title>${brand}</title>${symbol}${word}</svg>`);
   }
   // V1.4: vector export uses Fontkit OpenType layout (Arabic GSUB/GPOS), not SVG <text>.
-  // Licensed fonts remain on the official Google Fonts repository; none are bundled or redistributed.
+  // OFL fonts are self-hosted for same-origin vector exports. See LICENSES/.
   const vectorFontSources={
-    noto:{name:'Noto Kufi Arabic',url:'https://raw.githubusercontent.com/google/fonts/main/ofl/notokufiarabic/NotoKufiArabic%5Bwght%5D.ttf'},
-    amiri:{name:'Amiri',url:'https://raw.githubusercontent.com/google/fonts/main/ofl/amiri/Amiri-Regular.ttf'}
+    noto:{name:'Noto Kufi Arabic',url:'./fonts/NotoKufiArabic-wght.ttf'},
+    amiri:{name:'Amiri',url:'./fonts/Amiri-Regular.ttf'}
   };
   const vectorFontCache=new Map();
   let vectorPreviewEnabled=false, vectorPreviewCounter=0;
@@ -390,12 +390,12 @@
     if(!src)throw Error('الخط المتجهي غير معتمد');
     if(typeof window.fontkit?.create!=='function')throw Error('محرك الخطوط غير متاح، أعد تحميل الصفحة');
     if(!vectorFontCache.has(key)){
-      statusVector('جارٍ تحميل '+src.name+' من المصدر الرسمي…','loading');
+      statusVector('جارٍ تحميل '+src.name+' من مكتبة الواسطي المرخصة…','loading');
       const promise=(async()=>{
         const controller=new AbortController();
         const timeout=setTimeout(()=>controller.abort(),12000);
         let res;
-        try{res=await fetch(src.url,{mode:'cors',cache:'force-cache',signal:controller.signal});}
+        try{res=await fetch(src.url,{mode:'same-origin',cache:'force-cache',signal:controller.signal});}
         finally{clearTimeout(timeout);}
         if(!res.ok)throw Error('تعذر تحميل الخط: '+res.status);
         const buf=await res.arrayBuffer();

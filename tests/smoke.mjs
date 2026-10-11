@@ -16,7 +16,7 @@ const checks=[
  ['Fontkit engine included',()=>assert.match(vendor,/window\.fontkit=/)],
  ['app includes vector export',()=>assert.match(app,/downloadOutlinedLogo/)],
  ['recovery draft supported',()=>assert.match(app,/alwasiti-recovery-draft-v1/)],
- ['font resources restricted',()=>assert.match(app,/raw\.githubusercontent\.com/)],
+ ['outline fonts self-hosted',()=>assert.match(app,/\.\/fonts\/Amiri-Regular\.ttf/) && assert.match(app,/\.\/fonts\/NotoKufiArabic-wght\.ttf/)],
  ['nosniff',()=>assert.match(JSON.stringify(config),/nosniff/)],
  ['CSP self-hosted scripts',()=>assert.match(JSON.stringify(config),/script-src 'self'/)],
  ['legal pages exist',()=>['privacy.html','terms.html','CONTENT-LICENSES.md'].forEach(x=>assert.ok(fs.existsSync(path.join(dir,x))))],

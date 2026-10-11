@@ -16,4 +16,4 @@
 
 ## License texts bundled with this source release
 
-Texts available from the installed dependency packages are provided in `LICENSES/` for software redistributors. Fontkit itself is labeled MIT by its npm package metadata and official README; a standard MIT notice identifying upstream author and contributors is included. Dependencies lacking a packaged license file are listed with license and source URLs above for review before publication. No binary font files are redistributed.
+Texts available from the installed dependency packages are provided in `LICENSES/` for software redistributors. Fontkit itself is labeled MIT by its npm package metadata and official README; a standard MIT notice identifying upstream author and contributors is included. Dependencies lacking a packaged license file are listed with license and source URLs above for review before publication. Two unmodified OFL fonts are redistributed under LICENSES/OFL-Amiri.txt and LICENSES/OFL-NotoKufiArabic.txt.
