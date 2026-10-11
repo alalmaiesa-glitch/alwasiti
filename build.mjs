@@ -15,7 +15,7 @@ doc=doc.replace(/<style>\n([\s\S]*?)\n<\/style>/g,(_m,css)=>{
  styleCount++;fs.writeFileSync(path.join(dir,'styles.css'),css+'\n','utf8');
  return '<link rel="stylesheet" href="./styles.css">';
 });
-doc=doc.replace(/<script>\n([\s\S]*?)\n<\/script>/g,(_m,js)=>{
+doc=doc.replace(/<script>([\s\S]*?)<\/script>/g,(_m,js)=>{
  const file=scriptCount++===0?'fontkit-browser.js':'app.js';
  fs.writeFileSync(path.join(dir,file),js+'\n','utf8');
  return '<script src="./'+file+'"></script>';
