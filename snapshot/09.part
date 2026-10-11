@@ -1,0 +1,1000 @@
+                'clig'
+            ]
+        });
+        // Setup the indic config for the selected script
+        plan.unicodeScript = $e38a1a895f6aeb54$export$ce50e82f12a827a4(plan.script);
+        plan.indicConfig = (0, $79e3b6f2c331d0bf$export$e99d119da76a0fc5)[plan.unicodeScript] || (0, $79e3b6f2c331d0bf$export$e99d119da76a0fc5).Default;
+        plan.isOldSpec = plan.indicConfig.hasOldSpec && plan.script[plan.script.length - 1] !== '2';
+    // TODO: turn off kern (Khmer) and liga features.
+    }
+    static assignFeatures(plan, glyphs) {
+        // Decompose split matras
+        // TODO: do this in a more general unicode normalizer
+        for(let i = glyphs.length - 1; i >= 0; i--){
+            let codepoint = glyphs[i].codePoints[0];
+            let d = (0, $79e3b6f2c331d0bf$export$f647c9cfdd77d95a)[codepoint] || $d203e6b9523d0071$var$decompositions[codepoint];
+            if (d) {
+                let decomposed = d.map((c)=>{
+                    let g = plan.font.glyphForCodePoint(c);
+                    return new (0, $f22bb23c9fd478d8$export$2e2bcd8739ae039)(plan.font, g.id, [
+                        c
+                    ], glyphs[i].features);
+                });
+                glyphs.splice(i, 1, ...decomposed);
+            }
+        }
+    }
+}
+(0, $gfJaN$swchelperscjs_define_propertycjs._)($d203e6b9523d0071$export$2e2bcd8739ae039, "zeroMarkWidths", 'NONE');
+function $d203e6b9523d0071$var$indicCategory(glyph) {
+    return $d203e6b9523d0071$var$trie.get(glyph.codePoints[0]) >> 8;
+}
+function $d203e6b9523d0071$var$indicPosition(glyph) {
+    return 1 << ($d203e6b9523d0071$var$trie.get(glyph.codePoints[0]) & 0xff);
+}
+class $d203e6b9523d0071$var$IndicInfo {
+    constructor(category, position, syllableType, syllable){
+        this.category = category;
+        this.position = position;
+        this.syllableType = syllableType;
+        this.syllable = syllable;
+    }
+}
+function $d203e6b9523d0071$var$setupSyllables(font, glyphs) {
+    let syllable = 0;
+    let last = 0;
+    for (let [start, end, tags] of $d203e6b9523d0071$var$stateMachine.match(glyphs.map($d203e6b9523d0071$var$indicCategory))){
+        if (start > last) {
+            ++syllable;
+            for(let i = last; i < start; i++)glyphs[i].shaperInfo = new $d203e6b9523d0071$var$IndicInfo((0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).X, (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).End, 'non_indic_cluster', syllable);
+        }
+        ++syllable;
+        // Create shaper info
+        for(let i = start; i <= end; i++)glyphs[i].shaperInfo = new $d203e6b9523d0071$var$IndicInfo(1 << $d203e6b9523d0071$var$indicCategory(glyphs[i]), $d203e6b9523d0071$var$indicPosition(glyphs[i]), tags[0], syllable);
+        last = end + 1;
+    }
+    if (last < glyphs.length) {
+        ++syllable;
+        for(let i = last; i < glyphs.length; i++)glyphs[i].shaperInfo = new $d203e6b9523d0071$var$IndicInfo((0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).X, (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).End, 'non_indic_cluster', syllable);
+    }
+}
+function $d203e6b9523d0071$var$isConsonant(glyph) {
+    return glyph.shaperInfo.category & (0, $79e3b6f2c331d0bf$export$8519deaa7de2b07);
+}
+function $d203e6b9523d0071$var$isJoiner(glyph) {
+    return glyph.shaperInfo.category & (0, $79e3b6f2c331d0bf$export$bbcd928767338e0d);
+}
+function $d203e6b9523d0071$var$isHalantOrCoeng(glyph) {
+    return glyph.shaperInfo.category & (0, $79e3b6f2c331d0bf$export$ca9599b2a300afc);
+}
+function $d203e6b9523d0071$var$wouldSubstitute(glyphs, feature) {
+    for (let glyph of glyphs)glyph.features = {
+        [feature]: true
+    };
+    let GSUB = glyphs[0]._font._layoutEngine.engine.GSUBProcessor;
+    GSUB.applyFeatures([
+        feature
+    ], glyphs);
+    return glyphs.length === 1;
+}
+function $d203e6b9523d0071$var$consonantPosition(font, consonant, virama) {
+    let glyphs = [
+        virama,
+        consonant,
+        virama
+    ];
+    if ($d203e6b9523d0071$var$wouldSubstitute(glyphs.slice(0, 2), 'blwf') || $d203e6b9523d0071$var$wouldSubstitute(glyphs.slice(1, 3), 'blwf')) return (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Below_C;
+    else if ($d203e6b9523d0071$var$wouldSubstitute(glyphs.slice(0, 2), 'pstf') || $d203e6b9523d0071$var$wouldSubstitute(glyphs.slice(1, 3), 'pstf')) return (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Post_C;
+    else if ($d203e6b9523d0071$var$wouldSubstitute(glyphs.slice(0, 2), 'pref') || $d203e6b9523d0071$var$wouldSubstitute(glyphs.slice(1, 3), 'pref')) return (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Post_C;
+    return (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Base_C;
+}
+function $d203e6b9523d0071$var$initialReordering(font, glyphs, plan) {
+    let indicConfig = plan.indicConfig;
+    let features = font._layoutEngine.engine.GSUBProcessor.features;
+    let dottedCircle = font.glyphForCodePoint(0x25cc).id;
+    let virama = font.glyphForCodePoint(indicConfig.virama).id;
+    if (virama) {
+        let info = new (0, $f22bb23c9fd478d8$export$2e2bcd8739ae039)(font, virama, [
+            indicConfig.virama
+        ]);
+        for(let i = 0; i < glyphs.length; i++)if (glyphs[i].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Base_C) glyphs[i].shaperInfo.position = $d203e6b9523d0071$var$consonantPosition(font, glyphs[i].copy(), info);
+    }
+    for(let start = 0, end = $d203e6b9523d0071$var$nextSyllable(glyphs, 0); start < glyphs.length; start = end, end = $d203e6b9523d0071$var$nextSyllable(glyphs, start)){
+        let { category: category, syllableType: syllableType } = glyphs[start].shaperInfo;
+        if (syllableType === 'symbol_cluster' || syllableType === 'non_indic_cluster') continue;
+        if (syllableType === 'broken_cluster' && dottedCircle) {
+            let g = new (0, $f22bb23c9fd478d8$export$2e2bcd8739ae039)(font, dottedCircle, [
+                0x25cc
+            ]);
+            g.shaperInfo = new $d203e6b9523d0071$var$IndicInfo(1 << $d203e6b9523d0071$var$indicCategory(g), $d203e6b9523d0071$var$indicPosition(g), glyphs[start].shaperInfo.syllableType, glyphs[start].shaperInfo.syllable);
+            // Insert after possible Repha.
+            let i = start;
+            while(i < end && glyphs[i].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).Repha)i++;
+            glyphs.splice(i++, 0, g);
+            end++;
+        }
+        // 1. Find base consonant:
+        //
+        // The shaping engine finds the base consonant of the syllable, using the
+        // following algorithm: starting from the end of the syllable, move backwards
+        // until a consonant is found that does not have a below-base or post-base
+        // form (post-base forms have to follow below-base forms), or that is not a
+        // pre-base reordering Ra, or arrive at the first consonant. The consonant
+        // stopped at will be the base.
+        let base = end;
+        let limit = start;
+        let hasReph = false;
+        // If the syllable starts with Ra + Halant (in a script that has Reph)
+        // and has more than one consonant, Ra is excluded from candidates for
+        // base consonants.
+        if (indicConfig.rephPos !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Ra_To_Become_Reph && features.rphf && start + 3 <= end && (indicConfig.rephMode === 'Implicit' && !$d203e6b9523d0071$var$isJoiner(glyphs[start + 2]) || indicConfig.rephMode === 'Explicit' && glyphs[start + 2].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).ZWJ)) {
+            // See if it matches the 'rphf' feature.
+            let g = [
+                glyphs[start].copy(),
+                glyphs[start + 1].copy(),
+                glyphs[start + 2].copy()
+            ];
+            if ($d203e6b9523d0071$var$wouldSubstitute(g.slice(0, 2), 'rphf') || indicConfig.rephMode === 'Explicit' && $d203e6b9523d0071$var$wouldSubstitute(g, 'rphf')) {
+                limit += 2;
+                while(limit < end && $d203e6b9523d0071$var$isJoiner(glyphs[limit]))limit++;
+                base = start;
+                hasReph = true;
+            }
+        } else if (indicConfig.rephMode === 'Log_Repha' && glyphs[start].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).Repha) {
+            limit++;
+            while(limit < end && $d203e6b9523d0071$var$isJoiner(glyphs[limit]))limit++;
+            base = start;
+            hasReph = true;
+        }
+        switch(indicConfig.basePos){
+            case 'Last':
+                {
+                    // starting from the end of the syllable, move backwards
+                    let i = end;
+                    let seenBelow = false;
+                    do {
+                        let info = glyphs[--i].shaperInfo;
+                        // until a consonant is found
+                        if ($d203e6b9523d0071$var$isConsonant(glyphs[i])) {
+                            // that does not have a below-base or post-base form
+                            // (post-base forms have to follow below-base forms),
+                            if (info.position !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Below_C && (info.position !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Post_C || seenBelow)) {
+                                base = i;
+                                break;
+                            }
+                            // or that is not a pre-base reordering Ra,
+                            //
+                            // IMPLEMENTATION NOTES:
+                            //
+                            // Our pre-base reordering Ra's are marked POS_POST_C, so will be skipped
+                            // by the logic above already.
+                            //
+                            // or arrive at the first consonant. The consonant stopped at will
+                            // be the base.
+                            if (info.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Below_C) seenBelow = true;
+                            base = i;
+                        } else if (start < i && info.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).ZWJ && glyphs[i - 1].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).H) break;
+                    }while (i > limit);
+                    break;
+                }
+            case 'First':
+                // The first consonant is always the base.
+                base = start;
+                // Mark all subsequent consonants as below.
+                for(let i = base + 1; i < end; i++)if ($d203e6b9523d0071$var$isConsonant(glyphs[i])) glyphs[i].shaperInfo.position = (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Below_C;
+        }
+        // If the syllable starts with Ra + Halant (in a script that has Reph)
+        // and has more than one consonant, Ra is excluded from candidates for
+        // base consonants.
+        //
+        //  Only do this for unforced Reph. (ie. not for Ra,H,ZWJ)
+        if (hasReph && base === start && limit - base <= 2) hasReph = false;
+        // 2. Decompose and reorder Matras:
+        //
+        // Each matra and any syllable modifier sign in the cluster are moved to the
+        // appropriate position relative to the consonant(s) in the cluster. The
+        // shaping engine decomposes two- or three-part matras into their constituent
+        // parts before any repositioning. Matra characters are classified by which
+        // consonant in a conjunct they have affinity for and are reordered to the
+        // following positions:
+        //
+        //   o Before first half form in the syllable
+        //   o After subjoined consonants
+        //   o After post-form consonant
+        //   o After main consonant (for above marks)
+        //
+        // IMPLEMENTATION NOTES:
+        //
+        // The normalize() routine has already decomposed matras for us, so we don't
+        // need to worry about that.
+        // 3.  Reorder marks to canonical order:
+        //
+        // Adjacent nukta and halant or nukta and vedic sign are always repositioned
+        // if necessary, so that the nukta is first.
+        //
+        // IMPLEMENTATION NOTES:
+        //
+        // We don't need to do this: the normalize() routine already did this for us.
+        // Reorder characters
+        for(let i = start; i < base; i++){
+            let info = glyphs[i].shaperInfo;
+            info.position = Math.min((0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Pre_C, info.position);
+        }
+        if (base < end) glyphs[base].shaperInfo.position = (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Base_C;
+        // Mark final consonants.  A final consonant is one appearing after a matra,
+        // like in Khmer.
+        for(let i = base + 1; i < end; i++)if (glyphs[i].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).M) {
+            for(let j = i + 1; j < end; j++)if ($d203e6b9523d0071$var$isConsonant(glyphs[j])) {
+                glyphs[j].shaperInfo.position = (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Final_C;
+                break;
+            }
+            break;
+        }
+        // Handle beginning Ra
+        if (hasReph) glyphs[start].shaperInfo.position = (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Ra_To_Become_Reph;
+        // For old-style Indic script tags, move the first post-base Halant after
+        // last consonant.
+        //
+        // Reports suggest that in some scripts Uniscribe does this only if there
+        // is *not* a Halant after last consonant already (eg. Kannada), while it
+        // does it unconditionally in other scripts (eg. Malayalam).  We don't
+        // currently know about other scripts, so we single out Malayalam for now.
+        //
+        // Kannada test case:
+        // U+0C9A,U+0CCD,U+0C9A,U+0CCD
+        // With some versions of Lohit Kannada.
+        // https://bugs.freedesktop.org/show_bug.cgi?id=59118
+        //
+        // Malayalam test case:
+        // U+0D38,U+0D4D,U+0D31,U+0D4D,U+0D31,U+0D4D
+        // With lohit-ttf-20121122/Lohit-Malayalam.ttf
+        if (plan.isOldSpec) {
+            let disallowDoubleHalants = plan.unicodeScript !== 'Malayalam';
+            for(let i = base + 1; i < end; i++)if (glyphs[i].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).H) {
+                let j;
+                for(j = end - 1; j > i; j--){
+                    if ($d203e6b9523d0071$var$isConsonant(glyphs[j]) || disallowDoubleHalants && glyphs[j].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).H) break;
+                }
+                if (glyphs[j].shaperInfo.category !== (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).H && j > i) {
+                    // Move Halant to after last consonant.
+                    let t = glyphs[i];
+                    glyphs.splice(i, 0, ...glyphs.splice(i + 1, j - i));
+                    glyphs[j] = t;
+                }
+                break;
+            }
+        }
+        // Attach misc marks to previous char to move with them.
+        let lastPos = (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Start;
+        for(let i = start; i < end; i++){
+            let info = glyphs[i].shaperInfo;
+            if (info.category & ((0, $79e3b6f2c331d0bf$export$bbcd928767338e0d) | (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).N | (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).RS | (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).CM | (0, $79e3b6f2c331d0bf$export$ca9599b2a300afc) & info.category)) {
+                info.position = lastPos;
+                if (info.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).H && info.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Pre_M) {
+                    // Uniscribe doesn't move the Halant with Left Matra.
+                    // TEST: U+092B,U+093F,U+094DE
+                    // We follow.  This is important for the Sinhala
+                    // U+0DDA split matra since it decomposes to U+0DD9,U+0DCA
+                    // where U+0DD9 is a left matra and U+0DCA is the virama.
+                    // We don't want to move the virama with the left matra.
+                    // TEST: U+0D9A,U+0DDA
+                    for(let j = i; j > start; j--)if (glyphs[j - 1].shaperInfo.position !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Pre_M) {
+                        info.position = glyphs[j - 1].shaperInfo.position;
+                        break;
+                    }
+                }
+            } else if (info.position !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).SMVD) lastPos = info.position;
+        }
+        // For post-base consonants let them own anything before them
+        // since the last consonant or matra.
+        let last = base;
+        for(let i = base + 1; i < end; i++){
+            if ($d203e6b9523d0071$var$isConsonant(glyphs[i])) {
+                for(let j = last + 1; j < i; j++)if (glyphs[j].shaperInfo.position < (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).SMVD) glyphs[j].shaperInfo.position = glyphs[i].shaperInfo.position;
+                last = i;
+            } else if (glyphs[i].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).M) last = i;
+        }
+        let arr = glyphs.slice(start, end);
+        arr.sort((a, b)=>a.shaperInfo.position - b.shaperInfo.position);
+        glyphs.splice(start, arr.length, ...arr);
+        // Find base again
+        for(let i = start; i < end; i++)if (glyphs[i].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Base_C) {
+            base = i;
+            break;
+        }
+        // Setup features now
+        // Reph
+        for(let i = start; i < end && glyphs[i].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Ra_To_Become_Reph; i++)glyphs[i].features.rphf = true;
+        // Pre-base
+        let blwf = !plan.isOldSpec && indicConfig.blwfMode === 'Pre_And_Post';
+        for(let i = start; i < base; i++){
+            glyphs[i].features.half = true;
+            if (blwf) glyphs[i].features.blwf = true;
+        }
+        // Post-base
+        for(let i = base + 1; i < end; i++){
+            glyphs[i].features.abvf = true;
+            glyphs[i].features.pstf = true;
+            glyphs[i].features.blwf = true;
+        }
+        if (plan.isOldSpec && plan.unicodeScript === 'Devanagari') {
+            // Old-spec eye-lash Ra needs special handling.  From the
+            // spec:
+            //
+            // "The feature 'below-base form' is applied to consonants
+            // having below-base forms and following the base consonant.
+            // The exception is vattu, which may appear below half forms
+            // as well as below the base glyph. The feature 'below-base
+            // form' will be applied to all such occurrences of Ra as well."
+            //
+            // Test case: U+0924,U+094D,U+0930,U+094d,U+0915
+            // with Sanskrit 2003 font.
+            //
+            // However, note that Ra,Halant,ZWJ is the correct way to
+            // request eyelash form of Ra, so we wouldbn't inhibit it
+            // in that sequence.
+            //
+            // Test case: U+0924,U+094D,U+0930,U+094d,U+200D,U+0915
+            for(let i = start; i + 1 < base; i++)if (glyphs[i].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).Ra && glyphs[i + 1].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).H && (i + 1 === base || glyphs[i + 2].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).ZWJ)) {
+                glyphs[i].features.blwf = true;
+                glyphs[i + 1].features.blwf = true;
+            }
+        }
+        let prefLen = 2;
+        if (features.pref && base + prefLen < end) // Find a Halant,Ra sequence and mark it for pre-base reordering processing.
+        for(let i = base + 1; i + prefLen - 1 < end; i++){
+            let g = [
+                glyphs[i].copy(),
+                glyphs[i + 1].copy()
+            ];
+            if ($d203e6b9523d0071$var$wouldSubstitute(g, 'pref')) {
+                for(let j = 0; j < prefLen; j++)glyphs[i++].features.pref = true;
+                // Mark the subsequent stuff with 'cfar'.  Used in Khmer.
+                // Read the feature spec.
+                // This allows distinguishing the following cases with MS Khmer fonts:
+                // U+1784,U+17D2,U+179A,U+17D2,U+1782
+                // U+1784,U+17D2,U+1782,U+17D2,U+179A
+                if (features.cfar) for(; i < end; i++)glyphs[i].features.cfar = true;
+                break;
+            }
+        }
+        // Apply ZWJ/ZWNJ effects
+        for(let i = start + 1; i < end; i++)if ($d203e6b9523d0071$var$isJoiner(glyphs[i])) {
+            let nonJoiner = glyphs[i].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).ZWNJ;
+            let j = i;
+            do {
+                j--;
+                // ZWJ/ZWNJ should disable CJCT.  They do that by simply
+                // being there, since we don't skip them for the CJCT
+                // feature (ie. F_MANUAL_ZWJ)
+                // A ZWNJ disables HALF.
+                if (nonJoiner) delete glyphs[j].features.half;
+            }while (j > start && !$d203e6b9523d0071$var$isConsonant(glyphs[j]));
+        }
+    }
+}
+function $d203e6b9523d0071$var$finalReordering(font, glyphs, plan) {
+    let indicConfig = plan.indicConfig;
+    let features = font._layoutEngine.engine.GSUBProcessor.features;
+    for(let start = 0, end = $d203e6b9523d0071$var$nextSyllable(glyphs, 0); start < glyphs.length; start = end, end = $d203e6b9523d0071$var$nextSyllable(glyphs, start)){
+        // 4. Final reordering:
+        //
+        // After the localized forms and basic shaping forms GSUB features have been
+        // applied (see below), the shaping engine performs some final glyph
+        // reordering before applying all the remaining font features to the entire
+        // cluster.
+        let tryPref = !!features.pref;
+        // Find base again
+        let base = start;
+        for(; base < end; base++)if (glyphs[base].shaperInfo.position >= (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Base_C) {
+            if (tryPref && base + 1 < end) {
+                for(let i = base + 1; i < end; i++)if (glyphs[i].features.pref) {
+                    if (!(glyphs[i].substituted && glyphs[i].isLigated && !glyphs[i].isMultiplied)) {
+                        // Ok, this was a 'pref' candidate but didn't form any.
+                        // Base is around here...
+                        base = i;
+                        while(base < end && $d203e6b9523d0071$var$isHalantOrCoeng(glyphs[base]))base++;
+                        glyphs[base].shaperInfo.position = (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).BASE_C;
+                        tryPref = false;
+                    }
+                    break;
+                }
+            }
+            // For Malayalam, skip over unformed below- (but NOT post-) forms.
+            if (plan.unicodeScript === 'Malayalam') for(let i = base + 1; i < end; i++){
+                while(i < end && $d203e6b9523d0071$var$isJoiner(glyphs[i]))i++;
+                if (i === end || !$d203e6b9523d0071$var$isHalantOrCoeng(glyphs[i])) break;
+                i++; // Skip halant.
+                while(i < end && $d203e6b9523d0071$var$isJoiner(glyphs[i]))i++;
+                if (i < end && $d203e6b9523d0071$var$isConsonant(glyphs[i]) && glyphs[i].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Below_C) {
+                    base = i;
+                    glyphs[base].shaperInfo.position = (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Base_C;
+                }
+            }
+            if (start < base && glyphs[base].shaperInfo.position > (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Base_C) base--;
+            break;
+        }
+        if (base === end && start < base && glyphs[base - 1].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).ZWJ) base--;
+        if (base < end) while(start < base && glyphs[base].shaperInfo.category & ((0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).N | (0, $79e3b6f2c331d0bf$export$ca9599b2a300afc)))base--;
+        // o Reorder matras:
+        //
+        // If a pre-base matra character had been reordered before applying basic
+        // features, the glyph can be moved closer to the main consonant based on
+        // whether half-forms had been formed. Actual position for the matra is
+        // defined as “after last standalone halant glyph, after initial matra
+        // position and before the main consonant”. If ZWJ or ZWNJ follow this
+        // halant, position is moved after it.
+        //
+        if (start + 1 < end && start < base) {
+            // If we lost track of base, alas, position before last thingy.
+            let newPos = base === end ? base - 2 : base - 1;
+            // Malayalam / Tamil do not have "half" forms or explicit virama forms.
+            // The glyphs formed by 'half' are Chillus or ligated explicit viramas.
+            // We want to position matra after them.
+            if (plan.unicodeScript !== 'Malayalam' && plan.unicodeScript !== 'Tamil') {
+                while(newPos > start && !(glyphs[newPos].shaperInfo.category & ((0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).M | (0, $79e3b6f2c331d0bf$export$ca9599b2a300afc))))newPos--;
+                // If we found no Halant we are done.
+                // Otherwise only proceed if the Halant does
+                // not belong to the Matra itself!
+                if ($d203e6b9523d0071$var$isHalantOrCoeng(glyphs[newPos]) && glyphs[newPos].shaperInfo.position !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Pre_M) // If ZWJ or ZWNJ follow this halant, position is moved after it.
+                {
+                    if (newPos + 1 < end && $d203e6b9523d0071$var$isJoiner(glyphs[newPos + 1])) newPos++;
+                } else newPos = start; // No move.
+            }
+            if (start < newPos && glyphs[newPos].shaperInfo.position !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Pre_M) {
+                // Now go see if there's actually any matras...
+                for(let i = newPos; i > start; i--)if (glyphs[i - 1].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Pre_M) {
+                    let oldPos = i - 1;
+                    if (oldPos < base && base <= newPos) base--;
+                    let tmp = glyphs[oldPos];
+                    glyphs.splice(oldPos, 0, ...glyphs.splice(oldPos + 1, newPos - oldPos));
+                    glyphs[newPos] = tmp;
+                    newPos--;
+                }
+            }
+        }
+        // o Reorder reph:
+        //
+        // Reph’s original position is always at the beginning of the syllable,
+        // (i.e. it is not reordered at the character reordering stage). However,
+        // it will be reordered according to the basic-forms shaping results.
+        // Possible positions for reph, depending on the script, are; after main,
+        // before post-base consonant forms, and after post-base consonant forms.
+        // Two cases:
+        //
+        // - If repha is encoded as a sequence of characters (Ra,H or Ra,H,ZWJ), then
+        //   we should only move it if the sequence ligated to the repha form.
+        //
+        // - If repha is encoded separately and in the logical position, we should only
+        //   move it if it did NOT ligate.  If it ligated, it's probably the font trying
+        //   to make it work without the reordering.
+        if (start + 1 < end && glyphs[start].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Ra_To_Become_Reph && glyphs[start].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).Repha !== (glyphs[start].isLigated && !glyphs[start].isMultiplied)) {
+            let newRephPos;
+            let rephPos = indicConfig.rephPos;
+            let found = false;
+            // 1. If reph should be positioned after post-base consonant forms,
+            //    proceed to step 5.
+            if (rephPos !== (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).After_Post) {
+                //  2. If the reph repositioning class is not after post-base: target
+                //     position is after the first explicit halant glyph between the
+                //     first post-reph consonant and last main consonant. If ZWJ or ZWNJ
+                //     are following this halant, position is moved after it. If such
+                //     position is found, this is the target position. Otherwise,
+                //     proceed to the next step.
+                //
+                //     Note: in old-implementation fonts, where classifications were
+                //     fixed in shaping engine, there was no case where reph position
+                //     will be found on this step.
+                newRephPos = start + 1;
+                while(newRephPos < base && !$d203e6b9523d0071$var$isHalantOrCoeng(glyphs[newRephPos]))newRephPos++;
+                if (newRephPos < base && $d203e6b9523d0071$var$isHalantOrCoeng(glyphs[newRephPos])) {
+                    // ->If ZWJ or ZWNJ are following this halant, position is moved after it.
+                    if (newRephPos + 1 < base && $d203e6b9523d0071$var$isJoiner(glyphs[newRephPos + 1])) newRephPos++;
+                    found = true;
+                }
+                // 3. If reph should be repositioned after the main consonant: find the
+                //    first consonant not ligated with main, or find the first
+                //    consonant that is not a potential pre-base reordering Ra.
+                if (!found && rephPos === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).After_Main) {
+                    newRephPos = base;
+                    while(newRephPos + 1 < end && glyphs[newRephPos + 1].shaperInfo.position <= (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).After_Main)newRephPos++;
+                    found = newRephPos < end;
+                }
+                // 4. If reph should be positioned before post-base consonant, find
+                //    first post-base classified consonant not ligated with main. If no
+                //    consonant is found, the target position should be before the
+                //    first matra, syllable modifier sign or vedic sign.
+                //
+                // This is our take on what step 4 is trying to say (and failing, BADLY).
+                if (!found && rephPos === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).After_Sub) {
+                    newRephPos = base;
+                    while(newRephPos + 1 < end && !(glyphs[newRephPos + 1].shaperInfo.position & ((0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Post_C | (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).After_Post | (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).SMVD)))newRephPos++;
+                    found = newRephPos < end;
+                }
+            }
+            //  5. If no consonant is found in steps 3 or 4, move reph to a position
+            //     immediately before the first post-base matra, syllable modifier
+            //     sign or vedic sign that has a reordering class after the intended
+            //     reph position. For example, if the reordering position for reph
+            //     is post-main, it will skip above-base matras that also have a
+            //     post-main position.
+            if (!found) {
+                // Copied from step 2.
+                newRephPos = start + 1;
+                while(newRephPos < base && !$d203e6b9523d0071$var$isHalantOrCoeng(glyphs[newRephPos]))newRephPos++;
+                if (newRephPos < base && $d203e6b9523d0071$var$isHalantOrCoeng(glyphs[newRephPos])) {
+                    // ->If ZWJ or ZWNJ are following this halant, position is moved after it.
+                    if (newRephPos + 1 < base && $d203e6b9523d0071$var$isJoiner(glyphs[newRephPos + 1])) newRephPos++;
+                    found = true;
+                }
+            }
+            // 6. Otherwise, reorder reph to the end of the syllable.
+            if (!found) {
+                newRephPos = end - 1;
+                while(newRephPos > start && glyphs[newRephPos].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).SMVD)newRephPos--;
+                // If the Reph is to be ending up after a Matra,Halant sequence,
+                // position it before that Halant so it can interact with the Matra.
+                // However, if it's a plain Consonant,Halant we shouldn't do that.
+                // Uniscribe doesn't do this.
+                // TEST: U+0930,U+094D,U+0915,U+094B,U+094D
+                if ($d203e6b9523d0071$var$isHalantOrCoeng(glyphs[newRephPos])) {
+                    for(let i = base + 1; i < newRephPos; i++)if (glyphs[i].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).M) newRephPos--;
+                }
+            }
+            let reph = glyphs[start];
+            glyphs.splice(start, 0, ...glyphs.splice(start + 1, newRephPos - start));
+            glyphs[newRephPos] = reph;
+            if (start < base && base <= newRephPos) base--;
+        }
+        // o Reorder pre-base reordering consonants:
+        //
+        // If a pre-base reordering consonant is found, reorder it according to
+        // the following rules:
+        if (tryPref && base + 1 < end) {
+            for(let i = base + 1; i < end; i++)if (glyphs[i].features.pref) {
+                // 1. Only reorder a glyph produced by substitution during application
+                //    of the <pref> feature. (Note that a font may shape a Ra consonant with
+                //    the feature generally but block it in certain contexts.)
+                // Note: We just check that something got substituted.  We don't check that
+                // the <pref> feature actually did it...
+                //
+                // Reorder pref only if it ligated.
+                if (glyphs[i].isLigated && !glyphs[i].isMultiplied) {
+                    // 2. Try to find a target position the same way as for pre-base matra.
+                    //    If it is found, reorder pre-base consonant glyph.
+                    //
+                    // 3. If position is not found, reorder immediately before main
+                    //    consonant.
+                    let newPos = base;
+                    // Malayalam / Tamil do not have "half" forms or explicit virama forms.
+                    // The glyphs formed by 'half' are Chillus or ligated explicit viramas.
+                    // We want to position matra after them.
+                    if (plan.unicodeScript !== 'Malayalam' && plan.unicodeScript !== 'Tamil') {
+                        while(newPos > start && !(glyphs[newPos - 1].shaperInfo.category & ((0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).M | (0, $79e3b6f2c331d0bf$export$ca9599b2a300afc))))newPos--;
+                        // In Khmer coeng model, a H,Ra can go *after* matras.  If it goes after a
+                        // split matra, it should be reordered to *before* the left part of such matra.
+                        if (newPos > start && glyphs[newPos - 1].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).M) {
+                            let oldPos = i;
+                            for(let j = base + 1; j < oldPos; j++)if (glyphs[j].shaperInfo.category === (0, $79e3b6f2c331d0bf$export$a513ea61a7bee91c).M) {
+                                newPos--;
+                                break;
+                            }
+                        }
+                    }
+                    if (newPos > start && $d203e6b9523d0071$var$isHalantOrCoeng(glyphs[newPos - 1])) // -> If ZWJ or ZWNJ follow this halant, position is moved after it.
+                    {
+                        if (newPos < end && $d203e6b9523d0071$var$isJoiner(glyphs[newPos])) newPos++;
+                    }
+                    let oldPos = i;
+                    let tmp = glyphs[oldPos];
+                    glyphs.splice(newPos + 1, 0, ...glyphs.splice(newPos, oldPos - newPos));
+                    glyphs[newPos] = tmp;
+                    if (newPos <= base && base < oldPos) base++;
+                }
+                break;
+            }
+        }
+        // Apply 'init' to the Left Matra if it's a word start.
+        if (glyphs[start].shaperInfo.position === (0, $79e3b6f2c331d0bf$export$1a1f61c9c4dd9df0).Pre_M && (!start || !/Cf|Mn/.test((0, $gfJaN$unicodeproperties.getCategory)(glyphs[start - 1].codePoints[0])))) glyphs[start].features.init = true;
+    }
+}
+function $d203e6b9523d0071$var$nextSyllable(glyphs, start) {
+    if (start >= glyphs.length) return start;
+    let syllable = glyphs[start].shaperInfo.syllable;
+    while(++start < glyphs.length && glyphs[start].shaperInfo.syllable === syllable);
+    return start;
+}
+
+
+
+
+
+
+
+
+
+const { categories: $9b772791ccede8a5$var$categories, decompositions: $9b772791ccede8a5$var$decompositions } = (0, (/*@__PURE__*/$parcel$interopDefault($79781f8c452881c2$exports)));
+const $9b772791ccede8a5$var$trie = new (0, ($parcel$interopDefault($gfJaN$unicodetrie)))((0, $66a5b9fb5318558a$export$94fdf11bafc8de6b)("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"));
+const $9b772791ccede8a5$var$stateMachine = new (0, ($parcel$interopDefault($gfJaN$dfa)))((0, (/*@__PURE__*/$parcel$interopDefault($79781f8c452881c2$exports))));
+class $9b772791ccede8a5$export$2e2bcd8739ae039 extends (0, $d28fb665ee343afc$export$2e2bcd8739ae039) {
+    static planFeatures(plan) {
+        plan.addStage($9b772791ccede8a5$var$setupSyllables);
+        // Default glyph pre-processing group
+        plan.addStage([
+            'locl',
+            'ccmp',
+            'nukt',
+            'akhn'
+        ]);
+        // Reordering group
+        plan.addStage($9b772791ccede8a5$var$clearSubstitutionFlags);
+        plan.addStage([
+            'rphf'
+        ], false);
+        plan.addStage($9b772791ccede8a5$var$recordRphf);
+        plan.addStage($9b772791ccede8a5$var$clearSubstitutionFlags);
+        plan.addStage([
+            'pref'
+        ]);
+        plan.addStage($9b772791ccede8a5$var$recordPref);
+        // Orthographic unit shaping group
+        plan.addStage([
+            'rkrf',
+            'abvf',
+            'blwf',
+            'half',
+            'pstf',
+            'vatu',
+            'cjct'
+        ]);
+        plan.addStage($9b772791ccede8a5$var$reorder);
+        // Topographical features
+        // Scripts that need this are handled by the Arabic shaper, not implemented here for now.
+        // plan.addStage(['isol', 'init', 'medi', 'fina', 'med2', 'fin2', 'fin3'], false);
+        // Standard topographic presentation and positional feature application
+        plan.addStage([
+            'abvs',
+            'blws',
+            'pres',
+            'psts',
+            'dist',
+            'abvm',
+            'blwm'
+        ]);
+    }
+    static assignFeatures(plan, glyphs) {
+        // Decompose split vowels
+        // TODO: do this in a more general unicode normalizer
+        for(let i = glyphs.length - 1; i >= 0; i--){
+            let codepoint = glyphs[i].codePoints[0];
+            if ($9b772791ccede8a5$var$decompositions[codepoint]) {
+                let decomposed = $9b772791ccede8a5$var$decompositions[codepoint].map((c)=>{
+                    let g = plan.font.glyphForCodePoint(c);
+                    return new (0, $f22bb23c9fd478d8$export$2e2bcd8739ae039)(plan.font, g.id, [
+                        c
+                    ], glyphs[i].features);
+                });
+                glyphs.splice(i, 1, ...decomposed);
+            }
+        }
+    }
+}
+(0, $gfJaN$swchelperscjs_define_propertycjs._)($9b772791ccede8a5$export$2e2bcd8739ae039, "zeroMarkWidths", 'BEFORE_GPOS');
+function $9b772791ccede8a5$var$useCategory(glyph) {
+    return $9b772791ccede8a5$var$trie.get(glyph.codePoints[0]);
+}
+class $9b772791ccede8a5$var$USEInfo {
+    constructor(category, syllableType, syllable){
+        this.category = category;
+        this.syllableType = syllableType;
+        this.syllable = syllable;
+    }
+}
+function $9b772791ccede8a5$var$setupSyllables(font, glyphs) {
+    let syllable = 0;
+    for (let [start, end, tags] of $9b772791ccede8a5$var$stateMachine.match(glyphs.map($9b772791ccede8a5$var$useCategory))){
+        ++syllable;
+        // Create shaper info
+        for(let i = start; i <= end; i++)glyphs[i].shaperInfo = new $9b772791ccede8a5$var$USEInfo($9b772791ccede8a5$var$categories[$9b772791ccede8a5$var$useCategory(glyphs[i])], tags[0], syllable);
+        // Assign rphf feature
+        let limit = glyphs[start].shaperInfo.category === 'R' ? 1 : Math.min(3, end - start);
+        for(let i = start; i < start + limit; i++)glyphs[i].features.rphf = true;
+    }
+}
+function $9b772791ccede8a5$var$clearSubstitutionFlags(font, glyphs) {
+    for (let glyph of glyphs)glyph.substituted = false;
+}
+function $9b772791ccede8a5$var$recordRphf(font, glyphs) {
+    for (let glyph of glyphs)if (glyph.substituted && glyph.features.rphf) // Mark a substituted repha.
+    glyph.shaperInfo.category = 'R';
+}
+function $9b772791ccede8a5$var$recordPref(font, glyphs) {
+    for (let glyph of glyphs)if (glyph.substituted) // Mark a substituted pref as VPre, as they behave the same way.
+    glyph.shaperInfo.category = 'VPre';
+}
+function $9b772791ccede8a5$var$reorder(font, glyphs) {
+    let dottedCircle = font.glyphForCodePoint(0x25cc).id;
+    for(let start = 0, end = $9b772791ccede8a5$var$nextSyllable(glyphs, 0); start < glyphs.length; start = end, end = $9b772791ccede8a5$var$nextSyllable(glyphs, start)){
+        let i, j;
+        let info = glyphs[start].shaperInfo;
+        let type = info.syllableType;
+        // Only a few syllable types need reordering.
+        if (type !== 'virama_terminated_cluster' && type !== 'standard_cluster' && type !== 'broken_cluster') continue;
+        // Insert a dotted circle glyph in broken clusters.
+        if (type === 'broken_cluster' && dottedCircle) {
+            let g = new (0, $f22bb23c9fd478d8$export$2e2bcd8739ae039)(font, dottedCircle, [
+                0x25cc
+            ]);
+            g.shaperInfo = info;
+            // Insert after possible Repha.
+            for(i = start; i < end && glyphs[i].shaperInfo.category === 'R'; i++);
+            glyphs.splice(++i, 0, g);
+            end++;
+        }
+        // Move things forward.
+        if (info.category === 'R' && end - start > 1) // Got a repha. Reorder it to after first base, before first halant.
+        for(i = start + 1; i < end; i++){
+            info = glyphs[i].shaperInfo;
+            if ($9b772791ccede8a5$var$isBase(info) || $9b772791ccede8a5$var$isHalant(glyphs[i])) {
+                // If we hit a halant, move before it; otherwise it's a base: move to it's
+                // place, and shift things in between backward.
+                if ($9b772791ccede8a5$var$isHalant(glyphs[i])) i--;
+                glyphs.splice(start, 0, ...glyphs.splice(start + 1, i - start), glyphs[i]);
+                break;
+            }
+        }
+        // Move things back.
+        for(i = start, j = end; i < end; i++){
+            info = glyphs[i].shaperInfo;
+            if ($9b772791ccede8a5$var$isBase(info) || $9b772791ccede8a5$var$isHalant(glyphs[i])) // If we hit a halant, move after it; otherwise it's a base: move to it's
+            // place, and shift things in between backward.
+            j = $9b772791ccede8a5$var$isHalant(glyphs[i]) ? i + 1 : i;
+            else if ((info.category === 'VPre' || info.category === 'VMPre') && j < i) glyphs.splice(j, 1, glyphs[i], ...glyphs.splice(j, i - j));
+        }
+    }
+}
+function $9b772791ccede8a5$var$nextSyllable(glyphs, start) {
+    if (start >= glyphs.length) return start;
+    let syllable = glyphs[start].shaperInfo.syllable;
+    while(++start < glyphs.length && glyphs[start].shaperInfo.syllable === syllable);
+    return start;
+}
+function $9b772791ccede8a5$var$isHalant(glyph) {
+    return glyph.shaperInfo.category === 'H' && !glyph.isLigated;
+}
+function $9b772791ccede8a5$var$isBase(info) {
+    return info.category === 'B' || info.category === 'GB';
+}
+
+
+const $fdb4471fc82bc2c2$var$SHAPERS = {
+    arab: (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    mong: (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    syrc: (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    'nko ': (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    phag: (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    mand: (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    mani: (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    phlp: (0, $17ba6019f27bfcf9$export$2e2bcd8739ae039),
+    hang: (0, $fa1d9fd80dd7279e$export$2e2bcd8739ae039),
+    bng2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    beng: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    dev2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    deva: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    gjr2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    gujr: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    guru: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    gur2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    knda: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    knd2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    mlm2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    mlym: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    ory2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    orya: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    taml: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    tml2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    telu: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    tel2: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    khmr: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    bali: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    batk: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    brah: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    bugi: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    buhd: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    cakm: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    cham: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    dupl: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    egyp: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    gran: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    hano: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    java: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    kthi: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    kali: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    khar: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    khoj: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    sind: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    lepc: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    limb: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    mahj: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    // mand: UniversalShaper, // Mandaic
+    // mani: UniversalShaper, // Manichaean
+    mtei: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    modi: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    // mong: UniversalShaper, // Mongolian
+    // 'nko ': UniversalShaper, // N’Ko
+    hmng: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    // phag: UniversalShaper, // Phags-pa
+    // phlp: UniversalShaper, // Psalter Pahlavi
+    rjng: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    saur: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    shrd: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    sidd: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    sinh: (0, $d203e6b9523d0071$export$2e2bcd8739ae039),
+    sund: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    sylo: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    tglg: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    tagb: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    tale: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    lana: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    tavt: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    takr: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    tibt: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    tfng: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    tirh: (0, $9b772791ccede8a5$export$2e2bcd8739ae039),
+    latn: (0, $d28fb665ee343afc$export$2e2bcd8739ae039),
+    DFLT: (0, $d28fb665ee343afc$export$2e2bcd8739ae039 // Default
+    )
+};
+function $fdb4471fc82bc2c2$export$7877a478dd30fd3d(script) {
+    if (!Array.isArray(script)) script = [
+        script
+    ];
+    for (let s of script){
+        let shaper = $fdb4471fc82bc2c2$var$SHAPERS[s];
+        if (shaper) return shaper;
+    }
+    return 0, $d28fb665ee343afc$export$2e2bcd8739ae039;
+}
+
+
+
+
+
+class $86bc1883359e094a$export$2e2bcd8739ae039 extends (0, $7b226e6bbeadedeb$export$2e2bcd8739ae039) {
+    applyLookup(lookupType, table) {
+        switch(lookupType){
+            case 1:
+                {
+                    let index = this.coverageIndex(table.coverage);
+                    if (index === -1) return false;
+                    let glyph = this.glyphIterator.cur;
+                    switch(table.version){
+                        case 1:
+                            glyph.id = glyph.id + table.deltaGlyphID & 0xffff;
+                            break;
+                        case 2:
+                            glyph.id = table.substitute.get(index);
+                            break;
+                    }
+                    return true;
+                }
+            case 2:
+                {
+                    let index = this.coverageIndex(table.coverage);
+                    if (index !== -1) {
+                        let sequence = table.sequences.get(index);
+                        if (sequence.length === 0) {
+                            // If the sequence length is zero, delete the glyph.
+                            // The OpenType spec disallows this, but seems like Harfbuzz and Uniscribe allow it.
+                            this.glyphs.splice(this.glyphIterator.index, 1);
+                            return true;
+                        }
+                        this.glyphIterator.cur.id = sequence[0];
+                        this.glyphIterator.cur.ligatureComponent = 0;
+                        let features = this.glyphIterator.cur.features;
+                        let curGlyph = this.glyphIterator.cur;
+                        let replacement = sequence.slice(1).map((gid, i)=>{
+                            let glyph = new (0, $f22bb23c9fd478d8$export$2e2bcd8739ae039)(this.font, gid, undefined, features);
+                            glyph.shaperInfo = curGlyph.shaperInfo;
+                            glyph.isLigated = curGlyph.isLigated;
+                            glyph.ligatureComponent = i + 1;
+                            glyph.substituted = true;
+                            glyph.isMultiplied = true;
+                            return glyph;
+                        });
+                        this.glyphs.splice(this.glyphIterator.index + 1, 0, ...replacement);
+                        return true;
+                    }
+                    return false;
+                }
+            case 3:
+                {
+                    let index = this.coverageIndex(table.coverage);
+                    if (index !== -1) {
+                        let USER_INDEX = 0; // TODO
+                        this.glyphIterator.cur.id = table.alternateSet.get(index)[USER_INDEX];
+                        return true;
+                    }
+                    return false;
+                }
+            case 4:
+                {
+                    let index = this.coverageIndex(table.coverage);
+                    if (index === -1) return false;
+                    for (let ligature of table.ligatureSets.get(index)){
+                        let matched = this.sequenceMatchIndices(1, ligature.components);
+                        if (!matched) continue;
+                        let curGlyph = this.glyphIterator.cur;
+                        // Concatenate all of the characters the new ligature will represent
+                        let characters = curGlyph.codePoints.slice();
+                        for (let index of matched)characters.push(...this.glyphs[index].codePoints);
+                        // Create the replacement ligature glyph
+                        let ligatureGlyph = new (0, $f22bb23c9fd478d8$export$2e2bcd8739ae039)(this.font, ligature.glyph, characters, curGlyph.features);
+                        ligatureGlyph.shaperInfo = curGlyph.shaperInfo;
+                        ligatureGlyph.isLigated = true;
+                        ligatureGlyph.substituted = true;
+                        // From Harfbuzz:
+                        // - If it *is* a mark ligature, we don't allocate a new ligature id, and leave
+                        //   the ligature to keep its old ligature id.  This will allow it to attach to
+                        //   a base ligature in GPOS.  Eg. if the sequence is: LAM,LAM,SHADDA,FATHA,HEH,
+                        //   and LAM,LAM,HEH for a ligature, they will leave SHADDA and FATHA with a
+                        //   ligature id and component value of 2.  Then if SHADDA,FATHA form a ligature
+                        //   later, we don't want them to lose their ligature id/component, otherwise
+                        //   GPOS will fail to correctly position the mark ligature on top of the
+                        //   LAM,LAM,HEH ligature. See https://bugzilla.gnome.org/show_bug.cgi?id=676343
+                        //
+                        // - If a ligature is formed of components that some of which are also ligatures
+                        //   themselves, and those ligature components had marks attached to *their*
+                        //   components, we have to attach the marks to the new ligature component
+                        //   positions!  Now *that*'s tricky!  And these marks may be following the
+                        //   last component of the whole sequence, so we should loop forward looking
+                        //   for them and update them.
+                        //
+                        //   Eg. the sequence is LAM,LAM,SHADDA,FATHA,HEH, and the font first forms a
+                        //   'calt' ligature of LAM,HEH, leaving the SHADDA and FATHA with a ligature
+                        //   id and component == 1.  Now, during 'liga', the LAM and the LAM-HEH ligature
+                        //   form a LAM-LAM-HEH ligature.  We need to reassign the SHADDA and FATHA to
+                        //   the new ligature with a component value of 2.
+                        //
+                        //   This in fact happened to a font...  See https://bugzilla.gnome.org/show_bug.cgi?id=437633
+                        let isMarkLigature = curGlyph.isMark;
+                        for(let i = 0; i < matched.length && isMarkLigature; i++)isMarkLigature = this.glyphs[matched[i]].isMark;
+                        ligatureGlyph.ligatureID = isMarkLigature ? null : this.ligatureID++;
+                        let lastLigID = curGlyph.ligatureID;
+                        let lastNumComps = curGlyph.codePoints.length;
+                        let curComps = lastNumComps;
+                        let idx = this.glyphIterator.index + 1;
+                        // Set ligatureID and ligatureComponent on glyphs that were skipped in the matched sequence.
+                        // This allows GPOS to attach marks to the correct ligature components.
+                        for (let matchIndex of matched){
+                            // Don't assign new ligature components for mark ligatures (see above)
+                            if (isMarkLigature) idx = matchIndex;
+                            else while(idx < matchIndex){
+                                var ligatureComponent = curComps - lastNumComps + Math.min(this.glyphs[idx].ligatureComponent || 1, lastNumComps);
+                                this.glyphs[idx].ligatureID = ligatureGlyph.ligatureID;
+                                this.glyphs[idx].ligatureComponent = ligatureComponent;
+                                idx++;
+                            }
+                            lastLigID = this.glyphs[idx].ligatureID;
+                            lastNumComps = this.glyphs[idx].codePoints.length;
+                            curComps += lastNumComps;
+                            idx++; // skip base glyph
+                        }
+                        // Adjust ligature components for any marks following
+                        if (lastLigID && !isMarkLigature) for(let i = idx; i < this.glyphs.length; i++){
+                            if (this.glyphs[i].ligatureID === lastLigID) {
+                                var ligatureComponent = curComps - lastNumComps + Math.min(this.glyphs[i].ligatureComponent || 1, lastNumComps);
+                                this.glyphs[i].ligatureComponent = ligatureComponent;
+                            } else break;
+                        }
+                        // Delete the matched glyphs, and replace the current glyph with the ligature glyph
+                        for(let i = matched.length - 1; i >= 0; i--)this.glyphs.splice(matched[i], 1);
+                        this.glyphs[this.glyphIterator.index] = ligatureGlyph;
+                        return true;
+                    }
+                    return false;
+                }
+            case 5:
+                return this.applyContext(table);
+            case 6:
+                return this.applyChainingContext(table);

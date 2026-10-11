@@ -1,0 +1,1000 @@
+        // define properties for each table to lazily parse
+        for(let tag in this.directory.tables){
+            let table = this.directory.tables[tag];
+            if ((0, $5825c04ce8f7102d$export$2e2bcd8739ae039)[tag] && table.length > 0) Object.defineProperty(this, tag, {
+                get: this._getTable.bind(this, table)
+            });
+        }
+    }
+}
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0a8ef2660a6ce4b6$export$2e2bcd8739ae039.prototype, "bbox", null);
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0a8ef2660a6ce4b6$export$2e2bcd8739ae039.prototype, "_cmapProcessor", null);
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0a8ef2660a6ce4b6$export$2e2bcd8739ae039.prototype, "characterSet", null);
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0a8ef2660a6ce4b6$export$2e2bcd8739ae039.prototype, "_layoutEngine", null);
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0a8ef2660a6ce4b6$export$2e2bcd8739ae039.prototype, "variationAxes", null);
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0a8ef2660a6ce4b6$export$2e2bcd8739ae039.prototype, "namedVariations", null);
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0a8ef2660a6ce4b6$export$2e2bcd8739ae039.prototype, "_variationProcessor", null);
+
+
+
+
+
+
+let $89f72d2d7c9afc0d$var$WOFFDirectoryEntry = new $gfJaN$restructure.Struct({
+    tag: new $gfJaN$restructure.String(4),
+    offset: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, 'void', {
+        type: 'global'
+    }),
+    compLength: $gfJaN$restructure.uint32,
+    length: $gfJaN$restructure.uint32,
+    origChecksum: $gfJaN$restructure.uint32
+});
+let $89f72d2d7c9afc0d$var$WOFFDirectory = new $gfJaN$restructure.Struct({
+    tag: new $gfJaN$restructure.String(4),
+    flavor: $gfJaN$restructure.uint32,
+    length: $gfJaN$restructure.uint32,
+    numTables: $gfJaN$restructure.uint16,
+    reserved: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint16),
+    totalSfntSize: $gfJaN$restructure.uint32,
+    majorVersion: $gfJaN$restructure.uint16,
+    minorVersion: $gfJaN$restructure.uint16,
+    metaOffset: $gfJaN$restructure.uint32,
+    metaLength: $gfJaN$restructure.uint32,
+    metaOrigLength: $gfJaN$restructure.uint32,
+    privOffset: $gfJaN$restructure.uint32,
+    privLength: $gfJaN$restructure.uint32,
+    tables: new $gfJaN$restructure.Array($89f72d2d7c9afc0d$var$WOFFDirectoryEntry, 'numTables')
+});
+$89f72d2d7c9afc0d$var$WOFFDirectory.process = function() {
+    let tables = {};
+    for (let table of this.tables)tables[table.tag] = table;
+    this.tables = tables;
+};
+var $89f72d2d7c9afc0d$export$2e2bcd8739ae039 = $89f72d2d7c9afc0d$var$WOFFDirectory;
+
+
+
+
+
+
+class $8a0a49baaf5d834d$export$2e2bcd8739ae039 extends (0, $0a8ef2660a6ce4b6$export$2e2bcd8739ae039) {
+    static probe(buffer) {
+        return (0, $66a5b9fb5318558a$export$3d28c1996ced1f14).decode(buffer.slice(0, 4)) === 'wOFF';
+    }
+    _decodeDirectory() {
+        this.directory = (0, $89f72d2d7c9afc0d$export$2e2bcd8739ae039).decode(this.stream, {
+            _startOffset: 0
+        });
+    }
+    _getTableStream(tag) {
+        let table = this.directory.tables[tag];
+        if (table) {
+            this.stream.pos = table.offset;
+            if (table.compLength < table.length) {
+                this.stream.pos += 2; // skip deflate header
+                let outBuffer = new Uint8Array(table.length);
+                let buf = (0, ($parcel$interopDefault($gfJaN$tinyinflate)))(this.stream.readBuffer(table.compLength - 2), outBuffer);
+                return new $gfJaN$restructure.DecodeStream(buf);
+            } else return this.stream;
+        }
+        return null;
+    }
+    constructor(...args){
+        super(...args);
+        (0, $gfJaN$swchelperscjs_define_propertycjs._)(this, "type", 'WOFF');
+    }
+}
+
+
+
+
+
+
+
+
+
+class $44b9edca0e403d6d$export$2e2bcd8739ae039 extends (0, $f680320fa07ef53d$export$2e2bcd8739ae039) {
+    _decode() {
+        // We have to decode in advance (in WOFF2Font), so just return the pre-decoded data.
+        return this._font._transformedGlyphs[this.id];
+    }
+    _getCBox() {
+        return this.path.bbox;
+    }
+    constructor(...args){
+        super(...args);
+        (0, $gfJaN$swchelperscjs_define_propertycjs._)(this, "type", 'WOFF2');
+    }
+}
+
+
+
+const $2f0bfd9a5c1d7b58$var$Base128 = {
+    decode (stream) {
+        let result = 0;
+        let iterable = [
+            0,
+            1,
+            2,
+            3,
+            4
+        ];
+        for(let j = 0; j < iterable.length; j++){
+            let i = iterable[j];
+            let code = stream.readUInt8();
+            // If any of the top seven bits are set then we're about to overflow.
+            if (result & 0xe0000000) throw new Error('Overflow');
+            result = result << 7 | code & 0x7f;
+            if ((code & 0x80) === 0) return result;
+        }
+        throw new Error('Bad base 128 number');
+    }
+};
+let $2f0bfd9a5c1d7b58$var$knownTags = [
+    'cmap',
+    'head',
+    'hhea',
+    'hmtx',
+    'maxp',
+    'name',
+    'OS/2',
+    'post',
+    'cvt ',
+    'fpgm',
+    'glyf',
+    'loca',
+    'prep',
+    'CFF ',
+    'VORG',
+    'EBDT',
+    'EBLC',
+    'gasp',
+    'hdmx',
+    'kern',
+    'LTSH',
+    'PCLT',
+    'VDMX',
+    'vhea',
+    'vmtx',
+    'BASE',
+    'GDEF',
+    'GPOS',
+    'GSUB',
+    'EBSC',
+    'JSTF',
+    'MATH',
+    'CBDT',
+    'CBLC',
+    'COLR',
+    'CPAL',
+    'SVG ',
+    'sbix',
+    'acnt',
+    'avar',
+    'bdat',
+    'bloc',
+    'bsln',
+    'cvar',
+    'fdsc',
+    'feat',
+    'fmtx',
+    'fvar',
+    'gvar',
+    'hsty',
+    'just',
+    'lcar',
+    'mort',
+    'morx',
+    'opbd',
+    'prop',
+    'trak',
+    'Zapf',
+    'Silf',
+    'Glat',
+    'Gloc',
+    'Feat',
+    'Sill'
+];
+let $2f0bfd9a5c1d7b58$var$WOFF2DirectoryEntry = new $gfJaN$restructure.Struct({
+    flags: $gfJaN$restructure.uint8,
+    customTag: new $gfJaN$restructure.Optional(new $gfJaN$restructure.String(4), (t)=>(t.flags & 0x3f) === 0x3f),
+    tag: (t)=>t.customTag || $2f0bfd9a5c1d7b58$var$knownTags[t.flags & 0x3f],
+    length: $2f0bfd9a5c1d7b58$var$Base128,
+    transformVersion: (t)=>t.flags >>> 6 & 0x03,
+    transformed: (t)=>t.tag === 'glyf' || t.tag === 'loca' ? t.transformVersion === 0 : t.transformVersion !== 0,
+    transformLength: new $gfJaN$restructure.Optional($2f0bfd9a5c1d7b58$var$Base128, (t)=>t.transformed)
+});
+let $2f0bfd9a5c1d7b58$var$WOFF2Directory = new $gfJaN$restructure.Struct({
+    tag: new $gfJaN$restructure.String(4),
+    flavor: $gfJaN$restructure.uint32,
+    length: $gfJaN$restructure.uint32,
+    numTables: $gfJaN$restructure.uint16,
+    reserved: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint16),
+    totalSfntSize: $gfJaN$restructure.uint32,
+    totalCompressedSize: $gfJaN$restructure.uint32,
+    majorVersion: $gfJaN$restructure.uint16,
+    minorVersion: $gfJaN$restructure.uint16,
+    metaOffset: $gfJaN$restructure.uint32,
+    metaLength: $gfJaN$restructure.uint32,
+    metaOrigLength: $gfJaN$restructure.uint32,
+    privOffset: $gfJaN$restructure.uint32,
+    privLength: $gfJaN$restructure.uint32,
+    tables: new $gfJaN$restructure.Array($2f0bfd9a5c1d7b58$var$WOFF2DirectoryEntry, 'numTables')
+});
+$2f0bfd9a5c1d7b58$var$WOFF2Directory.process = function() {
+    let tables = {};
+    for(let i = 0; i < this.tables.length; i++){
+        let table = this.tables[i];
+        tables[table.tag] = table;
+    }
+    return this.tables = tables;
+};
+var $2f0bfd9a5c1d7b58$export$2e2bcd8739ae039 = $2f0bfd9a5c1d7b58$var$WOFF2Directory;
+
+
+
+class $333fb94547d9fb5c$export$2e2bcd8739ae039 extends (0, $0a8ef2660a6ce4b6$export$2e2bcd8739ae039) {
+    static probe(buffer) {
+        return (0, $66a5b9fb5318558a$export$3d28c1996ced1f14).decode(buffer.slice(0, 4)) === 'wOF2';
+    }
+    _decodeDirectory() {
+        this.directory = (0, $2f0bfd9a5c1d7b58$export$2e2bcd8739ae039).decode(this.stream);
+        this._dataPos = this.stream.pos;
+    }
+    _decompress() {
+        // decompress data and setup table offsets if we haven't already
+        if (!this._decompressed) {
+            this.stream.pos = this._dataPos;
+            let buffer = this.stream.readBuffer(this.directory.totalCompressedSize);
+            let decompressedSize = 0;
+            for(let tag in this.directory.tables){
+                let entry = this.directory.tables[tag];
+                entry.offset = decompressedSize;
+                decompressedSize += entry.transformLength != null ? entry.transformLength : entry.length;
+            }
+            let decompressed = (0, ($parcel$interopDefault($gfJaN$brotlidecompressjs)))(buffer, decompressedSize);
+            if (!decompressed) throw new Error('Error decoding compressed data in WOFF2');
+            this.stream = new $gfJaN$restructure.DecodeStream(decompressed);
+            this._decompressed = true;
+        }
+    }
+    _decodeTable(table) {
+        this._decompress();
+        return super._decodeTable(table);
+    }
+    // Override this method to get a glyph and return our
+    // custom subclass if there is a glyf table.
+    _getBaseGlyph(glyph, characters = []) {
+        if (!this._glyphs[glyph]) {
+            if (this.directory.tables.glyf && this.directory.tables.glyf.transformed) {
+                if (!this._transformedGlyphs) this._transformGlyfTable();
+                return this._glyphs[glyph] = new (0, $44b9edca0e403d6d$export$2e2bcd8739ae039)(glyph, characters, this);
+            } else return super._getBaseGlyph(glyph, characters);
+        }
+    }
+    _transformGlyfTable() {
+        this._decompress();
+        this.stream.pos = this.directory.tables.glyf.offset;
+        let table = $333fb94547d9fb5c$var$GlyfTable.decode(this.stream);
+        let glyphs = [];
+        for(let index = 0; index < table.numGlyphs; index++){
+            let glyph = {};
+            let nContours = table.nContours.readInt16BE();
+            glyph.numberOfContours = nContours;
+            if (nContours > 0) {
+                let nPoints = [];
+                let totalPoints = 0;
+                for(let i = 0; i < nContours; i++){
+                    let r = $333fb94547d9fb5c$var$read255UInt16(table.nPoints);
+                    totalPoints += r;
+                    nPoints.push(totalPoints);
+                }
+                glyph.points = $333fb94547d9fb5c$var$decodeTriplet(table.flags, table.glyphs, totalPoints);
+                for(let i = 0; i < nContours; i++)glyph.points[nPoints[i] - 1].endContour = true;
+                var instructionSize = $333fb94547d9fb5c$var$read255UInt16(table.glyphs);
+            } else if (nContours < 0) {
+                let haveInstructions = (0, $f680320fa07ef53d$export$2e2bcd8739ae039).prototype._decodeComposite.call({
+                    _font: this
+                }, glyph, table.composites);
+                if (haveInstructions) var instructionSize = $333fb94547d9fb5c$var$read255UInt16(table.glyphs);
+            }
+            glyphs.push(glyph);
+        }
+        this._transformedGlyphs = glyphs;
+    }
+    constructor(...args){
+        super(...args);
+        (0, $gfJaN$swchelperscjs_define_propertycjs._)(this, "type", 'WOFF2');
+    }
+}
+// Special class that accepts a length and returns a sub-stream for that data
+class $333fb94547d9fb5c$var$Substream {
+    decode(stream, parent) {
+        return new $gfJaN$restructure.DecodeStream(this._buf.decode(stream, parent));
+    }
+    constructor(length){
+        this.length = length;
+        this._buf = new $gfJaN$restructure.Buffer(length);
+    }
+}
+// This struct represents the entire glyf table
+let $333fb94547d9fb5c$var$GlyfTable = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.uint32,
+    numGlyphs: $gfJaN$restructure.uint16,
+    indexFormat: $gfJaN$restructure.uint16,
+    nContourStreamSize: $gfJaN$restructure.uint32,
+    nPointsStreamSize: $gfJaN$restructure.uint32,
+    flagStreamSize: $gfJaN$restructure.uint32,
+    glyphStreamSize: $gfJaN$restructure.uint32,
+    compositeStreamSize: $gfJaN$restructure.uint32,
+    bboxStreamSize: $gfJaN$restructure.uint32,
+    instructionStreamSize: $gfJaN$restructure.uint32,
+    nContours: new $333fb94547d9fb5c$var$Substream('nContourStreamSize'),
+    nPoints: new $333fb94547d9fb5c$var$Substream('nPointsStreamSize'),
+    flags: new $333fb94547d9fb5c$var$Substream('flagStreamSize'),
+    glyphs: new $333fb94547d9fb5c$var$Substream('glyphStreamSize'),
+    composites: new $333fb94547d9fb5c$var$Substream('compositeStreamSize'),
+    bboxes: new $333fb94547d9fb5c$var$Substream('bboxStreamSize'),
+    instructions: new $333fb94547d9fb5c$var$Substream('instructionStreamSize')
+});
+const $333fb94547d9fb5c$var$WORD_CODE = 253;
+const $333fb94547d9fb5c$var$ONE_MORE_BYTE_CODE2 = 254;
+const $333fb94547d9fb5c$var$ONE_MORE_BYTE_CODE1 = 255;
+const $333fb94547d9fb5c$var$LOWEST_U_CODE = 253;
+function $333fb94547d9fb5c$var$read255UInt16(stream) {
+    let code = stream.readUInt8();
+    if (code === $333fb94547d9fb5c$var$WORD_CODE) return stream.readUInt16BE();
+    if (code === $333fb94547d9fb5c$var$ONE_MORE_BYTE_CODE1) return stream.readUInt8() + $333fb94547d9fb5c$var$LOWEST_U_CODE;
+    if (code === $333fb94547d9fb5c$var$ONE_MORE_BYTE_CODE2) return stream.readUInt8() + $333fb94547d9fb5c$var$LOWEST_U_CODE * 2;
+    return code;
+}
+function $333fb94547d9fb5c$var$withSign(flag, baseval) {
+    return flag & 1 ? baseval : -baseval;
+}
+function $333fb94547d9fb5c$var$decodeTriplet(flags, glyphs, nPoints) {
+    let y;
+    let x = y = 0;
+    let res = [];
+    for(let i = 0; i < nPoints; i++){
+        let dx = 0, dy = 0;
+        let flag = flags.readUInt8();
+        let onCurve = !(flag >> 7);
+        flag &= 0x7f;
+        if (flag < 10) {
+            dx = 0;
+            dy = $333fb94547d9fb5c$var$withSign(flag, ((flag & 14) << 7) + glyphs.readUInt8());
+        } else if (flag < 20) {
+            dx = $333fb94547d9fb5c$var$withSign(flag, ((flag - 10 & 14) << 7) + glyphs.readUInt8());
+            dy = 0;
+        } else if (flag < 84) {
+            var b0 = flag - 20;
+            var b1 = glyphs.readUInt8();
+            dx = $333fb94547d9fb5c$var$withSign(flag, 1 + (b0 & 0x30) + (b1 >> 4));
+            dy = $333fb94547d9fb5c$var$withSign(flag >> 1, 1 + ((b0 & 0x0c) << 2) + (b1 & 0x0f));
+        } else if (flag < 120) {
+            var b0 = flag - 84;
+            dx = $333fb94547d9fb5c$var$withSign(flag, 1 + (b0 / 12 << 8) + glyphs.readUInt8());
+            dy = $333fb94547d9fb5c$var$withSign(flag >> 1, 1 + (b0 % 12 >> 2 << 8) + glyphs.readUInt8());
+        } else if (flag < 124) {
+            var b1 = glyphs.readUInt8();
+            let b2 = glyphs.readUInt8();
+            dx = $333fb94547d9fb5c$var$withSign(flag, (b1 << 4) + (b2 >> 4));
+            dy = $333fb94547d9fb5c$var$withSign(flag >> 1, ((b2 & 0x0f) << 8) + glyphs.readUInt8());
+        } else {
+            dx = $333fb94547d9fb5c$var$withSign(flag, glyphs.readUInt16BE());
+            dy = $333fb94547d9fb5c$var$withSign(flag >> 1, glyphs.readUInt16BE());
+        }
+        x += dx;
+        y += dy;
+        res.push(new (0, $f680320fa07ef53d$export$baf26146a414f24a)(onCurve, false, x, y));
+    }
+    return res;
+}
+
+
+
+
+
+
+
+
+let $e0b2de9958441c02$var$TTCHeader = new $gfJaN$restructure.VersionedStruct($gfJaN$restructure.uint32, {
+    0x00010000: {
+        numFonts: $gfJaN$restructure.uint32,
+        offsets: new $gfJaN$restructure.Array($gfJaN$restructure.uint32, 'numFonts')
+    },
+    0x00020000: {
+        numFonts: $gfJaN$restructure.uint32,
+        offsets: new $gfJaN$restructure.Array($gfJaN$restructure.uint32, 'numFonts'),
+        dsigTag: $gfJaN$restructure.uint32,
+        dsigLength: $gfJaN$restructure.uint32,
+        dsigOffset: $gfJaN$restructure.uint32
+    }
+});
+class $e0b2de9958441c02$export$2e2bcd8739ae039 {
+    static probe(buffer) {
+        return (0, $66a5b9fb5318558a$export$3d28c1996ced1f14).decode(buffer.slice(0, 4)) === 'ttcf';
+    }
+    getFont(name) {
+        for (let offset of this.header.offsets){
+            let stream = new $gfJaN$restructure.DecodeStream(this.stream.buffer);
+            stream.pos = offset;
+            let font = new (0, $0a8ef2660a6ce4b6$export$2e2bcd8739ae039)(stream);
+            if (font.postscriptName === name || font.postscriptName instanceof Uint8Array && name instanceof Uint8Array && font.postscriptName.every((v, i)=>name[i] === v)) return font;
+        }
+        return null;
+    }
+    get fonts() {
+        let fonts = [];
+        for (let offset of this.header.offsets){
+            let stream = new $gfJaN$restructure.DecodeStream(this.stream.buffer);
+            stream.pos = offset;
+            fonts.push(new (0, $0a8ef2660a6ce4b6$export$2e2bcd8739ae039)(stream));
+        }
+        return fonts;
+    }
+    constructor(stream){
+        (0, $gfJaN$swchelperscjs_define_propertycjs._)(this, "type", 'TTC');
+        this.stream = stream;
+        if (stream.readString(4) !== 'ttcf') throw new Error('Not a TrueType collection');
+        this.header = $e0b2de9958441c02$var$TTCHeader.decode(stream);
+    }
+}
+
+
+
+
+
+let $d0fe640dc6c78783$var$DFontName = new $gfJaN$restructure.String($gfJaN$restructure.uint8);
+let $d0fe640dc6c78783$var$DFontData = new $gfJaN$restructure.Struct({
+    len: $gfJaN$restructure.uint32,
+    buf: new $gfJaN$restructure.Buffer('len')
+});
+let $d0fe640dc6c78783$var$Ref = new $gfJaN$restructure.Struct({
+    id: $gfJaN$restructure.uint16,
+    nameOffset: $gfJaN$restructure.int16,
+    attr: $gfJaN$restructure.uint8,
+    dataOffset: $gfJaN$restructure.uint24,
+    handle: $gfJaN$restructure.uint32
+});
+let $d0fe640dc6c78783$var$Type = new $gfJaN$restructure.Struct({
+    name: new $gfJaN$restructure.String(4),
+    maxTypeIndex: $gfJaN$restructure.uint16,
+    refList: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, new $gfJaN$restructure.Array($d0fe640dc6c78783$var$Ref, (t)=>t.maxTypeIndex + 1), {
+        type: 'parent'
+    })
+});
+let $d0fe640dc6c78783$var$TypeList = new $gfJaN$restructure.Struct({
+    length: $gfJaN$restructure.uint16,
+    types: new $gfJaN$restructure.Array($d0fe640dc6c78783$var$Type, (t)=>t.length + 1)
+});
+let $d0fe640dc6c78783$var$DFontMap = new $gfJaN$restructure.Struct({
+    reserved: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint8, 24),
+    typeList: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, $d0fe640dc6c78783$var$TypeList),
+    nameListOffset: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, 'void')
+});
+let $d0fe640dc6c78783$var$DFontHeader = new $gfJaN$restructure.Struct({
+    dataOffset: $gfJaN$restructure.uint32,
+    map: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, $d0fe640dc6c78783$var$DFontMap),
+    dataLength: $gfJaN$restructure.uint32,
+    mapLength: $gfJaN$restructure.uint32
+});
+class $d0fe640dc6c78783$export$2e2bcd8739ae039 {
+    static probe(buffer) {
+        let stream = new $gfJaN$restructure.DecodeStream(buffer);
+        try {
+            var header = $d0fe640dc6c78783$var$DFontHeader.decode(stream);
+        } catch (e) {
+            return false;
+        }
+        for (let type of header.map.typeList.types){
+            if (type.name === 'sfnt') return true;
+        }
+        return false;
+    }
+    getFont(name) {
+        if (!this.sfnt) return null;
+        for (let ref of this.sfnt.refList){
+            let pos = this.header.dataOffset + ref.dataOffset + 4;
+            let stream = new $gfJaN$restructure.DecodeStream(this.stream.buffer.slice(pos));
+            let font = new (0, $0a8ef2660a6ce4b6$export$2e2bcd8739ae039)(stream);
+            if (font.postscriptName === name || font.postscriptName instanceof Uint8Array && name instanceof Uint8Array && font.postscriptName.every((v, i)=>name[i] === v)) return font;
+        }
+        return null;
+    }
+    get fonts() {
+        let fonts = [];
+        for (let ref of this.sfnt.refList){
+            let pos = this.header.dataOffset + ref.dataOffset + 4;
+            let stream = new $gfJaN$restructure.DecodeStream(this.stream.buffer.slice(pos));
+            fonts.push(new (0, $0a8ef2660a6ce4b6$export$2e2bcd8739ae039)(stream));
+        }
+        return fonts;
+    }
+    constructor(stream){
+        (0, $gfJaN$swchelperscjs_define_propertycjs._)(this, "type", 'DFont');
+        this.stream = stream;
+        this.header = $d0fe640dc6c78783$var$DFontHeader.decode(this.stream);
+        for (let type of this.header.map.typeList.types){
+            for (let ref of type.refList)if (ref.nameOffset >= 0) {
+                this.stream.pos = ref.nameOffset + this.header.map.nameListOffset;
+                ref.name = $d0fe640dc6c78783$var$DFontName.decode(this.stream);
+            } else ref.name = null;
+            if (type.name === 'sfnt') this.sfnt = type;
+        }
+    }
+}
+
+
+// Register font formats
+(0, $59aa4ed98453e1d4$export$36b2f24e97d43be)((0, $0a8ef2660a6ce4b6$export$2e2bcd8739ae039));
+(0, $59aa4ed98453e1d4$export$36b2f24e97d43be)((0, $8a0a49baaf5d834d$export$2e2bcd8739ae039));
+(0, $59aa4ed98453e1d4$export$36b2f24e97d43be)((0, $333fb94547d9fb5c$export$2e2bcd8739ae039));
+(0, $59aa4ed98453e1d4$export$36b2f24e97d43be)((0, $e0b2de9958441c02$export$2e2bcd8739ae039));
+(0, $59aa4ed98453e1d4$export$36b2f24e97d43be)((0, $d0fe640dc6c78783$export$2e2bcd8739ae039));
+$parcel$exportWildcard(module.exports, $59aa4ed98453e1d4$exports);
+
+
+
+
+},
+1:function(module,exports,__localRequire){
+
+function $parcel$exportWildcard(dest, source) {
+  Object.keys(source).forEach(function(key) {
+    if (key === 'default' || key === '__esModule' || Object.prototype.hasOwnProperty.call(dest, key)) {
+      return;
+    }
+
+    Object.defineProperty(dest, key, {
+      enumerable: true,
+      get: function get() {
+        return source[key];
+      }
+    });
+  });
+
+  return dest;
+}
+
+function $parcel$export(e, n, v, s) {
+  Object.defineProperty(e, n, {get: v, set: s, enumerable: true, configurable: true});
+}
+
+$parcel$export(module.exports, "EncodeStream", () => $1ed46182c1410e1d$export$9b4f661deaa36c3e);
+$parcel$export(module.exports, "DecodeStream", () => $8ae20583b93e4933$export$c18b354bac7948e9);
+$parcel$export(module.exports, "Array", () => $8ea28a08eae2a116$export$c4be6576ca6fe4aa);
+$parcel$export(module.exports, "LazyArray", () => $444f112d3cbc7e9f$export$5576c026028d4983);
+$parcel$export(module.exports, "Bitfield", () => $3def237a34a226b5$export$96b43b8a49f688ea);
+$parcel$export(module.exports, "Boolean", () => $8415e91bb83faf74$export$ff887cefee4d61ec);
+$parcel$export(module.exports, "Buffer", () => $08d28604119af47e$export$7d22a0eea6656474);
+$parcel$export(module.exports, "Enum", () => $070ce31ea947467f$export$deb82508dd66d288);
+$parcel$export(module.exports, "Optional", () => $80703542fcfb6ff0$export$7acb7b24c478f9c6);
+$parcel$export(module.exports, "Reserved", () => $f4fd49878232508a$export$da9b5fe187a9aa1);
+$parcel$export(module.exports, "String", () => $d8705cd4022e7dcf$export$89b8e0fa65f6a914);
+$parcel$export(module.exports, "Struct", () => $aa8b66bae6abe658$export$eabc71f011df675a);
+$parcel$export(module.exports, "VersionedStruct", () => $fcb208a95f6d048b$export$95a8b60f4da7dec8);
+// Node back-compat.
+const $8ae20583b93e4933$var$ENCODING_MAPPING = {
+    utf16le: "utf-16le",
+    ucs2: "utf-16le",
+    utf16be: "utf-16be"
+};
+class $8ae20583b93e4933$export$c18b354bac7948e9 {
+    constructor(buffer){
+        this.buffer = buffer;
+        this.view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+        this.pos = 0;
+        this.length = this.buffer.length;
+    }
+    readString(length, encoding = "ascii") {
+        encoding = $8ae20583b93e4933$var$ENCODING_MAPPING[encoding] || encoding;
+        let buf = this.readBuffer(length);
+        try {
+            let decoder = new TextDecoder(encoding);
+            return decoder.decode(buf);
+        } catch (err) {
+            return buf;
+        }
+    }
+    readBuffer(length) {
+        return this.buffer.slice(this.pos, this.pos += length);
+    }
+    readUInt24BE() {
+        return (this.readUInt16BE() << 8) + this.readUInt8();
+    }
+    readUInt24LE() {
+        return this.readUInt16LE() + (this.readUInt8() << 16);
+    }
+    readInt24BE() {
+        return (this.readInt16BE() << 8) + this.readUInt8();
+    }
+    readInt24LE() {
+        return this.readUInt16LE() + (this.readInt8() << 16);
+    }
+}
+$8ae20583b93e4933$export$c18b354bac7948e9.TYPES = {
+    UInt8: 1,
+    UInt16: 2,
+    UInt24: 3,
+    UInt32: 4,
+    Int8: 1,
+    Int16: 2,
+    Int24: 3,
+    Int32: 4,
+    Float: 4,
+    Double: 8
+};
+for (let key of Object.getOwnPropertyNames(DataView.prototype))if (key.slice(0, 3) === "get") {
+    let type = key.slice(3).replace("Ui", "UI");
+    if (type === "Float32") type = "Float";
+    else if (type === "Float64") type = "Double";
+    let bytes = $8ae20583b93e4933$export$c18b354bac7948e9.TYPES[type];
+    $8ae20583b93e4933$export$c18b354bac7948e9.prototype["read" + type + (bytes === 1 ? "" : "BE")] = function() {
+        const ret = this.view[key](this.pos, false);
+        this.pos += bytes;
+        return ret;
+    };
+    if (bytes !== 1) $8ae20583b93e4933$export$c18b354bac7948e9.prototype["read" + type + "LE"] = function() {
+        const ret = this.view[key](this.pos, true);
+        this.pos += bytes;
+        return ret;
+    };
+}
+
+
+const $1ed46182c1410e1d$var$textEncoder = new TextEncoder();
+const $1ed46182c1410e1d$var$isBigEndian = new Uint8Array(new Uint16Array([
+    0x1234
+]).buffer)[0] == 0x12;
+class $1ed46182c1410e1d$export$9b4f661deaa36c3e {
+    constructor(buffer){
+        this.buffer = buffer;
+        this.view = new DataView(this.buffer.buffer, this.buffer.byteOffset, this.buffer.byteLength);
+        this.pos = 0;
+    }
+    writeBuffer(buffer) {
+        this.buffer.set(buffer, this.pos);
+        this.pos += buffer.length;
+    }
+    writeString(string, encoding = "ascii") {
+        let buf;
+        switch(encoding){
+            case "utf16le":
+            case "utf16-le":
+            case "ucs2":
+                buf = $1ed46182c1410e1d$var$stringToUtf16(string, $1ed46182c1410e1d$var$isBigEndian);
+                break;
+            case "utf16be":
+            case "utf16-be":
+                buf = $1ed46182c1410e1d$var$stringToUtf16(string, !$1ed46182c1410e1d$var$isBigEndian);
+                break;
+            case "utf8":
+                buf = $1ed46182c1410e1d$var$textEncoder.encode(string);
+                break;
+            case "ascii":
+                buf = $1ed46182c1410e1d$var$stringToAscii(string);
+                break;
+            default:
+                throw new Error(`Unsupported encoding: ${encoding}`);
+        }
+        this.writeBuffer(buf);
+    }
+    writeUInt24BE(val) {
+        this.buffer[this.pos++] = val >>> 16 & 0xff;
+        this.buffer[this.pos++] = val >>> 8 & 0xff;
+        this.buffer[this.pos++] = val & 0xff;
+    }
+    writeUInt24LE(val) {
+        this.buffer[this.pos++] = val & 0xff;
+        this.buffer[this.pos++] = val >>> 8 & 0xff;
+        this.buffer[this.pos++] = val >>> 16 & 0xff;
+    }
+    writeInt24BE(val) {
+        if (val >= 0) this.writeUInt24BE(val);
+        else this.writeUInt24BE(val + 0xffffff + 1);
+    }
+    writeInt24LE(val) {
+        if (val >= 0) this.writeUInt24LE(val);
+        else this.writeUInt24LE(val + 0xffffff + 1);
+    }
+    fill(val, length) {
+        if (length < this.buffer.length) {
+            this.buffer.fill(val, this.pos, this.pos + length);
+            this.pos += length;
+        } else {
+            const buf = new Uint8Array(length);
+            buf.fill(val);
+            this.writeBuffer(buf);
+        }
+    }
+}
+function $1ed46182c1410e1d$var$stringToUtf16(string, swap) {
+    let buf = new Uint16Array(string.length);
+    for(let i = 0; i < string.length; i++){
+        let code = string.charCodeAt(i);
+        if (swap) code = code >> 8 | (code & 0xff) << 8;
+        buf[i] = code;
+    }
+    return new Uint8Array(buf.buffer);
+}
+function $1ed46182c1410e1d$var$stringToAscii(string) {
+    let buf = new Uint8Array(string.length);
+    for(let i = 0; i < string.length; i++)// Match node.js behavior - encoding allows 8-bit rather than 7-bit.
+    buf[i] = string.charCodeAt(i);
+    return buf;
+}
+for (let key of Object.getOwnPropertyNames(DataView.prototype))if (key.slice(0, 3) === "set") {
+    let type = key.slice(3).replace("Ui", "UI");
+    if (type === "Float32") type = "Float";
+    else if (type === "Float64") type = "Double";
+    let bytes = (0, $8ae20583b93e4933$export$c18b354bac7948e9).TYPES[type];
+    $1ed46182c1410e1d$export$9b4f661deaa36c3e.prototype["write" + type + (bytes === 1 ? "" : "BE")] = function(value) {
+        this.view[key](this.pos, value, false);
+        this.pos += bytes;
+    };
+    if (bytes !== 1) $1ed46182c1410e1d$export$9b4f661deaa36c3e.prototype["write" + type + "LE"] = function(value) {
+        this.view[key](this.pos, value, true);
+        this.pos += bytes;
+    };
+}
+
+
+
+
+
+class $8d21f7fa58802901$export$ef88aa0d34c34520 {
+    fromBuffer(buffer) {
+        let stream = new (0, $8ae20583b93e4933$export$c18b354bac7948e9)(buffer);
+        return this.decode(stream);
+    }
+    toBuffer(value) {
+        let size = this.size(value);
+        let buffer = new Uint8Array(size);
+        let stream = new (0, $1ed46182c1410e1d$export$9b4f661deaa36c3e)(buffer);
+        this.encode(stream, value);
+        return buffer;
+    }
+}
+
+
+var $af65abf7bf65ac42$exports = {};
+
+$parcel$export($af65abf7bf65ac42$exports, "Number", () => $af65abf7bf65ac42$export$fffa67e515d04022);
+$parcel$export($af65abf7bf65ac42$exports, "uint8", () => $af65abf7bf65ac42$export$52e103c63c4e68cf);
+$parcel$export($af65abf7bf65ac42$exports, "uint16be", () => $af65abf7bf65ac42$export$60dfe43c8297a8f8);
+$parcel$export($af65abf7bf65ac42$exports, "uint16", () => $af65abf7bf65ac42$export$56bd24b5a3ee8456);
+$parcel$export($af65abf7bf65ac42$exports, "uint16le", () => $af65abf7bf65ac42$export$b92d76f0ca6d1789);
+$parcel$export($af65abf7bf65ac42$exports, "uint24be", () => $af65abf7bf65ac42$export$255f45171f96b50c);
+$parcel$export($af65abf7bf65ac42$exports, "uint24", () => $af65abf7bf65ac42$export$1925298fbd719b21);
+$parcel$export($af65abf7bf65ac42$exports, "uint24le", () => $af65abf7bf65ac42$export$758e1dafc8dc7271);
+$parcel$export($af65abf7bf65ac42$exports, "uint32be", () => $af65abf7bf65ac42$export$74c16dba6c885532);
+$parcel$export($af65abf7bf65ac42$exports, "uint32", () => $af65abf7bf65ac42$export$de9ffb9418dd7d0d);
+$parcel$export($af65abf7bf65ac42$exports, "uint32le", () => $af65abf7bf65ac42$export$5f744bb30a534bc9);
+$parcel$export($af65abf7bf65ac42$exports, "int8", () => $af65abf7bf65ac42$export$5984f25eab09961f);
+$parcel$export($af65abf7bf65ac42$exports, "int16be", () => $af65abf7bf65ac42$export$198ae7d10d26a900);
+$parcel$export($af65abf7bf65ac42$exports, "int16", () => $af65abf7bf65ac42$export$c35c15c7caeff2b6);
+$parcel$export($af65abf7bf65ac42$exports, "int16le", () => $af65abf7bf65ac42$export$399cc4b7169e5aed);
+$parcel$export($af65abf7bf65ac42$exports, "int24be", () => $af65abf7bf65ac42$export$3676d1f71eca2ec0);
+$parcel$export($af65abf7bf65ac42$exports, "int24", () => $af65abf7bf65ac42$export$73f695d681ac61f9);
+$parcel$export($af65abf7bf65ac42$exports, "int24le", () => $af65abf7bf65ac42$export$671f8672dbd40a4);
+$parcel$export($af65abf7bf65ac42$exports, "int32be", () => $af65abf7bf65ac42$export$78a2ac3d09dd42d5);
+$parcel$export($af65abf7bf65ac42$exports, "int32", () => $af65abf7bf65ac42$export$1d95835383bb05a);
+$parcel$export($af65abf7bf65ac42$exports, "int32le", () => $af65abf7bf65ac42$export$5ec1f146e759329a);
+$parcel$export($af65abf7bf65ac42$exports, "floatbe", () => $af65abf7bf65ac42$export$92b5c14c6abb5c97);
+$parcel$export($af65abf7bf65ac42$exports, "float", () => $af65abf7bf65ac42$export$6b5cd3983e3ee5ab);
+$parcel$export($af65abf7bf65ac42$exports, "floatle", () => $af65abf7bf65ac42$export$6d20592bc4cb19d9);
+$parcel$export($af65abf7bf65ac42$exports, "doublebe", () => $af65abf7bf65ac42$export$e50b9e97e4d43631);
+$parcel$export($af65abf7bf65ac42$exports, "double", () => $af65abf7bf65ac42$export$7b3cbda67be88f5f);
+$parcel$export($af65abf7bf65ac42$exports, "doublele", () => $af65abf7bf65ac42$export$6f53315aa512b751);
+$parcel$export($af65abf7bf65ac42$exports, "Fixed", () => $af65abf7bf65ac42$export$13475bbd2a37a9b4);
+$parcel$export($af65abf7bf65ac42$exports, "fixed16be", () => $af65abf7bf65ac42$export$f87b441e6bd90278);
+$parcel$export($af65abf7bf65ac42$exports, "fixed16", () => $af65abf7bf65ac42$export$a3abada75ef55921);
+$parcel$export($af65abf7bf65ac42$exports, "fixed16le", () => $af65abf7bf65ac42$export$3752a2886837dc22);
+$parcel$export($af65abf7bf65ac42$exports, "fixed32be", () => $af65abf7bf65ac42$export$dd71d8d9bc792632);
+$parcel$export($af65abf7bf65ac42$exports, "fixed32", () => $af65abf7bf65ac42$export$e913265d48471f2d);
+$parcel$export($af65abf7bf65ac42$exports, "fixed32le", () => $af65abf7bf65ac42$export$7fc47db6a5fc8223);
+
+
+class $af65abf7bf65ac42$export$fffa67e515d04022 extends (0, $8d21f7fa58802901$export$ef88aa0d34c34520) {
+    constructor(type, endian = "BE"){
+        super();
+        this.type = type;
+        this.endian = endian;
+        this.fn = this.type;
+        if (this.type[this.type.length - 1] !== "8") this.fn += this.endian;
+    }
+    size() {
+        return (0, $8ae20583b93e4933$export$c18b354bac7948e9).TYPES[this.type];
+    }
+    decode(stream) {
+        return stream[`read${this.fn}`]();
+    }
+    encode(stream, val) {
+        return stream[`write${this.fn}`](val);
+    }
+}
+const $af65abf7bf65ac42$export$52e103c63c4e68cf = new $af65abf7bf65ac42$export$fffa67e515d04022("UInt8");
+const $af65abf7bf65ac42$export$60dfe43c8297a8f8 = new $af65abf7bf65ac42$export$fffa67e515d04022("UInt16", "BE");
+const $af65abf7bf65ac42$export$56bd24b5a3ee8456 = $af65abf7bf65ac42$export$60dfe43c8297a8f8;
+const $af65abf7bf65ac42$export$b92d76f0ca6d1789 = new $af65abf7bf65ac42$export$fffa67e515d04022("UInt16", "LE");
+const $af65abf7bf65ac42$export$255f45171f96b50c = new $af65abf7bf65ac42$export$fffa67e515d04022("UInt24", "BE");
+const $af65abf7bf65ac42$export$1925298fbd719b21 = $af65abf7bf65ac42$export$255f45171f96b50c;
+const $af65abf7bf65ac42$export$758e1dafc8dc7271 = new $af65abf7bf65ac42$export$fffa67e515d04022("UInt24", "LE");
+const $af65abf7bf65ac42$export$74c16dba6c885532 = new $af65abf7bf65ac42$export$fffa67e515d04022("UInt32", "BE");
+const $af65abf7bf65ac42$export$de9ffb9418dd7d0d = $af65abf7bf65ac42$export$74c16dba6c885532;
+const $af65abf7bf65ac42$export$5f744bb30a534bc9 = new $af65abf7bf65ac42$export$fffa67e515d04022("UInt32", "LE");
+const $af65abf7bf65ac42$export$5984f25eab09961f = new $af65abf7bf65ac42$export$fffa67e515d04022("Int8");
+const $af65abf7bf65ac42$export$198ae7d10d26a900 = new $af65abf7bf65ac42$export$fffa67e515d04022("Int16", "BE");
+const $af65abf7bf65ac42$export$c35c15c7caeff2b6 = $af65abf7bf65ac42$export$198ae7d10d26a900;
+const $af65abf7bf65ac42$export$399cc4b7169e5aed = new $af65abf7bf65ac42$export$fffa67e515d04022("Int16", "LE");
+const $af65abf7bf65ac42$export$3676d1f71eca2ec0 = new $af65abf7bf65ac42$export$fffa67e515d04022("Int24", "BE");
+const $af65abf7bf65ac42$export$73f695d681ac61f9 = $af65abf7bf65ac42$export$3676d1f71eca2ec0;
+const $af65abf7bf65ac42$export$671f8672dbd40a4 = new $af65abf7bf65ac42$export$fffa67e515d04022("Int24", "LE");
+const $af65abf7bf65ac42$export$78a2ac3d09dd42d5 = new $af65abf7bf65ac42$export$fffa67e515d04022("Int32", "BE");
+const $af65abf7bf65ac42$export$1d95835383bb05a = $af65abf7bf65ac42$export$78a2ac3d09dd42d5;
+const $af65abf7bf65ac42$export$5ec1f146e759329a = new $af65abf7bf65ac42$export$fffa67e515d04022("Int32", "LE");
+const $af65abf7bf65ac42$export$92b5c14c6abb5c97 = new $af65abf7bf65ac42$export$fffa67e515d04022("Float", "BE");
+const $af65abf7bf65ac42$export$6b5cd3983e3ee5ab = $af65abf7bf65ac42$export$92b5c14c6abb5c97;
+const $af65abf7bf65ac42$export$6d20592bc4cb19d9 = new $af65abf7bf65ac42$export$fffa67e515d04022("Float", "LE");
+const $af65abf7bf65ac42$export$e50b9e97e4d43631 = new $af65abf7bf65ac42$export$fffa67e515d04022("Double", "BE");
+const $af65abf7bf65ac42$export$7b3cbda67be88f5f = $af65abf7bf65ac42$export$e50b9e97e4d43631;
+const $af65abf7bf65ac42$export$6f53315aa512b751 = new $af65abf7bf65ac42$export$fffa67e515d04022("Double", "LE");
+class $af65abf7bf65ac42$export$13475bbd2a37a9b4 extends $af65abf7bf65ac42$export$fffa67e515d04022 {
+    constructor(size, endian, fracBits = size >> 1){
+        super(`Int${size}`, endian);
+        this._point = 1 << fracBits;
+    }
+    decode(stream) {
+        return super.decode(stream) / this._point;
+    }
+    encode(stream, val) {
+        return super.encode(stream, val * this._point | 0);
+    }
+}
+const $af65abf7bf65ac42$export$f87b441e6bd90278 = new $af65abf7bf65ac42$export$13475bbd2a37a9b4(16, "BE");
+const $af65abf7bf65ac42$export$a3abada75ef55921 = $af65abf7bf65ac42$export$f87b441e6bd90278;
+const $af65abf7bf65ac42$export$3752a2886837dc22 = new $af65abf7bf65ac42$export$13475bbd2a37a9b4(16, "LE");
+const $af65abf7bf65ac42$export$dd71d8d9bc792632 = new $af65abf7bf65ac42$export$13475bbd2a37a9b4(32, "BE");
+const $af65abf7bf65ac42$export$e913265d48471f2d = $af65abf7bf65ac42$export$dd71d8d9bc792632;
+const $af65abf7bf65ac42$export$7fc47db6a5fc8223 = new $af65abf7bf65ac42$export$13475bbd2a37a9b4(32, "LE");
+
+
+var $4559ecf940edc78d$exports = {};
+
+$parcel$export($4559ecf940edc78d$exports, "resolveLength", () => $4559ecf940edc78d$export$83b6dc3503c1fda6);
+$parcel$export($4559ecf940edc78d$exports, "PropertyDescriptor", () => $4559ecf940edc78d$export$41705b1d644e0f14);
+
+function $4559ecf940edc78d$export$83b6dc3503c1fda6(length, stream, parent) {
+    let res;
+    if (typeof length === "number") res = length;
+    else if (typeof length === "function") res = length.call(parent, parent);
+    else if (parent && typeof length === "string") res = parent[length];
+    else if (stream && length instanceof (0, $af65abf7bf65ac42$export$fffa67e515d04022)) res = length.decode(stream);
+    if (isNaN(res)) throw new Error("Not a fixed size");
+    return res;
+}
+class $4559ecf940edc78d$export$41705b1d644e0f14 {
+    constructor(opts = {}){
+        this.enumerable = true;
+        this.configurable = true;
+        for(let key in opts){
+            const val = opts[key];
+            this[key] = val;
+        }
+    }
+}
+
+
+class $8ea28a08eae2a116$export$c4be6576ca6fe4aa extends (0, $8d21f7fa58802901$export$ef88aa0d34c34520) {
+    constructor(type, length, lengthType = "count"){
+        super();
+        this.type = type;
+        this.length = length;
+        this.lengthType = lengthType;
+    }
+    decode(stream, parent) {
+        let length;
+        const { pos: pos } = stream;
+        const res = [];
+        let ctx = parent;
+        if (this.length != null) length = $4559ecf940edc78d$export$83b6dc3503c1fda6(this.length, stream, parent);
+        if (this.length instanceof (0, $af65abf7bf65ac42$export$fffa67e515d04022)) {
+            // define hidden properties
+            Object.defineProperties(res, {
+                parent: {
+                    value: parent
+                },
+                _startOffset: {
+                    value: pos
+                },
+                _currentOffset: {
+                    value: 0,
+                    writable: true
+                },
+                _length: {
+                    value: length
+                }
+            });
+            ctx = res;
+        }
+        if (length == null || this.lengthType === "bytes") {
+            const target = length != null ? stream.pos + length : (parent != null ? parent._length : undefined) ? parent._startOffset + parent._length : stream.length;
+            while(stream.pos < target)res.push(this.type.decode(stream, ctx));
+        } else for(let i = 0, end = length; i < end; i++)res.push(this.type.decode(stream, ctx));
+        return res;
+    }
+    size(array, ctx, includePointers = true) {
+        if (!array) return this.type.size(null, ctx) * $4559ecf940edc78d$export$83b6dc3503c1fda6(this.length, null, ctx);
+        let size = 0;
+        if (this.length instanceof (0, $af65abf7bf65ac42$export$fffa67e515d04022)) {
+            size += this.length.size();
+            ctx = {
+                parent: ctx,
+                pointerSize: 0
+            };
+        }
+        for (let item of array)size += this.type.size(item, ctx);
+        if (ctx && includePointers && this.length instanceof (0, $af65abf7bf65ac42$export$fffa67e515d04022)) size += ctx.pointerSize;
+        return size;
+    }
+    encode(stream, array, parent) {
+        let ctx = parent;
+        if (this.length instanceof (0, $af65abf7bf65ac42$export$fffa67e515d04022)) {
+            ctx = {
+                pointers: [],
+                startOffset: stream.pos,
+                parent: parent
+            };
+            ctx.pointerOffset = stream.pos + this.size(array, ctx, false);
+            this.length.encode(stream, array.length);
+        }
+        for (let item of array)this.type.encode(stream, item, ctx);
+        if (this.length instanceof (0, $af65abf7bf65ac42$export$fffa67e515d04022)) {
+            let i = 0;
+            while(i < ctx.pointers.length){
+                const ptr = ctx.pointers[i++];
+                ptr.type.encode(stream, ptr.val, ptr.parent);
+            }
+        }
+    }
+}
+
+
+
+
+
+class $444f112d3cbc7e9f$export$5576c026028d4983 extends (0, $8ea28a08eae2a116$export$c4be6576ca6fe4aa) {
+    decode(stream, parent) {
+        const { pos: pos } = stream;
+        const length = $4559ecf940edc78d$export$83b6dc3503c1fda6(this.length, stream, parent);
+        if (this.length instanceof (0, $af65abf7bf65ac42$export$fffa67e515d04022)) parent = {
+            parent: parent,
+            _startOffset: pos,
+            _currentOffset: 0,
+            _length: length
+        };
+        const res = new $444f112d3cbc7e9f$var$LazyArrayValue(this.type, length, stream, parent);
+        stream.pos += length * this.type.size(null, parent);
+        return res;
+    }
+    size(val, ctx) {
+        if (val instanceof $444f112d3cbc7e9f$var$LazyArrayValue) val = val.toArray();
+        return super.size(val, ctx);
+    }
+    encode(stream, val, ctx) {
+        if (val instanceof $444f112d3cbc7e9f$var$LazyArrayValue) val = val.toArray();

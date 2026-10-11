@@ -1,0 +1,1000 @@
+    typeFamily: $gfJaN$restructure.uint16,
+    capHeight: $gfJaN$restructure.uint16,
+    symbolSet: $gfJaN$restructure.uint16,
+    typeface: new $gfJaN$restructure.String(16),
+    characterComplement: new $gfJaN$restructure.String(8),
+    fileName: new $gfJaN$restructure.String(6),
+    strokeWeight: new $gfJaN$restructure.String(1),
+    widthType: new $gfJaN$restructure.String(1),
+    serifStyle: $gfJaN$restructure.uint8,
+    reserved: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint8)
+});
+
+
+
+// VDMX tables contain ascender/descender overrides for certain (usually small)
+// sizes. This is needed in order to match font metrics on Windows.
+let $627850fc9deed59a$var$Ratio = new $gfJaN$restructure.Struct({
+    bCharSet: $gfJaN$restructure.uint8,
+    xRatio: $gfJaN$restructure.uint8,
+    yStartRatio: $gfJaN$restructure.uint8,
+    yEndRatio: $gfJaN$restructure.uint8 // Ending y-Ratio value
+});
+let $627850fc9deed59a$var$vTable = new $gfJaN$restructure.Struct({
+    yPelHeight: $gfJaN$restructure.uint16,
+    yMax: $gfJaN$restructure.int16,
+    yMin: $gfJaN$restructure.int16 // Minimum value (in pels) for this yPelHeight
+});
+let $627850fc9deed59a$var$VdmxGroup = new $gfJaN$restructure.Struct({
+    recs: $gfJaN$restructure.uint16,
+    startsz: $gfJaN$restructure.uint8,
+    endsz: $gfJaN$restructure.uint8,
+    entries: new $gfJaN$restructure.Array($627850fc9deed59a$var$vTable, 'recs') // The VDMX records
+});
+var $627850fc9deed59a$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.uint16,
+    numRecs: $gfJaN$restructure.uint16,
+    numRatios: $gfJaN$restructure.uint16,
+    ratioRanges: new $gfJaN$restructure.Array($627850fc9deed59a$var$Ratio, 'numRatios'),
+    offsets: new $gfJaN$restructure.Array($gfJaN$restructure.uint16, 'numRatios'),
+    groups: new $gfJaN$restructure.Array($627850fc9deed59a$var$VdmxGroup, 'numRecs') // The actual VDMX groupings
+});
+
+
+
+var // Vertical Header Table
+$65c33f5f068fc77f$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.uint16,
+    ascent: $gfJaN$restructure.int16,
+    descent: $gfJaN$restructure.int16,
+    lineGap: $gfJaN$restructure.int16,
+    advanceHeightMax: $gfJaN$restructure.int16,
+    minTopSideBearing: $gfJaN$restructure.int16,
+    minBottomSideBearing: $gfJaN$restructure.int16,
+    yMaxExtent: $gfJaN$restructure.int16,
+    caretSlopeRise: $gfJaN$restructure.int16,
+    caretSlopeRun: $gfJaN$restructure.int16,
+    caretOffset: $gfJaN$restructure.int16,
+    reserved: new $gfJaN$restructure.Reserved($gfJaN$restructure.int16, 4),
+    metricDataFormat: $gfJaN$restructure.int16,
+    numberOfMetrics: $gfJaN$restructure.uint16 // Number of advance heights in the Vertical Metrics table
+});
+
+
+
+let $597d739523b65bb3$var$VmtxEntry = new $gfJaN$restructure.Struct({
+    advance: $gfJaN$restructure.uint16,
+    bearing: $gfJaN$restructure.int16 // The top sidebearing of the glyph
+});
+var // Vertical Metrics Table
+$597d739523b65bb3$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    metrics: new $gfJaN$restructure.LazyArray($597d739523b65bb3$var$VmtxEntry, (t)=>t.parent.vhea.numberOfMetrics),
+    bearings: new $gfJaN$restructure.LazyArray($gfJaN$restructure.int16, (t)=>t.parent.maxp.numGlyphs - t.parent.vhea.numberOfMetrics)
+});
+
+
+
+let $35aa0c87d9c3d3a0$var$shortFrac = new $gfJaN$restructure.Fixed(16, 'BE', 14);
+let $35aa0c87d9c3d3a0$var$Correspondence = new $gfJaN$restructure.Struct({
+    fromCoord: $35aa0c87d9c3d3a0$var$shortFrac,
+    toCoord: $35aa0c87d9c3d3a0$var$shortFrac
+});
+let $35aa0c87d9c3d3a0$var$Segment = new $gfJaN$restructure.Struct({
+    pairCount: $gfJaN$restructure.uint16,
+    correspondence: new $gfJaN$restructure.Array($35aa0c87d9c3d3a0$var$Correspondence, 'pairCount')
+});
+var $35aa0c87d9c3d3a0$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.fixed32,
+    axisCount: $gfJaN$restructure.uint32,
+    segment: new $gfJaN$restructure.Array($35aa0c87d9c3d3a0$var$Segment, 'axisCount')
+});
+
+
+
+
+class $22801616bd931ca3$var$UnboundedArrayAccessor {
+    getItem(index) {
+        if (this._items[index] == null) {
+            let pos = this.stream.pos;
+            this.stream.pos = this.base + this.type.size(null, this.parent) * index;
+            this._items[index] = this.type.decode(this.stream, this.parent);
+            this.stream.pos = pos;
+        }
+        return this._items[index];
+    }
+    inspect() {
+        return `[UnboundedArray ${this.type.constructor.name}]`;
+    }
+    constructor(type, stream, parent){
+        this.type = type;
+        this.stream = stream;
+        this.parent = parent;
+        this.base = this.stream.pos;
+        this._items = [];
+    }
+}
+class $22801616bd931ca3$export$c5af1eebc882e39a extends $gfJaN$restructure.Array {
+    decode(stream, parent) {
+        return new $22801616bd931ca3$var$UnboundedArrayAccessor(this.type, stream, parent);
+    }
+    constructor(type){
+        super(type, 0);
+    }
+}
+let $22801616bd931ca3$export$8351f8c2ae2f103c = function(ValueType = $gfJaN$restructure.uint16) {
+    // Helper class that makes internal structures invisible to pointers
+    class Shadow {
+        decode(stream, ctx) {
+            ctx = ctx.parent.parent;
+            return this.type.decode(stream, ctx);
+        }
+        size(val, ctx) {
+            ctx = ctx.parent.parent;
+            return this.type.size(val, ctx);
+        }
+        encode(stream, val, ctx) {
+            ctx = ctx.parent.parent;
+            return this.type.encode(stream, val, ctx);
+        }
+        constructor(type){
+            this.type = type;
+        }
+    }
+    ValueType = new Shadow(ValueType);
+    let BinarySearchHeader = new $gfJaN$restructure.Struct({
+        unitSize: $gfJaN$restructure.uint16,
+        nUnits: $gfJaN$restructure.uint16,
+        searchRange: $gfJaN$restructure.uint16,
+        entrySelector: $gfJaN$restructure.uint16,
+        rangeShift: $gfJaN$restructure.uint16
+    });
+    let LookupSegmentSingle = new $gfJaN$restructure.Struct({
+        lastGlyph: $gfJaN$restructure.uint16,
+        firstGlyph: $gfJaN$restructure.uint16,
+        value: ValueType
+    });
+    let LookupSegmentArray = new $gfJaN$restructure.Struct({
+        lastGlyph: $gfJaN$restructure.uint16,
+        firstGlyph: $gfJaN$restructure.uint16,
+        values: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, new $gfJaN$restructure.Array(ValueType, (t)=>t.lastGlyph - t.firstGlyph + 1), {
+            type: 'parent'
+        })
+    });
+    let LookupSingle = new $gfJaN$restructure.Struct({
+        glyph: $gfJaN$restructure.uint16,
+        value: ValueType
+    });
+    return new $gfJaN$restructure.VersionedStruct($gfJaN$restructure.uint16, {
+        0: {
+            values: new $22801616bd931ca3$export$c5af1eebc882e39a(ValueType) // length == number of glyphs maybe?
+        },
+        2: {
+            binarySearchHeader: BinarySearchHeader,
+            segments: new $gfJaN$restructure.Array(LookupSegmentSingle, (t)=>t.binarySearchHeader.nUnits)
+        },
+        4: {
+            binarySearchHeader: BinarySearchHeader,
+            segments: new $gfJaN$restructure.Array(LookupSegmentArray, (t)=>t.binarySearchHeader.nUnits)
+        },
+        6: {
+            binarySearchHeader: BinarySearchHeader,
+            segments: new $gfJaN$restructure.Array(LookupSingle, (t)=>t.binarySearchHeader.nUnits)
+        },
+        8: {
+            firstGlyph: $gfJaN$restructure.uint16,
+            count: $gfJaN$restructure.uint16,
+            values: new $gfJaN$restructure.Array(ValueType, 'count')
+        }
+    });
+};
+function $22801616bd931ca3$export$79f7d93d790934ba(entryData = {}, lookupType = $gfJaN$restructure.uint16) {
+    let entry = Object.assign({
+        newState: $gfJaN$restructure.uint16,
+        flags: $gfJaN$restructure.uint16
+    }, entryData);
+    let Entry = new $gfJaN$restructure.Struct(entry);
+    let StateArray = new $22801616bd931ca3$export$c5af1eebc882e39a(new $gfJaN$restructure.Array($gfJaN$restructure.uint16, (t)=>t.nClasses));
+    let StateHeader = new $gfJaN$restructure.Struct({
+        nClasses: $gfJaN$restructure.uint32,
+        classTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new $22801616bd931ca3$export$8351f8c2ae2f103c(lookupType)),
+        stateArray: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, StateArray),
+        entryTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new $22801616bd931ca3$export$c5af1eebc882e39a(Entry))
+    });
+    return StateHeader;
+}
+function $22801616bd931ca3$export$105027425199cc51(entryData = {}, lookupType = $gfJaN$restructure.uint16) {
+    let ClassLookupTable = new $gfJaN$restructure.Struct({
+        version () {
+            return 8;
+        },
+        firstGlyph: $gfJaN$restructure.uint16,
+        values: new $gfJaN$restructure.Array($gfJaN$restructure.uint8, $gfJaN$restructure.uint16)
+    });
+    let entry = Object.assign({
+        newStateOffset: $gfJaN$restructure.uint16,
+        // convert offset to stateArray index
+        newState: (t)=>(t.newStateOffset - (t.parent.stateArray.base - t.parent._startOffset)) / t.parent.nClasses,
+        flags: $gfJaN$restructure.uint16
+    }, entryData);
+    let Entry = new $gfJaN$restructure.Struct(entry);
+    let StateArray = new $22801616bd931ca3$export$c5af1eebc882e39a(new $gfJaN$restructure.Array($gfJaN$restructure.uint8, (t)=>t.nClasses));
+    let StateHeader1 = new $gfJaN$restructure.Struct({
+        nClasses: $gfJaN$restructure.uint16,
+        classTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, ClassLookupTable),
+        stateArray: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, StateArray),
+        entryTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, new $22801616bd931ca3$export$c5af1eebc882e39a(Entry))
+    });
+    return StateHeader1;
+}
+
+
+let $3a5ca96d3e3aaf20$var$BslnSubtable = new $gfJaN$restructure.VersionedStruct('format', {
+    0: {
+        deltas: new $gfJaN$restructure.Array($gfJaN$restructure.int16, 32)
+    },
+    1: {
+        deltas: new $gfJaN$restructure.Array($gfJaN$restructure.int16, 32),
+        mappingData: new (0, $22801616bd931ca3$export$8351f8c2ae2f103c)($gfJaN$restructure.uint16)
+    },
+    2: {
+        standardGlyph: $gfJaN$restructure.uint16,
+        controlPoints: new $gfJaN$restructure.Array($gfJaN$restructure.uint16, 32)
+    },
+    3: {
+        standardGlyph: $gfJaN$restructure.uint16,
+        controlPoints: new $gfJaN$restructure.Array($gfJaN$restructure.uint16, 32),
+        mappingData: new (0, $22801616bd931ca3$export$8351f8c2ae2f103c)($gfJaN$restructure.uint16)
+    }
+});
+var $3a5ca96d3e3aaf20$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.fixed32,
+    format: $gfJaN$restructure.uint16,
+    defaultBaseline: $gfJaN$restructure.uint16,
+    subtable: $3a5ca96d3e3aaf20$var$BslnSubtable
+});
+
+
+
+let $8d4241d96b2b0589$var$Setting = new $gfJaN$restructure.Struct({
+    setting: $gfJaN$restructure.uint16,
+    nameIndex: $gfJaN$restructure.int16,
+    name: (t)=>t.parent.parent.parent.name.records.fontFeatures[t.nameIndex]
+});
+let $8d4241d96b2b0589$var$FeatureName = new $gfJaN$restructure.Struct({
+    feature: $gfJaN$restructure.uint16,
+    nSettings: $gfJaN$restructure.uint16,
+    settingTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new $gfJaN$restructure.Array($8d4241d96b2b0589$var$Setting, 'nSettings'), {
+        type: 'parent'
+    }),
+    featureFlags: new $gfJaN$restructure.Bitfield($gfJaN$restructure.uint8, [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        'hasDefault',
+        'exclusive'
+    ]),
+    defaultSetting: $gfJaN$restructure.uint8,
+    nameIndex: $gfJaN$restructure.int16,
+    name: (t)=>t.parent.parent.name.records.fontFeatures[t.nameIndex]
+});
+var $8d4241d96b2b0589$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.fixed32,
+    featureNameCount: $gfJaN$restructure.uint16,
+    reserved1: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint16),
+    reserved2: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint32),
+    featureNames: new $gfJaN$restructure.Array($8d4241d96b2b0589$var$FeatureName, 'featureNameCount')
+});
+
+
+
+let $a79cd5132b1cf476$var$Axis = new $gfJaN$restructure.Struct({
+    axisTag: new $gfJaN$restructure.String(4),
+    minValue: $gfJaN$restructure.fixed32,
+    defaultValue: $gfJaN$restructure.fixed32,
+    maxValue: $gfJaN$restructure.fixed32,
+    flags: $gfJaN$restructure.uint16,
+    nameID: $gfJaN$restructure.uint16,
+    name: (t)=>t.parent.parent.name.records.fontFeatures[t.nameID]
+});
+let $a79cd5132b1cf476$var$Instance = new $gfJaN$restructure.Struct({
+    nameID: $gfJaN$restructure.uint16,
+    name: (t)=>t.parent.parent.name.records.fontFeatures[t.nameID],
+    flags: $gfJaN$restructure.uint16,
+    coord: new $gfJaN$restructure.Array($gfJaN$restructure.fixed32, (t)=>t.parent.axisCount),
+    postscriptNameID: new $gfJaN$restructure.Optional($gfJaN$restructure.uint16, (t)=>t.parent.instanceSize - t._currentOffset > 0)
+});
+var $a79cd5132b1cf476$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.fixed32,
+    offsetToData: $gfJaN$restructure.uint16,
+    countSizePairs: $gfJaN$restructure.uint16,
+    axisCount: $gfJaN$restructure.uint16,
+    axisSize: $gfJaN$restructure.uint16,
+    instanceCount: $gfJaN$restructure.uint16,
+    instanceSize: $gfJaN$restructure.uint16,
+    axis: new $gfJaN$restructure.Array($a79cd5132b1cf476$var$Axis, 'axisCount'),
+    instance: new $gfJaN$restructure.Array($a79cd5132b1cf476$var$Instance, 'instanceCount')
+});
+
+
+
+let $3f36f1a5e6989457$var$shortFrac = new $gfJaN$restructure.Fixed(16, 'BE', 14);
+class $3f36f1a5e6989457$var$Offset {
+    static decode(stream, parent) {
+        // In short format, offsets are multiplied by 2.
+        // This doesn't seem to be documented by Apple, but it
+        // is implemented this way in Freetype.
+        return parent.flags ? stream.readUInt32BE() : stream.readUInt16BE() * 2;
+    }
+}
+let $3f36f1a5e6989457$var$gvar = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.uint16,
+    reserved: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint16),
+    axisCount: $gfJaN$restructure.uint16,
+    globalCoordCount: $gfJaN$restructure.uint16,
+    globalCoords: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new $gfJaN$restructure.Array(new $gfJaN$restructure.Array($3f36f1a5e6989457$var$shortFrac, 'axisCount'), 'globalCoordCount')),
+    glyphCount: $gfJaN$restructure.uint16,
+    flags: $gfJaN$restructure.uint16,
+    offsetToData: $gfJaN$restructure.uint32,
+    offsets: new $gfJaN$restructure.Array(new $gfJaN$restructure.Pointer($3f36f1a5e6989457$var$Offset, 'void', {
+        relativeTo: (ctx)=>ctx.offsetToData,
+        allowNull: false
+    }), (t)=>t.glyphCount + 1)
+});
+var $3f36f1a5e6989457$export$2e2bcd8739ae039 = $3f36f1a5e6989457$var$gvar;
+
+
+
+
+let $0bd8fe7a6d1d9fb4$var$ClassTable = new $gfJaN$restructure.Struct({
+    length: $gfJaN$restructure.uint16,
+    coverage: $gfJaN$restructure.uint16,
+    subFeatureFlags: $gfJaN$restructure.uint32,
+    stateTable: new (0, $22801616bd931ca3$export$105027425199cc51)
+});
+let $0bd8fe7a6d1d9fb4$var$WidthDeltaRecord = new $gfJaN$restructure.Struct({
+    justClass: $gfJaN$restructure.uint32,
+    beforeGrowLimit: $gfJaN$restructure.fixed32,
+    beforeShrinkLimit: $gfJaN$restructure.fixed32,
+    afterGrowLimit: $gfJaN$restructure.fixed32,
+    afterShrinkLimit: $gfJaN$restructure.fixed32,
+    growFlags: $gfJaN$restructure.uint16,
+    shrinkFlags: $gfJaN$restructure.uint16
+});
+let $0bd8fe7a6d1d9fb4$var$WidthDeltaCluster = new $gfJaN$restructure.Array($0bd8fe7a6d1d9fb4$var$WidthDeltaRecord, $gfJaN$restructure.uint32);
+let $0bd8fe7a6d1d9fb4$var$ActionData = new $gfJaN$restructure.VersionedStruct('actionType', {
+    0: {
+        lowerLimit: $gfJaN$restructure.fixed32,
+        upperLimit: $gfJaN$restructure.fixed32,
+        order: $gfJaN$restructure.uint16,
+        glyphs: new $gfJaN$restructure.Array($gfJaN$restructure.uint16, $gfJaN$restructure.uint16)
+    },
+    1: {
+        addGlyph: $gfJaN$restructure.uint16
+    },
+    2: {
+        substThreshold: $gfJaN$restructure.fixed32,
+        addGlyph: $gfJaN$restructure.uint16,
+        substGlyph: $gfJaN$restructure.uint16
+    },
+    3: {},
+    4: {
+        variationAxis: $gfJaN$restructure.uint32,
+        minimumLimit: $gfJaN$restructure.fixed32,
+        noStretchValue: $gfJaN$restructure.fixed32,
+        maximumLimit: $gfJaN$restructure.fixed32
+    },
+    5: {
+        flags: $gfJaN$restructure.uint16,
+        glyph: $gfJaN$restructure.uint16
+    }
+});
+let $0bd8fe7a6d1d9fb4$var$Action = new $gfJaN$restructure.Struct({
+    actionClass: $gfJaN$restructure.uint16,
+    actionType: $gfJaN$restructure.uint16,
+    actionLength: $gfJaN$restructure.uint32,
+    actionData: $0bd8fe7a6d1d9fb4$var$ActionData,
+    padding: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint8, (t)=>t.actionLength - t._currentOffset)
+});
+let $0bd8fe7a6d1d9fb4$var$PostcompensationAction = new $gfJaN$restructure.Array($0bd8fe7a6d1d9fb4$var$Action, $gfJaN$restructure.uint32);
+let $0bd8fe7a6d1d9fb4$var$PostCompensationTable = new $gfJaN$restructure.Struct({
+    lookupTable: new (0, $22801616bd931ca3$export$8351f8c2ae2f103c)(new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, $0bd8fe7a6d1d9fb4$var$PostcompensationAction))
+});
+let $0bd8fe7a6d1d9fb4$var$JustificationTable = new $gfJaN$restructure.Struct({
+    classTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, $0bd8fe7a6d1d9fb4$var$ClassTable, {
+        type: 'parent'
+    }),
+    wdcOffset: $gfJaN$restructure.uint16,
+    postCompensationTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, $0bd8fe7a6d1d9fb4$var$PostCompensationTable, {
+        type: 'parent'
+    }),
+    widthDeltaClusters: new (0, $22801616bd931ca3$export$8351f8c2ae2f103c)(new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, $0bd8fe7a6d1d9fb4$var$WidthDeltaCluster, {
+        type: 'parent',
+        relativeTo: (ctx)=>ctx.wdcOffset
+    }))
+});
+var $0bd8fe7a6d1d9fb4$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.uint32,
+    format: $gfJaN$restructure.uint16,
+    horizontal: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, $0bd8fe7a6d1d9fb4$var$JustificationTable),
+    vertical: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint16, $0bd8fe7a6d1d9fb4$var$JustificationTable)
+});
+
+
+
+
+let $ef40c6dc80fd50a2$var$LigatureData = {
+    action: $gfJaN$restructure.uint16
+};
+let $ef40c6dc80fd50a2$var$ContextualData = {
+    markIndex: $gfJaN$restructure.uint16,
+    currentIndex: $gfJaN$restructure.uint16
+};
+let $ef40c6dc80fd50a2$var$InsertionData = {
+    currentInsertIndex: $gfJaN$restructure.uint16,
+    markedInsertIndex: $gfJaN$restructure.uint16
+};
+let $ef40c6dc80fd50a2$var$SubstitutionTable = new $gfJaN$restructure.Struct({
+    items: new (0, $22801616bd931ca3$export$c5af1eebc882e39a)(new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new (0, $22801616bd931ca3$export$8351f8c2ae2f103c)))
+});
+let $ef40c6dc80fd50a2$var$SubtableData = new $gfJaN$restructure.VersionedStruct('type', {
+    0: {
+        stateTable: new (0, $22801616bd931ca3$export$79f7d93d790934ba)
+    },
+    1: {
+        stateTable: new (0, $22801616bd931ca3$export$79f7d93d790934ba)($ef40c6dc80fd50a2$var$ContextualData),
+        substitutionTable: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, $ef40c6dc80fd50a2$var$SubstitutionTable)
+    },
+    2: {
+        stateTable: new (0, $22801616bd931ca3$export$79f7d93d790934ba)($ef40c6dc80fd50a2$var$LigatureData),
+        ligatureActions: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new (0, $22801616bd931ca3$export$c5af1eebc882e39a)($gfJaN$restructure.uint32)),
+        components: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new (0, $22801616bd931ca3$export$c5af1eebc882e39a)($gfJaN$restructure.uint16)),
+        ligatureList: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new (0, $22801616bd931ca3$export$c5af1eebc882e39a)($gfJaN$restructure.uint16))
+    },
+    4: {
+        lookupTable: new (0, $22801616bd931ca3$export$8351f8c2ae2f103c)
+    },
+    5: {
+        stateTable: new (0, $22801616bd931ca3$export$79f7d93d790934ba)($ef40c6dc80fd50a2$var$InsertionData),
+        insertionActions: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, new (0, $22801616bd931ca3$export$c5af1eebc882e39a)($gfJaN$restructure.uint16))
+    }
+});
+let $ef40c6dc80fd50a2$var$Subtable = new $gfJaN$restructure.Struct({
+    length: $gfJaN$restructure.uint32,
+    coverage: $gfJaN$restructure.uint24,
+    type: $gfJaN$restructure.uint8,
+    subFeatureFlags: $gfJaN$restructure.uint32,
+    table: $ef40c6dc80fd50a2$var$SubtableData,
+    padding: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint8, (t)=>t.length - t._currentOffset)
+});
+let $ef40c6dc80fd50a2$var$FeatureEntry = new $gfJaN$restructure.Struct({
+    featureType: $gfJaN$restructure.uint16,
+    featureSetting: $gfJaN$restructure.uint16,
+    enableFlags: $gfJaN$restructure.uint32,
+    disableFlags: $gfJaN$restructure.uint32
+});
+let $ef40c6dc80fd50a2$var$MorxChain = new $gfJaN$restructure.Struct({
+    defaultFlags: $gfJaN$restructure.uint32,
+    chainLength: $gfJaN$restructure.uint32,
+    nFeatureEntries: $gfJaN$restructure.uint32,
+    nSubtables: $gfJaN$restructure.uint32,
+    features: new $gfJaN$restructure.Array($ef40c6dc80fd50a2$var$FeatureEntry, 'nFeatureEntries'),
+    subtables: new $gfJaN$restructure.Array($ef40c6dc80fd50a2$var$Subtable, 'nSubtables')
+});
+var $ef40c6dc80fd50a2$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.uint16,
+    unused: new $gfJaN$restructure.Reserved($gfJaN$restructure.uint16),
+    nChains: $gfJaN$restructure.uint32,
+    chains: new $gfJaN$restructure.Array($ef40c6dc80fd50a2$var$MorxChain, 'nChains')
+});
+
+
+
+
+let $ab24dea08b58a7cc$var$OpticalBounds = new $gfJaN$restructure.Struct({
+    left: $gfJaN$restructure.int16,
+    top: $gfJaN$restructure.int16,
+    right: $gfJaN$restructure.int16,
+    bottom: $gfJaN$restructure.int16
+});
+var $ab24dea08b58a7cc$export$2e2bcd8739ae039 = new $gfJaN$restructure.Struct({
+    version: $gfJaN$restructure.fixed32,
+    format: $gfJaN$restructure.uint16,
+    lookupTable: new (0, $22801616bd931ca3$export$8351f8c2ae2f103c)($ab24dea08b58a7cc$var$OpticalBounds)
+});
+
+
+let $5825c04ce8f7102d$var$tables = {};
+var $5825c04ce8f7102d$export$2e2bcd8739ae039 = $5825c04ce8f7102d$var$tables;
+$5825c04ce8f7102d$var$tables.cmap = (0, $e4ae0436c91af89f$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.head = (0, $55a60976afb7c261$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.hhea = (0, $dde72b7b5b650596$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.hmtx = (0, $a7c40184072c9a5b$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.maxp = (0, $521197722369f691$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.name = (0, $51a9f4feb3a3b2b1$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables['OS/2'] = (0, $114ea85db469b435$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.post = (0, $f93b30299e1ea0f5$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.fpgm = (0, $873d79fea57d3161$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.loca = (0, $83c4155666d50c37$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.prep = (0, $b12598db7cdf7042$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables['cvt '] = (0, $8fb09b0f473d61a0$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.glyf = (0, $7707bdf21a3d89cc$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables['CFF '] = (0, $f717432b360040c7$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables['CFF2'] = (0, $f717432b360040c7$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.VORG = (0, $8cb7ae73ed7aa7d8$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.EBLC = (0, $035bb95c0cdb1f6d$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.CBLC = $5825c04ce8f7102d$var$tables.EBLC;
+$5825c04ce8f7102d$var$tables.sbix = (0, $73d13900b55a3c0c$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.COLR = (0, $97f6b8be3a347a8f$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.CPAL = (0, $16ca60ecbdee30ea$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.BASE = (0, $7327e41706f9d5c7$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.GDEF = (0, $7e48bbe9e5345664$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.GPOS = (0, $b687332511a4da75$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.GSUB = (0, $99ccad60b96f92fb$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.JSTF = (0, $573d5042c76c4940$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.HVAR = (0, $a5875b80d6087f61$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.DSIG = (0, $4423bc1ac09bbbd1$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.gasp = (0, $7b50e3f8d83263de$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.hdmx = (0, $7bf92ec372cd2307$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.kern = (0, $a3f544bcf76542d1$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.LTSH = (0, $86687befb45925d0$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.PCLT = (0, $91429006e51e0fe8$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.VDMX = (0, $627850fc9deed59a$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.vhea = (0, $65c33f5f068fc77f$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.vmtx = (0, $597d739523b65bb3$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.avar = (0, $35aa0c87d9c3d3a0$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.bsln = (0, $3a5ca96d3e3aaf20$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.feat = (0, $8d4241d96b2b0589$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.fvar = (0, $a79cd5132b1cf476$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.gvar = (0, $3f36f1a5e6989457$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.just = (0, $0bd8fe7a6d1d9fb4$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.morx = (0, $ef40c6dc80fd50a2$export$2e2bcd8739ae039);
+$5825c04ce8f7102d$var$tables.opbd = (0, $ab24dea08b58a7cc$export$2e2bcd8739ae039);
+
+
+let $df50e1efe10a1247$var$TableEntry = new $gfJaN$restructure.Struct({
+    tag: new $gfJaN$restructure.String(4),
+    checkSum: $gfJaN$restructure.uint32,
+    offset: new $gfJaN$restructure.Pointer($gfJaN$restructure.uint32, 'void', {
+        type: 'global'
+    }),
+    length: $gfJaN$restructure.uint32
+});
+let $df50e1efe10a1247$var$Directory = new $gfJaN$restructure.Struct({
+    tag: new $gfJaN$restructure.String(4),
+    numTables: $gfJaN$restructure.uint16,
+    searchRange: $gfJaN$restructure.uint16,
+    entrySelector: $gfJaN$restructure.uint16,
+    rangeShift: $gfJaN$restructure.uint16,
+    tables: new $gfJaN$restructure.Array($df50e1efe10a1247$var$TableEntry, 'numTables')
+});
+$df50e1efe10a1247$var$Directory.process = function() {
+    let tables = {};
+    for (let table of this.tables)tables[table.tag] = table;
+    this.tables = tables;
+};
+$df50e1efe10a1247$var$Directory.preEncode = function() {
+    if (!Array.isArray(this.tables)) {
+        let tables = [];
+        for(let tag in this.tables){
+            let table = this.tables[tag];
+            if (table) tables.push({
+                tag: tag,
+                checkSum: 0,
+                offset: new $gfJaN$restructure.VoidPointer((0, $5825c04ce8f7102d$export$2e2bcd8739ae039)[tag], table),
+                length: (0, $5825c04ce8f7102d$export$2e2bcd8739ae039)[tag].size(table)
+            });
+        }
+        this.tables = tables;
+    }
+    this.tag = 'true';
+    this.numTables = this.tables.length;
+    let maxExponentFor2 = Math.floor(Math.log(this.numTables) / Math.LN2);
+    let maxPowerOf2 = Math.pow(2, maxExponentFor2);
+    this.searchRange = maxPowerOf2 * 16;
+    this.entrySelector = Math.log(maxPowerOf2) / Math.LN2;
+    this.rangeShift = this.numTables * 16 - this.searchRange;
+};
+var $df50e1efe10a1247$export$2e2bcd8739ae039 = $df50e1efe10a1247$var$Directory;
+
+
+
+
+function $66a5b9fb5318558a$export$2e0ae67339d5f1ac(arr, cmp) {
+    let min = 0;
+    let max = arr.length - 1;
+    while(min <= max){
+        let mid = min + max >> 1;
+        let res = cmp(arr[mid]);
+        if (res < 0) max = mid - 1;
+        else if (res > 0) min = mid + 1;
+        else return mid;
+    }
+    return -1;
+}
+function $66a5b9fb5318558a$export$d02631cccf789723(index, end) {
+    let range = [];
+    while(index < end)range.push(index++);
+    return range;
+}
+const $66a5b9fb5318558a$export$3d28c1996ced1f14 = new TextDecoder('ascii');
+// Based on https://github.com/niklasvh/base64-arraybuffer. MIT license.
+const $66a5b9fb5318558a$var$CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const $66a5b9fb5318558a$var$LOOKUP = new Uint8Array(256);
+for(let i = 0; i < $66a5b9fb5318558a$var$CHARS.length; i++)$66a5b9fb5318558a$var$LOOKUP[$66a5b9fb5318558a$var$CHARS.charCodeAt(i)] = i;
+function $66a5b9fb5318558a$export$94fdf11bafc8de6b(base64) {
+    let bufferLength = base64.length * 0.75;
+    if (base64[base64.length - 1] === '=') {
+        bufferLength--;
+        if (base64[base64.length - 2] === '=') bufferLength--;
+    }
+    let bytes = new Uint8Array(bufferLength);
+    let p = 0;
+    for(let i = 0, len = base64.length; i < len; i += 4){
+        let encoded1 = $66a5b9fb5318558a$var$LOOKUP[base64.charCodeAt(i)];
+        let encoded2 = $66a5b9fb5318558a$var$LOOKUP[base64.charCodeAt(i + 1)];
+        let encoded3 = $66a5b9fb5318558a$var$LOOKUP[base64.charCodeAt(i + 2)];
+        let encoded4 = $66a5b9fb5318558a$var$LOOKUP[base64.charCodeAt(i + 3)];
+        bytes[p++] = encoded1 << 2 | encoded2 >> 4;
+        bytes[p++] = (encoded2 & 15) << 4 | encoded3 >> 2;
+        bytes[p++] = (encoded3 & 3) << 6 | encoded4 & 63;
+    }
+    return bytes;
+}
+
+
+
+
+class $0d6e160064c86e50$export$2e2bcd8739ae039 {
+    findSubtable(cmapTable, pairs) {
+        for (let [platformID, encodingID] of pairs)for (let cmap of cmapTable.tables){
+            if (cmap.platformID === platformID && cmap.encodingID === encodingID) return cmap.table;
+        }
+        return null;
+    }
+    lookup(codepoint, variationSelector) {
+        // If there is no Unicode cmap in this font, we need to re-encode
+        // the codepoint in the encoding that the cmap supports.
+        if (this.encoding) codepoint = this.encoding.get(codepoint) || codepoint;
+        else if (variationSelector) {
+            let gid = this.getVariationSelector(codepoint, variationSelector);
+            if (gid) return gid;
+        }
+        let cmap = this.cmap;
+        switch(cmap.version){
+            case 0:
+                return cmap.codeMap.get(codepoint) || 0;
+            case 4:
+                {
+                    let min = 0;
+                    let max = cmap.segCount - 1;
+                    while(min <= max){
+                        let mid = min + max >> 1;
+                        if (codepoint < cmap.startCode.get(mid)) max = mid - 1;
+                        else if (codepoint > cmap.endCode.get(mid)) min = mid + 1;
+                        else {
+                            let rangeOffset = cmap.idRangeOffset.get(mid);
+                            let gid;
+                            if (rangeOffset === 0) gid = codepoint + cmap.idDelta.get(mid);
+                            else {
+                                let index = rangeOffset / 2 + (codepoint - cmap.startCode.get(mid)) - (cmap.segCount - mid);
+                                gid = cmap.glyphIndexArray.get(index) || 0;
+                                if (gid !== 0) gid += cmap.idDelta.get(mid);
+                            }
+                            return gid & 0xffff;
+                        }
+                    }
+                    return 0;
+                }
+            case 8:
+                throw new Error('TODO: cmap format 8');
+            case 6:
+            case 10:
+                return cmap.glyphIndices.get(codepoint - cmap.firstCode) || 0;
+            case 12:
+            case 13:
+                {
+                    let min = 0;
+                    let max = cmap.nGroups - 1;
+                    while(min <= max){
+                        let mid = min + max >> 1;
+                        let group = cmap.groups.get(mid);
+                        if (codepoint < group.startCharCode) max = mid - 1;
+                        else if (codepoint > group.endCharCode) min = mid + 1;
+                        else {
+                            if (cmap.version === 12) return group.glyphID + (codepoint - group.startCharCode);
+                            else return group.glyphID;
+                        }
+                    }
+                    return 0;
+                }
+            case 14:
+                throw new Error('TODO: cmap format 14');
+            default:
+                throw new Error(`Unknown cmap format ${cmap.version}`);
+        }
+    }
+    getVariationSelector(codepoint, variationSelector) {
+        if (!this.uvs) return 0;
+        let selectors = this.uvs.varSelectors.toArray();
+        let i = (0, $66a5b9fb5318558a$export$2e0ae67339d5f1ac)(selectors, (x)=>variationSelector - x.varSelector);
+        let sel = selectors[i];
+        if (i !== -1 && sel.defaultUVS) i = (0, $66a5b9fb5318558a$export$2e0ae67339d5f1ac)(sel.defaultUVS, (x)=>codepoint < x.startUnicodeValue ? -1 : codepoint > x.startUnicodeValue + x.additionalCount ? 1 : 0);
+        if (i !== -1 && sel.nonDefaultUVS) {
+            i = (0, $66a5b9fb5318558a$export$2e0ae67339d5f1ac)(sel.nonDefaultUVS, (x)=>codepoint - x.unicodeValue);
+            if (i !== -1) return sel.nonDefaultUVS[i].glyphID;
+        }
+        return 0;
+    }
+    getCharacterSet() {
+        let cmap = this.cmap;
+        switch(cmap.version){
+            case 0:
+                return (0, $66a5b9fb5318558a$export$d02631cccf789723)(0, cmap.codeMap.length);
+            case 4:
+                {
+                    let res = [];
+                    let endCodes = cmap.endCode.toArray();
+                    for(let i = 0; i < endCodes.length; i++){
+                        let tail = endCodes[i] + 1;
+                        let start = cmap.startCode.get(i);
+                        res.push(...(0, $66a5b9fb5318558a$export$d02631cccf789723)(start, tail));
+                    }
+                    return res;
+                }
+            case 8:
+                throw new Error('TODO: cmap format 8');
+            case 6:
+            case 10:
+                return (0, $66a5b9fb5318558a$export$d02631cccf789723)(cmap.firstCode, cmap.firstCode + cmap.glyphIndices.length);
+            case 12:
+            case 13:
+                {
+                    let res = [];
+                    for (let group of cmap.groups.toArray())res.push(...(0, $66a5b9fb5318558a$export$d02631cccf789723)(group.startCharCode, group.endCharCode + 1));
+                    return res;
+                }
+            case 14:
+                throw new Error('TODO: cmap format 14');
+            default:
+                throw new Error(`Unknown cmap format ${cmap.version}`);
+        }
+    }
+    codePointsForGlyph(gid) {
+        let cmap = this.cmap;
+        switch(cmap.version){
+            case 0:
+                {
+                    let res = [];
+                    for(let i = 0; i < 256; i++)if (cmap.codeMap.get(i) === gid) res.push(i);
+                    return res;
+                }
+            case 4:
+                {
+                    let res = [];
+                    for(let i = 0; i < cmap.segCount; i++){
+                        let end = cmap.endCode.get(i);
+                        let start = cmap.startCode.get(i);
+                        let rangeOffset = cmap.idRangeOffset.get(i);
+                        let delta = cmap.idDelta.get(i);
+                        for(var c = start; c <= end; c++){
+                            let g = 0;
+                            if (rangeOffset === 0) g = c + delta;
+                            else {
+                                let index = rangeOffset / 2 + (c - start) - (cmap.segCount - i);
+                                g = cmap.glyphIndexArray.get(index) || 0;
+                                if (g !== 0) g += delta;
+                            }
+                            if (g === gid) res.push(c);
+                        }
+                    }
+                    return res;
+                }
+            case 12:
+                {
+                    let res = [];
+                    for (let group of cmap.groups.toArray())if (gid >= group.glyphID && gid <= group.glyphID + (group.endCharCode - group.startCharCode)) res.push(group.startCharCode + (gid - group.glyphID));
+                    return res;
+                }
+            case 13:
+                {
+                    let res = [];
+                    for (let group of cmap.groups.toArray())if (gid === group.glyphID) res.push(...(0, $66a5b9fb5318558a$export$d02631cccf789723)(group.startCharCode, group.endCharCode + 1));
+                    return res;
+                }
+            default:
+                throw new Error(`Unknown cmap format ${cmap.version}`);
+        }
+    }
+    constructor(cmapTable){
+        // Attempt to find a Unicode cmap first
+        this.encoding = null;
+        this.cmap = this.findSubtable(cmapTable, [
+            // 32-bit subtables
+            [
+                3,
+                10
+            ],
+            [
+                0,
+                6
+            ],
+            [
+                0,
+                4
+            ],
+            // 16-bit subtables
+            [
+                3,
+                1
+            ],
+            [
+                0,
+                3
+            ],
+            [
+                0,
+                2
+            ],
+            [
+                0,
+                1
+            ],
+            [
+                0,
+                0
+            ]
+        ]);
+        // If not unicode cmap was found, take the first table with a supported encoding.
+        if (!this.cmap) for (let cmap of cmapTable.tables){
+            let encoding = (0, $e2613b812f052cbe$export$badc544e0651b6b1)(cmap.platformID, cmap.encodingID, cmap.table.language - 1);
+            let mapping = (0, $e2613b812f052cbe$export$1dceb3c14ed68bee)(encoding);
+            if (mapping) {
+                this.cmap = cmap.table;
+                this.encoding = mapping;
+            }
+        }
+        if (!this.cmap) throw new Error("Could not find a supported cmap table");
+        this.uvs = this.findSubtable(cmapTable, [
+            [
+                0,
+                5
+            ]
+        ]);
+        if (this.uvs && this.uvs.version !== 14) this.uvs = null;
+    }
+}
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0d6e160064c86e50$export$2e2bcd8739ae039.prototype, "getCharacterSet", null);
+(0, $gfJaN$swchelperscjs_ts_decoratecjs._)([
+    (0, $3bda6911913b43f0$export$69a3209f1a06c04d)
+], $0d6e160064c86e50$export$2e2bcd8739ae039.prototype, "codePointsForGlyph", null);
+
+
+
+class $4646d52c2a559cdb$export$2e2bcd8739ae039 {
+    process(glyphs, positions) {
+        for(let glyphIndex = 0; glyphIndex < glyphs.length - 1; glyphIndex++){
+            let left = glyphs[glyphIndex].id;
+            let right = glyphs[glyphIndex + 1].id;
+            positions[glyphIndex].xAdvance += this.getKerning(left, right);
+        }
+    }
+    getKerning(left, right) {
+        let res = 0;
+        for (let table of this.kern.tables){
+            if (table.coverage.crossStream) continue;
+            switch(table.version){
+                case 0:
+                    if (!table.coverage.horizontal) continue;
+                    break;
+                case 1:
+                    if (table.coverage.vertical || table.coverage.variation) continue;
+                    break;
+                default:
+                    throw new Error(`Unsupported kerning table version ${table.version}`);
+            }
+            let val = 0;
+            let s = table.subtable;
+            switch(table.format){
+                case 0:
+                    let pairIdx = (0, $66a5b9fb5318558a$export$2e0ae67339d5f1ac)(s.pairs, function(pair) {
+                        return left - pair.left || right - pair.right;
+                    });
+                    if (pairIdx >= 0) val = s.pairs[pairIdx].value;
+                    break;
+                case 2:
+                    let leftOffset = 0, rightOffset = 0;
+                    if (left >= s.leftTable.firstGlyph && left < s.leftTable.firstGlyph + s.leftTable.nGlyphs) leftOffset = s.leftTable.offsets[left - s.leftTable.firstGlyph];
+                    else leftOffset = s.array.off;
+                    if (right >= s.rightTable.firstGlyph && right < s.rightTable.firstGlyph + s.rightTable.nGlyphs) rightOffset = s.rightTable.offsets[right - s.rightTable.firstGlyph];
+                    let index = (leftOffset + rightOffset - s.array.off) / 2;
+                    val = s.array.values.get(index);
+                    break;
+                case 3:
+                    if (left >= s.glyphCount || right >= s.glyphCount) return 0;
+                    val = s.kernValue[s.kernIndex[s.leftClass[left] * s.rightClassCount + s.rightClass[right]]];
+                    break;
+                default:
+                    throw new Error(`Unsupported kerning sub-table format ${table.format}`);
+            }
+            // Microsoft supports the override flag, which resets the result
+            // Otherwise, the sum of the results from all subtables is returned
+            if (table.coverage.override) res = val;
+            else res += val;
+        }
+        return res;
+    }
+    constructor(font){
+        this.kern = font.kern;
+    }
+}
+
+
+
+class $a57a26817cd35108$export$2e2bcd8739ae039 {
+    positionGlyphs(glyphs, positions) {
+        // find each base + mark cluster, and position the marks relative to the base
+        let clusterStart = 0;
+        let clusterEnd = 0;
+        for(let index = 0; index < glyphs.length; index++){
+            let glyph = glyphs[index];
+            if (glyph.isMark) clusterEnd = index;
+            else {
+                if (clusterStart !== clusterEnd) this.positionCluster(glyphs, positions, clusterStart, clusterEnd);
+                clusterStart = clusterEnd = index;
+            }
+        }
+        if (clusterStart !== clusterEnd) this.positionCluster(glyphs, positions, clusterStart, clusterEnd);
+        return positions;
+    }
+    positionCluster(glyphs, positions, clusterStart, clusterEnd) {
+        let base = glyphs[clusterStart];
+        let baseBox = base.cbox.copy();
+        // adjust bounding box for ligature glyphs
+        if (base.codePoints.length > 1) // LTR. TODO: RTL support.
+        baseBox.minX += (base.codePoints.length - 1) * baseBox.width / base.codePoints.length;
+        let xOffset = -positions[clusterStart].xAdvance;
+        let yOffset = 0;
+        let yGap = this.font.unitsPerEm / 16;
+        // position each of the mark glyphs relative to the base glyph
+        for(let index = clusterStart + 1; index <= clusterEnd; index++){
+            let mark = glyphs[index];
+            let markBox = mark.cbox;
+            let position = positions[index];
+            let combiningClass = this.getCombiningClass(mark.codePoints[0]);
+            if (combiningClass !== 'Not_Reordered') {
+                position.xOffset = position.yOffset = 0;
+                // x positioning
+                switch(combiningClass){
+                    case 'Double_Above':
+                    case 'Double_Below':
+                        // LTR. TODO: RTL support.
+                        position.xOffset += baseBox.minX - markBox.width / 2 - markBox.minX;
+                        break;
+                    case 'Attached_Below_Left':
+                    case 'Below_Left':
+                    case 'Above_Left':
+                        // left align
+                        position.xOffset += baseBox.minX - markBox.minX;
+                        break;
+                    case 'Attached_Above_Right':
+                    case 'Below_Right':
+                    case 'Above_Right':
+                        // right align
+                        position.xOffset += baseBox.maxX - markBox.width - markBox.minX;
+                        break;
+                    default:
+                        // center align
+                        position.xOffset += baseBox.minX + (baseBox.width - markBox.width) / 2 - markBox.minX;
+                }
+                // y positioning
+                switch(combiningClass){
+                    case 'Double_Below':
+                    case 'Below_Left':
+                    case 'Below':
+                    case 'Below_Right':
+                    case 'Attached_Below_Left':

@@ -1,0 +1,1000 @@
+            // Get the factor at which to apply this tuple
+            let factor = this.tupleFactor(tupleIndex, tupleCoords, startCoords, endCoords);
+            if (factor === 0) {
+                offsetToData += tupleDataSize;
+                continue;
+            }
+            var here = stream.pos;
+            stream.pos = offsetToData;
+            if (tupleIndex & $7586bb9ea67c41d8$var$PRIVATE_POINT_NUMBERS) var points = this.decodePoints();
+            else var points = sharedPoints;
+            // points.length = 0 means there are deltas for all points
+            let nPoints = points.length === 0 ? glyphPoints.length : points.length;
+            let xDeltas = this.decodeDeltas(nPoints);
+            let yDeltas = this.decodeDeltas(nPoints);
+            if (points.length === 0) for(let i = 0; i < glyphPoints.length; i++){
+                var point = glyphPoints[i];
+                point.x += Math.round(xDeltas[i] * factor);
+                point.y += Math.round(yDeltas[i] * factor);
+            }
+            else {
+                let outPoints = origPoints.map((pt)=>pt.copy());
+                let hasDelta = glyphPoints.map(()=>false);
+                for(let i = 0; i < points.length; i++){
+                    let idx = points[i];
+                    if (idx < glyphPoints.length) {
+                        let point = outPoints[idx];
+                        hasDelta[idx] = true;
+                        point.x += xDeltas[i] * factor;
+                        point.y += yDeltas[i] * factor;
+                    }
+                }
+                this.interpolateMissingDeltas(outPoints, origPoints, hasDelta);
+                for(let i = 0; i < glyphPoints.length; i++){
+                    let deltaX = outPoints[i].x - origPoints[i].x;
+                    let deltaY = outPoints[i].y - origPoints[i].y;
+                    glyphPoints[i].x = Math.round(glyphPoints[i].x + deltaX);
+                    glyphPoints[i].y = Math.round(glyphPoints[i].y + deltaY);
+                }
+            }
+            offsetToData += tupleDataSize;
+            stream.pos = here;
+        }
+    }
+    decodePoints() {
+        let stream = this.font.stream;
+        let count = stream.readUInt8();
+        if (count & $7586bb9ea67c41d8$var$POINTS_ARE_WORDS) count = (count & $7586bb9ea67c41d8$var$POINT_RUN_COUNT_MASK) << 8 | stream.readUInt8();
+        let points = new Uint16Array(count);
+        let i = 0;
+        let point = 0;
+        while(i < count){
+            let run = stream.readUInt8();
+            let runCount = (run & $7586bb9ea67c41d8$var$POINT_RUN_COUNT_MASK) + 1;
+            let fn = run & $7586bb9ea67c41d8$var$POINTS_ARE_WORDS ? stream.readUInt16 : stream.readUInt8;
+            for(let j = 0; j < runCount && i < count; j++){
+                point += fn.call(stream);
+                points[i++] = point;
+            }
+        }
+        return points;
+    }
+    decodeDeltas(count) {
+        let stream = this.font.stream;
+        let i = 0;
+        let deltas = new Int16Array(count);
+        while(i < count){
+            let run = stream.readUInt8();
+            let runCount = (run & $7586bb9ea67c41d8$var$DELTA_RUN_COUNT_MASK) + 1;
+            if (run & $7586bb9ea67c41d8$var$DELTAS_ARE_ZERO) i += runCount;
+            else {
+                let fn = run & $7586bb9ea67c41d8$var$DELTAS_ARE_WORDS ? stream.readInt16BE : stream.readInt8;
+                for(let j = 0; j < runCount && i < count; j++)deltas[i++] = fn.call(stream);
+            }
+        }
+        return deltas;
+    }
+    tupleFactor(tupleIndex, tupleCoords, startCoords, endCoords) {
+        let normalized = this.normalizedCoords;
+        let { gvar: gvar } = this.font;
+        let factor = 1;
+        for(let i = 0; i < gvar.axisCount; i++){
+            if (tupleCoords[i] === 0) continue;
+            if (normalized[i] === 0) return 0;
+            if ((tupleIndex & $7586bb9ea67c41d8$var$INTERMEDIATE_TUPLE) === 0) {
+                if (normalized[i] < Math.min(0, tupleCoords[i]) || normalized[i] > Math.max(0, tupleCoords[i])) return 0;
+                factor = (factor * normalized[i] + Number.EPSILON) / (tupleCoords[i] + Number.EPSILON);
+            } else {
+                if (normalized[i] < startCoords[i] || normalized[i] > endCoords[i]) return 0;
+                else if (normalized[i] < tupleCoords[i]) factor = factor * (normalized[i] - startCoords[i] + Number.EPSILON) / (tupleCoords[i] - startCoords[i] + Number.EPSILON);
+                else factor = factor * (endCoords[i] - normalized[i] + Number.EPSILON) / (endCoords[i] - tupleCoords[i] + Number.EPSILON);
+            }
+        }
+        return factor;
+    }
+    // Interpolates points without delta values.
+    // Needed for the Ø and Q glyphs in Skia.
+    // Algorithm from Freetype.
+    interpolateMissingDeltas(points, inPoints, hasDelta) {
+        if (points.length === 0) return;
+        let point = 0;
+        while(point < points.length){
+            let firstPoint = point;
+            // find the end point of the contour
+            let endPoint = point;
+            let pt = points[endPoint];
+            while(!pt.endContour)pt = points[++endPoint];
+            // find the first point that has a delta
+            while(point <= endPoint && !hasDelta[point])point++;
+            if (point > endPoint) continue;
+            let firstDelta = point;
+            let curDelta = point;
+            point++;
+            while(point <= endPoint){
+                // find the next point with a delta, and interpolate intermediate points
+                if (hasDelta[point]) {
+                    this.deltaInterpolate(curDelta + 1, point - 1, curDelta, point, inPoints, points);
+                    curDelta = point;
+                }
+                point++;
+            }
+            // shift contour if we only have a single delta
+            if (curDelta === firstDelta) this.deltaShift(firstPoint, endPoint, curDelta, inPoints, points);
+            else {
+                // otherwise, handle the remaining points at the end and beginning of the contour
+                this.deltaInterpolate(curDelta + 1, endPoint, curDelta, firstDelta, inPoints, points);
+                if (firstDelta > 0) this.deltaInterpolate(firstPoint, firstDelta - 1, curDelta, firstDelta, inPoints, points);
+            }
+            point = endPoint + 1;
+        }
+    }
+    deltaInterpolate(p1, p2, ref1, ref2, inPoints, outPoints) {
+        if (p1 > p2) return;
+        let iterable = [
+            'x',
+            'y'
+        ];
+        for(let i = 0; i < iterable.length; i++){
+            let k = iterable[i];
+            if (inPoints[ref1][k] > inPoints[ref2][k]) {
+                var p = ref1;
+                ref1 = ref2;
+                ref2 = p;
+            }
+            let in1 = inPoints[ref1][k];
+            let in2 = inPoints[ref2][k];
+            let out1 = outPoints[ref1][k];
+            let out2 = outPoints[ref2][k];
+            // If the reference points have the same coordinate but different
+            // delta, inferred delta is zero.  Otherwise interpolate.
+            if (in1 !== in2 || out1 === out2) {
+                let scale = in1 === in2 ? 0 : (out2 - out1) / (in2 - in1);
+                for(let p = p1; p <= p2; p++){
+                    let out = inPoints[p][k];
+                    if (out <= in1) out += out1 - in1;
+                    else if (out >= in2) out += out2 - in2;
+                    else out = out1 + (out - in1) * scale;
+                    outPoints[p][k] = out;
+                }
+            }
+        }
+    }
+    deltaShift(p1, p2, ref, inPoints, outPoints) {
+        let deltaX = outPoints[ref].x - inPoints[ref].x;
+        let deltaY = outPoints[ref].y - inPoints[ref].y;
+        if (deltaX === 0 && deltaY === 0) return;
+        for(let p = p1; p <= p2; p++)if (p !== ref) {
+            outPoints[p].x += deltaX;
+            outPoints[p].y += deltaY;
+        }
+    }
+    getAdvanceAdjustment(gid, table) {
+        let outerIndex, innerIndex;
+        if (table.advanceWidthMapping) {
+            let idx = gid;
+            if (idx >= table.advanceWidthMapping.mapCount) idx = table.advanceWidthMapping.mapCount - 1;
+            let entryFormat = table.advanceWidthMapping.entryFormat;
+            ({ outerIndex: outerIndex, innerIndex: innerIndex } = table.advanceWidthMapping.mapData[idx]);
+        } else {
+            outerIndex = 0;
+            innerIndex = gid;
+        }
+        return this.getDelta(table.itemVariationStore, outerIndex, innerIndex);
+    }
+    // See pseudo code from `Font Variations Overview'
+    // in the OpenType specification.
+    getDelta(itemStore, outerIndex, innerIndex) {
+        if (outerIndex >= itemStore.itemVariationData.length) return 0;
+        let varData = itemStore.itemVariationData[outerIndex];
+        if (innerIndex >= varData.deltaSets.length) return 0;
+        let deltaSet = varData.deltaSets[innerIndex];
+        let blendVector = this.getBlendVector(itemStore, outerIndex);
+        let netAdjustment = 0;
+        for(let master = 0; master < varData.regionIndexCount; master++)netAdjustment += deltaSet.deltas[master] * blendVector[master];
+        return netAdjustment;
+    }
+    getBlendVector(itemStore, outerIndex) {
+        let varData = itemStore.itemVariationData[outerIndex];
+        if (this.blendVectors.has(varData)) return this.blendVectors.get(varData);
+        let normalizedCoords = this.normalizedCoords;
+        let blendVector = [];
+        // outer loop steps through master designs to be blended
+        for(let master = 0; master < varData.regionIndexCount; master++){
+            let scalar = 1;
+            let regionIndex = varData.regionIndexes[master];
+            let axes = itemStore.variationRegionList.variationRegions[regionIndex];
+            // inner loop steps through axes in this region
+            for(let j = 0; j < axes.length; j++){
+                let axis = axes[j];
+                let axisScalar;
+                // compute the scalar contribution of this axis
+                // ignore invalid ranges
+                if (axis.startCoord > axis.peakCoord || axis.peakCoord > axis.endCoord) axisScalar = 1;
+                else if (axis.startCoord < 0 && axis.endCoord > 0 && axis.peakCoord !== 0) axisScalar = 1;
+                else if (axis.peakCoord === 0) axisScalar = 1;
+                else if (normalizedCoords[j] < axis.startCoord || normalizedCoords[j] > axis.endCoord) axisScalar = 0;
+                else {
+                    if (normalizedCoords[j] === axis.peakCoord) axisScalar = 1;
+                    else if (normalizedCoords[j] < axis.peakCoord) axisScalar = (normalizedCoords[j] - axis.startCoord + Number.EPSILON) / (axis.peakCoord - axis.startCoord + Number.EPSILON);
+                    else axisScalar = (axis.endCoord - normalizedCoords[j] + Number.EPSILON) / (axis.endCoord - axis.peakCoord + Number.EPSILON);
+                }
+                // take product of all the axis scalars
+                scalar *= axisScalar;
+            }
+            blendVector[master] = scalar;
+        }
+        this.blendVectors.set(varData, blendVector);
+        return blendVector;
+    }
+    constructor(font, coords){
+        this.font = font;
+        this.normalizedCoords = this.normalizeCoords(coords);
+        this.blendVectors = new Map;
+    }
+}
+
+
+
+
+const $a8ac370803cb82cf$var$resolved = Promise.resolve();
+class $a8ac370803cb82cf$export$2e2bcd8739ae039 {
+    includeGlyph(glyph) {
+        if (typeof glyph === 'object') glyph = glyph.id;
+        if (this.mapping[glyph] == null) {
+            this.glyphs.push(glyph);
+            this.mapping[glyph] = this.glyphs.length - 1;
+        }
+        return this.mapping[glyph];
+    }
+    constructor(font){
+        this.font = font;
+        this.glyphs = [];
+        this.mapping = {};
+        // always include the missing glyph
+        this.includeGlyph(0);
+    }
+}
+
+
+
+
+
+// Flags for simple glyphs
+const $2784eedf0b35a048$var$ON_CURVE = 1;
+const $2784eedf0b35a048$var$X_SHORT_VECTOR = 2;
+const $2784eedf0b35a048$var$Y_SHORT_VECTOR = 4;
+const $2784eedf0b35a048$var$REPEAT = 8;
+const $2784eedf0b35a048$var$SAME_X = 16;
+const $2784eedf0b35a048$var$SAME_Y = 32;
+class $2784eedf0b35a048$var$Point {
+    static size(val) {
+        return val >= 0 && val <= 255 ? 1 : 2;
+    }
+    static encode(stream, value) {
+        if (value >= 0 && value <= 255) stream.writeUInt8(value);
+        else stream.writeInt16BE(value);
+    }
+}
+let $2784eedf0b35a048$var$Glyf = new $gfJaN$restructure.Struct({
+    numberOfContours: $gfJaN$restructure.int16,
+    xMin: $gfJaN$restructure.int16,
+    yMin: $gfJaN$restructure.int16,
+    xMax: $gfJaN$restructure.int16,
+    yMax: $gfJaN$restructure.int16,
+    endPtsOfContours: new $gfJaN$restructure.Array($gfJaN$restructure.uint16, 'numberOfContours'),
+    instructions: new $gfJaN$restructure.Array($gfJaN$restructure.uint8, $gfJaN$restructure.uint16),
+    flags: new $gfJaN$restructure.Array($gfJaN$restructure.uint8, 0),
+    xPoints: new $gfJaN$restructure.Array($2784eedf0b35a048$var$Point, 0),
+    yPoints: new $gfJaN$restructure.Array($2784eedf0b35a048$var$Point, 0)
+});
+class $2784eedf0b35a048$export$2e2bcd8739ae039 {
+    encodeSimple(path, instructions = []) {
+        let endPtsOfContours = [];
+        let xPoints = [];
+        let yPoints = [];
+        let flags = [];
+        let same = 0;
+        let lastX = 0, lastY = 0, lastFlag = 0;
+        let pointCount = 0;
+        for(let i = 0; i < path.commands.length; i++){
+            let c = path.commands[i];
+            for(let j = 0; j < c.args.length; j += 2){
+                let x = c.args[j];
+                let y = c.args[j + 1];
+                let flag = 0;
+                // If the ending point of a quadratic curve is the midpoint
+                // between the control point and the control point of the next
+                // quadratic curve, we can omit the ending point.
+                if (c.command === 'quadraticCurveTo' && j === 2) {
+                    let next = path.commands[i + 1];
+                    if (next && next.command === 'quadraticCurveTo') {
+                        let midX = (lastX + next.args[0]) / 2;
+                        let midY = (lastY + next.args[1]) / 2;
+                        if (x === midX && y === midY) continue;
+                    }
+                }
+                // All points except control points are on curve.
+                if (!(c.command === 'quadraticCurveTo' && j === 0)) flag |= $2784eedf0b35a048$var$ON_CURVE;
+                flag = this._encodePoint(x, lastX, xPoints, flag, $2784eedf0b35a048$var$X_SHORT_VECTOR, $2784eedf0b35a048$var$SAME_X);
+                flag = this._encodePoint(y, lastY, yPoints, flag, $2784eedf0b35a048$var$Y_SHORT_VECTOR, $2784eedf0b35a048$var$SAME_Y);
+                if (flag === lastFlag && same < 255) {
+                    flags[flags.length - 1] |= $2784eedf0b35a048$var$REPEAT;
+                    same++;
+                } else {
+                    if (same > 0) {
+                        flags.push(same);
+                        same = 0;
+                    }
+                    flags.push(flag);
+                    lastFlag = flag;
+                }
+                lastX = x;
+                lastY = y;
+                pointCount++;
+            }
+            if (c.command === 'closePath') endPtsOfContours.push(pointCount - 1);
+        }
+        // Close the path if the last command didn't already
+        if (path.commands.length > 1 && path.commands[path.commands.length - 1].command !== 'closePath') endPtsOfContours.push(pointCount - 1);
+        let bbox = path.bbox;
+        let glyf = {
+            numberOfContours: endPtsOfContours.length,
+            xMin: bbox.minX,
+            yMin: bbox.minY,
+            xMax: bbox.maxX,
+            yMax: bbox.maxY,
+            endPtsOfContours: endPtsOfContours,
+            instructions: instructions,
+            flags: flags,
+            xPoints: xPoints,
+            yPoints: yPoints
+        };
+        let size = $2784eedf0b35a048$var$Glyf.size(glyf);
+        let tail = 4 - size % 4;
+        let stream = new $gfJaN$restructure.EncodeStream(size + tail);
+        $2784eedf0b35a048$var$Glyf.encode(stream, glyf);
+        // Align to 4-byte length
+        if (tail !== 0) stream.fill(0, tail);
+        return stream.buffer;
+    }
+    _encodePoint(value, last, points, flag, shortFlag, sameFlag) {
+        let diff = value - last;
+        if (value === last) flag |= sameFlag;
+        else {
+            if (-255 <= diff && diff <= 255) {
+                flag |= shortFlag;
+                if (diff < 0) diff = -diff;
+                else flag |= sameFlag;
+            }
+            points.push(diff);
+        }
+        return flag;
+    }
+}
+
+
+class $fe042f4b88f46896$export$2e2bcd8739ae039 extends (0, $a8ac370803cb82cf$export$2e2bcd8739ae039) {
+    _addGlyph(gid) {
+        let glyph = this.font.getGlyph(gid);
+        let glyf = glyph._decode();
+        // get the offset to the glyph from the loca table
+        let curOffset = this.font.loca.offsets[gid];
+        let nextOffset = this.font.loca.offsets[gid + 1];
+        let stream = this.font._getTableStream('glyf');
+        stream.pos += curOffset;
+        let buffer = stream.readBuffer(nextOffset - curOffset);
+        // if it is a compound glyph, include its components
+        if (glyf && glyf.numberOfContours < 0) {
+            buffer = new Uint8Array(buffer);
+            let view = new DataView(buffer.buffer);
+            for (let component of glyf.components){
+                gid = this.includeGlyph(component.glyphID);
+                view.setUint16(component.pos, gid);
+            }
+        } else if (glyf && this.font._variationProcessor) // If this is a TrueType variation glyph, re-encode the path
+        buffer = this.glyphEncoder.encodeSimple(glyph.path, glyf.instructions);
+        this.glyf.push(buffer);
+        this.loca.offsets.push(this.offset);
+        this.hmtx.metrics.push({
+            advance: glyph.advanceWidth,
+            bearing: glyph._getMetrics().leftBearing
+        });
+        this.offset += buffer.length;
+        return this.glyf.length - 1;
+    }
+    encode() {
+        // tables required by PDF spec:
+        //   head, hhea, loca, maxp, cvt , prep, glyf, hmtx, fpgm
+        //
+        // additional tables required for standalone fonts:
+        //   name, cmap, OS/2, post
+        this.glyf = [];
+        this.offset = 0;
+        this.loca = {
+            offsets: [],
+            version: this.font.loca.version
+        };
+        this.hmtx = {
+            metrics: [],
+            bearings: []
+        };
+        // include all the glyphs
+        // not using a for loop because we need to support adding more
+        // glyphs to the array as we go, and CoffeeScript caches the length.
+        let i = 0;
+        while(i < this.glyphs.length)this._addGlyph(this.glyphs[i++]);
+        let maxp = (0, ($parcel$interopDefault($gfJaN$clone)))(this.font.maxp);
+        maxp.numGlyphs = this.glyf.length;
+        this.loca.offsets.push(this.offset);
+        let head = (0, ($parcel$interopDefault($gfJaN$clone)))(this.font.head);
+        head.indexToLocFormat = this.loca.version;
+        let hhea = (0, ($parcel$interopDefault($gfJaN$clone)))(this.font.hhea);
+        hhea.numberOfMetrics = this.hmtx.metrics.length;
+        // map = []
+        // for index in [0...256]
+        //     if index < @numGlyphs
+        //         map[index] = index
+        //     else
+        //         map[index] = 0
+        //
+        // cmapTable =
+        //     version: 0
+        //     length: 262
+        //     language: 0
+        //     codeMap: map
+        //
+        // cmap =
+        //     version: 0
+        //     numSubtables: 1
+        //     tables: [
+        //         platformID: 1
+        //         encodingID: 0
+        //         table: cmapTable
+        //     ]
+        // TODO: subset prep, cvt, fpgm?
+        return (0, $df50e1efe10a1247$export$2e2bcd8739ae039).toBuffer({
+            tables: {
+                head: head,
+                hhea: hhea,
+                loca: this.loca,
+                maxp: maxp,
+                'cvt ': this.font['cvt '],
+                prep: this.font.prep,
+                glyf: this.glyf,
+                hmtx: this.hmtx,
+                fpgm: this.font.fpgm
+            }
+        });
+    }
+    constructor(font){
+        super(font);
+        this.glyphEncoder = new (0, $2784eedf0b35a048$export$2e2bcd8739ae039);
+    }
+}
+
+
+
+
+
+
+class $ec40f80c07a4e08a$export$2e2bcd8739ae039 extends (0, $a8ac370803cb82cf$export$2e2bcd8739ae039) {
+    subsetCharstrings() {
+        this.charstrings = [];
+        let gsubrs = {};
+        for (let gid of this.glyphs){
+            this.charstrings.push(this.cff.getCharString(gid));
+            let glyph = this.font.getGlyph(gid);
+            let path = glyph.path; // this causes the glyph to be parsed
+            for(let subr in glyph._usedGsubrs)gsubrs[subr] = true;
+        }
+        this.gsubrs = this.subsetSubrs(this.cff.globalSubrIndex, gsubrs);
+    }
+    subsetSubrs(subrs, used) {
+        let res = [];
+        for(let i = 0; i < subrs.length; i++){
+            let subr = subrs[i];
+            if (used[i]) {
+                this.cff.stream.pos = subr.offset;
+                res.push(this.cff.stream.readBuffer(subr.length));
+            } else res.push(new Uint8Array([
+                11
+            ])); // return
+        }
+        return res;
+    }
+    subsetFontdict(topDict) {
+        topDict.FDArray = [];
+        topDict.FDSelect = {
+            version: 0,
+            fds: []
+        };
+        let used_fds = {};
+        let used_subrs = [];
+        let fd_select = {};
+        for (let gid of this.glyphs){
+            let fd = this.cff.fdForGlyph(gid);
+            if (fd == null) continue;
+            if (!used_fds[fd]) {
+                topDict.FDArray.push(Object.assign({}, this.cff.topDict.FDArray[fd]));
+                used_subrs.push({});
+                fd_select[fd] = topDict.FDArray.length - 1;
+            }
+            used_fds[fd] = true;
+            topDict.FDSelect.fds.push(fd_select[fd]);
+            let glyph = this.font.getGlyph(gid);
+            let path = glyph.path; // this causes the glyph to be parsed
+            for(let subr in glyph._usedSubrs)used_subrs[fd_select[fd]][subr] = true;
+        }
+        for(let i = 0; i < topDict.FDArray.length; i++){
+            let dict = topDict.FDArray[i];
+            delete dict.FontName;
+            if (dict.Private && dict.Private.Subrs) {
+                dict.Private = Object.assign({}, dict.Private);
+                dict.Private.Subrs = this.subsetSubrs(dict.Private.Subrs, used_subrs[i]);
+            }
+        }
+        return;
+    }
+    createCIDFontdict(topDict) {
+        let used_subrs = {};
+        for (let gid of this.glyphs){
+            let glyph = this.font.getGlyph(gid);
+            let path = glyph.path; // this causes the glyph to be parsed
+            for(let subr in glyph._usedSubrs)used_subrs[subr] = true;
+        }
+        let privateDict = Object.assign({}, this.cff.topDict.Private);
+        if (this.cff.topDict.Private && this.cff.topDict.Private.Subrs) privateDict.Subrs = this.subsetSubrs(this.cff.topDict.Private.Subrs, used_subrs);
+        topDict.FDArray = [
+            {
+                Private: privateDict
+            }
+        ];
+        return topDict.FDSelect = {
+            version: 3,
+            nRanges: 1,
+            ranges: [
+                {
+                    first: 0,
+                    fd: 0
+                }
+            ],
+            sentinel: this.charstrings.length
+        };
+    }
+    addString(string) {
+        if (!string) return null;
+        if (!this.strings) this.strings = [];
+        this.strings.push(string);
+        return (0, $860d3574d7fa3a51$export$2e2bcd8739ae039).length + this.strings.length - 1;
+    }
+    encode() {
+        this.subsetCharstrings();
+        let charset = {
+            version: this.charstrings.length > 255 ? 2 : 1,
+            ranges: [
+                {
+                    first: 1,
+                    nLeft: this.charstrings.length - 2
+                }
+            ]
+        };
+        let topDict = Object.assign({}, this.cff.topDict);
+        topDict.Private = null;
+        topDict.charset = charset;
+        topDict.Encoding = null;
+        topDict.CharStrings = this.charstrings;
+        for (let key of [
+            'version',
+            'Notice',
+            'Copyright',
+            'FullName',
+            'FamilyName',
+            'Weight',
+            'PostScript',
+            'BaseFontName',
+            'FontName'
+        ])topDict[key] = this.addString(this.cff.string(topDict[key]));
+        topDict.ROS = [
+            this.addString('Adobe'),
+            this.addString('Identity'),
+            0
+        ];
+        topDict.CIDCount = this.charstrings.length;
+        if (this.cff.isCIDFont) this.subsetFontdict(topDict);
+        else this.createCIDFontdict(topDict);
+        let top = {
+            version: 1,
+            hdrSize: this.cff.hdrSize,
+            offSize: 4,
+            header: this.cff.header,
+            nameIndex: [
+                this.cff.postscriptName
+            ],
+            topDictIndex: [
+                topDict
+            ],
+            stringIndex: this.strings,
+            globalSubrIndex: this.gsubrs
+        };
+        return (0, $5b547cf9e5da519b$export$2e2bcd8739ae039).toBuffer(top);
+    }
+    constructor(font){
+        super(font);
+        this.cff = this.font['CFF '];
+        if (!this.cff) throw new Error('Not a CFF Font');
+    }
+}
+
+
+
+
+class $0a8ef2660a6ce4b6$export$2e2bcd8739ae039 {
+    static probe(buffer) {
+        let format = (0, $66a5b9fb5318558a$export$3d28c1996ced1f14).decode(buffer.slice(0, 4));
+        return format === 'true' || format === 'OTTO' || format === String.fromCharCode(0, 1, 0, 0);
+    }
+    setDefaultLanguage(lang = null) {
+        this.defaultLanguage = lang;
+    }
+    _getTable(table) {
+        if (!(table.tag in this._tables)) try {
+            this._tables[table.tag] = this._decodeTable(table);
+        } catch (e) {
+            if ($59aa4ed98453e1d4$export$bd5c5d8b8dcafd78) {
+                console.error(`Error decoding table ${table.tag}`);
+                console.error(e.stack);
+            }
+        }
+        return this._tables[table.tag];
+    }
+    _getTableStream(tag) {
+        let table = this.directory.tables[tag];
+        if (table) {
+            this.stream.pos = table.offset;
+            return this.stream;
+        }
+        return null;
+    }
+    _decodeDirectory() {
+        return this.directory = (0, $df50e1efe10a1247$export$2e2bcd8739ae039).decode(this.stream, {
+            _startOffset: 0
+        });
+    }
+    _decodeTable(table) {
+        let pos = this.stream.pos;
+        let stream = this._getTableStream(table.tag);
+        let result = (0, $5825c04ce8f7102d$export$2e2bcd8739ae039)[table.tag].decode(stream, this, table.length);
+        this.stream.pos = pos;
+        return result;
+    }
+    /**
+   * Gets a string from the font's `name` table
+   * `lang` is a BCP-47 language code.
+   * @return {string}
+   */ getName(key, lang = this.defaultLanguage || $59aa4ed98453e1d4$export$42940898df819940) {
+        let record = this.name && this.name.records[key];
+        if (record) // Attempt to retrieve the entry, depending on which translation is available:
+        return record[lang] || record[this.defaultLanguage] || record[$59aa4ed98453e1d4$export$42940898df819940] || record['en'] || record[Object.keys(record)[0]] // Seriously, ANY language would be fine
+         || null;
+        return null;
+    }
+    /**
+   * The unique PostScript name for this font, e.g. "Helvetica-Bold"
+   * @type {string}
+   */ get postscriptName() {
+        return this.getName('postscriptName');
+    }
+    /**
+   * The font's full name, e.g. "Helvetica Bold"
+   * @type {string}
+   */ get fullName() {
+        return this.getName('fullName');
+    }
+    /**
+   * The font's family name, e.g. "Helvetica"
+   * @type {string}
+   */ get familyName() {
+        return this.getName('fontFamily');
+    }
+    /**
+   * The font's sub-family, e.g. "Bold".
+   * @type {string}
+   */ get subfamilyName() {
+        return this.getName('fontSubfamily');
+    }
+    /**
+   * The font's copyright information
+   * @type {string}
+   */ get copyright() {
+        return this.getName('copyright');
+    }
+    /**
+   * The font's version number
+   * @type {string}
+   */ get version() {
+        return this.getName('version');
+    }
+    /**
+   * The font’s [ascender](https://en.wikipedia.org/wiki/Ascender_(typography))
+   * @type {number}
+   */ get ascent() {
+        return this.hhea.ascent;
+    }
+    /**
+   * The font’s [descender](https://en.wikipedia.org/wiki/Descender)
+   * @type {number}
+   */ get descent() {
+        return this.hhea.descent;
+    }
+    /**
+   * The amount of space that should be included between lines
+   * @type {number}
+   */ get lineGap() {
+        return this.hhea.lineGap;
+    }
+    /**
+   * The offset from the normal underline position that should be used
+   * @type {number}
+   */ get underlinePosition() {
+        return this.post.underlinePosition;
+    }
+    /**
+   * The weight of the underline that should be used
+   * @type {number}
+   */ get underlineThickness() {
+        return this.post.underlineThickness;
+    }
+    /**
+   * If this is an italic font, the angle the cursor should be drawn at to match the font design
+   * @type {number}
+   */ get italicAngle() {
+        return this.post.italicAngle;
+    }
+    /**
+   * The height of capital letters above the baseline.
+   * See [here](https://en.wikipedia.org/wiki/Cap_height) for more details.
+   * @type {number}
+   */ get capHeight() {
+        let os2 = this['OS/2'];
+        return os2 ? os2.capHeight : this.ascent;
+    }
+    /**
+   * The height of lower case letters in the font.
+   * See [here](https://en.wikipedia.org/wiki/X-height) for more details.
+   * @type {number}
+   */ get xHeight() {
+        let os2 = this['OS/2'];
+        return os2 ? os2.xHeight : 0;
+    }
+    /**
+   * The number of glyphs in the font.
+   * @type {number}
+   */ get numGlyphs() {
+        return this.maxp.numGlyphs;
+    }
+    /**
+   * The size of the font’s internal coordinate grid
+   * @type {number}
+   */ get unitsPerEm() {
+        return this.head.unitsPerEm;
+    }
+    /**
+   * The font’s bounding box, i.e. the box that encloses all glyphs in the font.
+   * @type {BBox}
+   */ get bbox() {
+        return Object.freeze(new (0, $0e2da1c4ce69e8ad$export$2e2bcd8739ae039)(this.head.xMin, this.head.yMin, this.head.xMax, this.head.yMax));
+    }
+    get _cmapProcessor() {
+        return new (0, $0d6e160064c86e50$export$2e2bcd8739ae039)(this.cmap);
+    }
+    /**
+   * An array of all of the unicode code points supported by the font.
+   * @type {number[]}
+   */ get characterSet() {
+        return this._cmapProcessor.getCharacterSet();
+    }
+    /**
+   * Returns whether there is glyph in the font for the given unicode code point.
+   *
+   * @param {number} codePoint
+   * @return {boolean}
+   */ hasGlyphForCodePoint(codePoint) {
+        return !!this._cmapProcessor.lookup(codePoint);
+    }
+    /**
+   * Maps a single unicode code point to a Glyph object.
+   * Does not perform any advanced substitutions (there is no context to do so).
+   *
+   * @param {number} codePoint
+   * @return {Glyph}
+   */ glyphForCodePoint(codePoint) {
+        return this.getGlyph(this._cmapProcessor.lookup(codePoint), [
+            codePoint
+        ]);
+    }
+    /**
+   * Returns an array of Glyph objects for the given string.
+   * This is only a one-to-one mapping from characters to glyphs.
+   * For most uses, you should use font.layout (described below), which
+   * provides a much more advanced mapping supporting AAT and OpenType shaping.
+   *
+   * @param {string} string
+   * @return {Glyph[]}
+   */ glyphsForString(string) {
+        let glyphs = [];
+        let len = string.length;
+        let idx = 0;
+        let last = -1;
+        let state = -1;
+        while(idx <= len){
+            let code = 0;
+            let nextState = 0;
+            if (idx < len) {
+                // Decode the next codepoint from UTF 16
+                code = string.charCodeAt(idx++);
+                if (0xd800 <= code && code <= 0xdbff && idx < len) {
+                    let next = string.charCodeAt(idx);
+                    if (0xdc00 <= next && next <= 0xdfff) {
+                        idx++;
+                        code = ((code & 0x3ff) << 10) + (next & 0x3ff) + 0x10000;
+                    }
+                }
+                // Compute the next state: 1 if the next codepoint is a variation selector, 0 otherwise.
+                nextState = 0xfe00 <= code && code <= 0xfe0f || 0xe0100 <= code && code <= 0xe01ef ? 1 : 0;
+            } else idx++;
+            if (state === 0 && nextState === 1) // Variation selector following normal codepoint.
+            glyphs.push(this.getGlyph(this._cmapProcessor.lookup(last, code), [
+                last,
+                code
+            ]));
+            else if (state === 0 && nextState === 0) // Normal codepoint following normal codepoint.
+            glyphs.push(this.glyphForCodePoint(last));
+            last = code;
+            state = nextState;
+        }
+        return glyphs;
+    }
+    get _layoutEngine() {
+        return new (0, $9d641258c9d7180d$export$2e2bcd8739ae039)(this);
+    }
+    /**
+   * Returns a GlyphRun object, which includes an array of Glyphs and GlyphPositions for the given string.
+   *
+   * @param {string} string
+   * @param {string[]} [userFeatures]
+   * @param {string} [script]
+   * @param {string} [language]
+   * @param {string} [direction]
+   * @return {GlyphRun}
+   */ layout(string, userFeatures, script, language, direction) {
+        return this._layoutEngine.layout(string, userFeatures, script, language, direction);
+    }
+    /**
+   * Returns an array of strings that map to the given glyph id.
+   * @param {number} gid - glyph id
+   */ stringsForGlyph(gid) {
+        return this._layoutEngine.stringsForGlyph(gid);
+    }
+    /**
+   * An array of all [OpenType feature tags](https://www.microsoft.com/typography/otspec/featuretags.htm)
+   * (or mapped AAT tags) supported by the font.
+   * The features parameter is an array of OpenType feature tags to be applied in addition to the default set.
+   * If this is an AAT font, the OpenType feature tags are mapped to AAT features.
+   *
+   * @type {string[]}
+   */ get availableFeatures() {
+        return this._layoutEngine.getAvailableFeatures();
+    }
+    getAvailableFeatures(script, language) {
+        return this._layoutEngine.getAvailableFeatures(script, language);
+    }
+    _getBaseGlyph(glyph, characters = []) {
+        if (!this._glyphs[glyph]) {
+            if (this.directory.tables.glyf) this._glyphs[glyph] = new (0, $f680320fa07ef53d$export$2e2bcd8739ae039)(glyph, characters, this);
+            else if (this.directory.tables['CFF '] || this.directory.tables.CFF2) this._glyphs[glyph] = new (0, $7ee0705195f3b047$export$2e2bcd8739ae039)(glyph, characters, this);
+        }
+        return this._glyphs[glyph] || null;
+    }
+    /**
+   * Returns a glyph object for the given glyph id.
+   * You can pass the array of code points this glyph represents for
+   * your use later, and it will be stored in the glyph object.
+   *
+   * @param {number} glyph
+   * @param {number[]} characters
+   * @return {Glyph}
+   */ getGlyph(glyph, characters = []) {
+        if (!this._glyphs[glyph]) {
+            if (this.directory.tables.sbix) this._glyphs[glyph] = new (0, $55855d6d316b015e$export$2e2bcd8739ae039)(glyph, characters, this);
+            else if (this.directory.tables.COLR && this.directory.tables.CPAL) this._glyphs[glyph] = new (0, $42d9dbd2de9ee2d8$export$2e2bcd8739ae039)(glyph, characters, this);
+            else this._getBaseGlyph(glyph, characters);
+        }
+        return this._glyphs[glyph] || null;
+    }
+    /**
+   * Returns a Subset for this font.
+   * @return {Subset}
+   */ createSubset() {
+        if (this.directory.tables['CFF ']) return new (0, $ec40f80c07a4e08a$export$2e2bcd8739ae039)(this);
+        return new (0, $fe042f4b88f46896$export$2e2bcd8739ae039)(this);
+    }
+    /**
+   * Returns an object describing the available variation axes
+   * that this font supports. Keys are setting tags, and values
+   * contain the axis name, range, and default value.
+   *
+   * @type {object}
+   */ get variationAxes() {
+        let res = {};
+        if (!this.fvar) return res;
+        for (let axis of this.fvar.axis)res[axis.axisTag.trim()] = {
+            name: axis.name.en,
+            min: axis.minValue,
+            default: axis.defaultValue,
+            max: axis.maxValue
+        };
+        return res;
+    }
+    /**
+   * Returns an object describing the named variation instances
+   * that the font designer has specified. Keys are variation names
+   * and values are the variation settings for this instance.
+   *
+   * @type {object}
+   */ get namedVariations() {
+        let res = {};
+        if (!this.fvar) return res;
+        for (let instance of this.fvar.instance){
+            let settings = {};
+            for(let i = 0; i < this.fvar.axis.length; i++){
+                let axis = this.fvar.axis[i];
+                settings[axis.axisTag.trim()] = instance.coord[i];
+            }
+            res[instance.name.en] = settings;
+        }
+        return res;
+    }
+    /**
+   * Returns a new font with the given variation settings applied.
+   * Settings can either be an instance name, or an object containing
+   * variation tags as specified by the `variationAxes` property.
+   *
+   * @param {object} settings
+   * @return {TTFFont}
+   */ getVariation(settings) {
+        if (!(this.directory.tables.fvar && (this.directory.tables.gvar && this.directory.tables.glyf || this.directory.tables.CFF2))) throw new Error('Variations require a font with the fvar, gvar and glyf, or CFF2 tables.');
+        if (typeof settings === 'string') settings = this.namedVariations[settings];
+        if (typeof settings !== 'object') throw new Error('Variation settings must be either a variation name or settings object.');
+        // normalize the coordinates
+        let coords = this.fvar.axis.map((axis, i)=>{
+            let axisTag = axis.axisTag.trim();
+            if (axisTag in settings) return Math.max(axis.minValue, Math.min(axis.maxValue, settings[axisTag]));
+            else return axis.defaultValue;
+        });
+        let stream = new $gfJaN$restructure.DecodeStream(this.stream.buffer);
+        stream.pos = this._directoryPos;
+        let font = new $0a8ef2660a6ce4b6$export$2e2bcd8739ae039(stream, coords);
+        font._tables = this._tables;
+        return font;
+    }
+    get _variationProcessor() {
+        if (!this.fvar) return null;
+        let variationCoords = this.variationCoords;
+        // Ignore if no variation coords and not CFF2
+        if (!variationCoords && !this.CFF2) return null;
+        if (!variationCoords) variationCoords = this.fvar.axis.map((axis)=>axis.defaultValue);
+        return new (0, $7586bb9ea67c41d8$export$2e2bcd8739ae039)(this, variationCoords);
+    }
+    // Standardized format plugin API
+    getFont(name) {
+        return this.getVariation(name);
+    }
+    constructor(stream, variationCoords = null){
+        (0, $gfJaN$swchelperscjs_define_propertycjs._)(this, "type", 'TTF');
+        this.defaultLanguage = null;
+        this.stream = stream;
+        this.variationCoords = variationCoords;
+        this._directoryPos = this.stream.pos;
+        this._tables = {};
+        this._glyphs = {};
+        this._decodeDirectory();
