@@ -35,8 +35,8 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq fonts-hosny-amiri fonts-noto-core
-          python -m pip install --disable-pip-version-check playwright==1.55.0 lxml==6.0.1
-          python -m playwright install --with-deps chromium
+          python -m pip install --disable-pip-version-check playwright==1.55.0 lxml==6.0.1 Pillow==11.3.0
+          python -m playwright install --with-deps chromium firefox webkit
       - name: Execute all 50 browser acceptance cases
         run: |
           export ALWASITI_TEST_FONT_AMIRI="$(find /usr/share/fonts -iname 'Amiri-Regular.ttf' -print -quit)"
@@ -44,6 +44,7 @@ jobs:
           test -s "$ALWASITI_TEST_FONT_AMIRI"
           test -s "$ALWASITI_TEST_FONT_NOTO"
           python tests/acceptance.py
+          python tests/cross_browser.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
