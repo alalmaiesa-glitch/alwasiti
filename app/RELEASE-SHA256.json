@@ -16,16 +16,17 @@
     "README.md": "fd022a4561b862ca808feef3ea342f18df05ae6ff797660f93a5c988fab4f025",
     "SECURITY.md": "9798ec3f94518a2e435fbc28dcbd7d52c6d52dad231de325f0a3bbdcbc210b8d",
     "THIRD-PARTY-NOTICES.md": "59b5957fdd620d1c2a1a927bdc74f28c61cd0f8bc4c19d0b6bc00953ab3c1fac",
-    "app.js": "3df1da30708024efe7ed3cf8e116d5e4ac1d29925ee7cb5c702a21b13873875f",
+    "app.js": "337d7bc1152a19196678aa3b6867487460b4abcef3858f7ecd6a57b30746e9d6",
     "fontkit-browser.js": "5696cdeea9317d7990e4ece288af3efcbde80ce971fb45c953e29eee4361f721",
-    "index.html": "3f8f3b80b65c7defcdbd33f4fa198443f261c255da4a08075b507d9eae9076cb",
+    "index.html": "be26ac52013a09df8e00cd5ff5d10fb97a1d92f881ba89de1901f96c2cca7b66",
     "privacy.html": "c60a6f1514ad15eb0dee3b5b1d3bc06b07907d4d9b437e0ec93e3ade4e2dd2a1",
-    "styles.css": "b74d90b0518ae7818b37c3d245f6c9c23c7b50290182665a3c3fe72b2ca3d6e6",
+    "styles.css": "37c13d5be097268e3a046296d9f087de51eefdcb0936b655d21d411889ec9dc3",
     "terms.html": "890dca31343c338eca9427c121dafea0e33877741365aa5d5452ebc0e2c84d73",
     "vercel.json": "04b8c7e78246ea6421eb65dec049d0d6d5a976e3096d61a7338ae90a0414ed39",
     "fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
     "fonts/NotoKufiArabic-wght.ttf": "494f6b61469d7a02a2d63f0fc4930bb007388d8cfe551de5eb98354e100889f3",
     "LICENSES/OFL-Amiri.txt": "72de68e5954f4fdd24702292ef5a32f003ca960ec9330dc86e5eefb5dffb9b22",
-    "LICENSES/OFL-NotoKufiArabic.txt": "07fc70bfeb985cc1a87a8587d0a0c80bab11c86c9dc3fd95b6f0cb332f983e96"
+    "LICENSES/OFL-NotoKufiArabic.txt": "07fc70bfeb985cc1a87a8587d0a0c80bab11c86c9dc3fd95b6f0cb332f983e96",
+    "templates.js": "bc4144ac8db915fb34c0368d98b1d04dd32198f00a9c42b0005019912758fe34"
   }
 }
