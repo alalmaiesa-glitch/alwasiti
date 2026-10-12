@@ -30,6 +30,8 @@ jobs:
         run: npm --prefix spikes/sigilgen-arabic install --no-save --ignore-scripts --no-audit --no-fund fontkit@2.0.4 sharp@0.34.2
       - name: Test 10 Arabic names × 6 logos
         run: node spikes/sigilgen-arabic/prototype.mjs
+      - name: Strict visual duplication quality gate (expected to fail until design diversity improves)
+        run: node spikes/sigilgen-arabic/visual-gate.mjs
       - name: Upload all 60 SVG + contact sheet + quality report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
