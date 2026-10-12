@@ -17,7 +17,7 @@
     <header class="site-header wrap">
       <a class="brand" href="#" aria-label="الواسطي - الرئيسية"><span class="brand-symbol" aria-hidden="true"><i></i><i></i><i></i></span><span class="brand-stack"><b>الواسطي</b><small>alWasiti</small></span></a>
       <nav class="site-nav" aria-label="القائمة الرئيسية">
-        <a href="#features">الأدوات</a><a href="#approach">كيف يعمل؟</a><a href="#about">عن الواسطي</a>
+        <a href="#features">الأدوات</a><a href="#templateCatalog">القوالب</a><a href="#approach">كيف يعمل؟</a><a href="#about">عن الواسطي</a>
       </nav>
       <button class="btn btn-dark btn-small" data-open-studio>ابدأ التصميم <span aria-hidden="true">↗</span></button>
     </header>
@@ -53,6 +53,14 @@
           <article class="feature-card feature-blue"><div class="feature-number">04 / التسليم للمطور</div><div class="feature-visual visual-code"><span>{</span><span>--brand-primary: #5947D9;</span><span>}</span></div><h3>جاهزة للبناء</h3><p>صدّر ألوانك وقواعد تصميمك إلى ملفات قابلة للاستخدام في الكود.</p></article>
         </div>
       </div></section>
+      <section id="templateCatalog" class="template-section" aria-labelledby="templateCatalogTitle">
+        <div class="wrap">
+          <div class="template-section-heading"><div><span class="section-kicker">بداية مصمّمة بعناية</span><h2 id="templateCatalogTitle">12 قالبًا عربيًا. لكل فكرة شخصيتها.</h2><p>قوالب أصلية للانطلاق، لا صورًا ثابتة. افتح أي هوية، غيّر اسمها وألوانها وخطها وشعارها، ثم احفظها أو صدّرها بلا علامة مائية.</p></div><span class="template-count">12 قالب انطلاق مجاني</span></div>
+          <div class="template-filters" role="group" aria-label="تصفية قوالب الانطلاق" data-template-filters="home"></div>
+          <div id="templateGalleryHome" class="template-gallery template-gallery-home" aria-label="قوالب الانطلاق العربية"></div>
+          <p class="template-footnote">الأسماء أمثلة تخيلية وليست علامات متاحة للتسجيل بالضرورة. افحص تشابه الأسماء والعلامات قبل الاستخدام التجاري أو التسجيل.</p>
+        </div>
+      </section>
       <section id="approach" class="approach wrap"><div class="approach-copy"><span class="section-kicker">من الفكرة إلى التنفيذ</span><h2>صمّم بحرية.<br><em>وسلّم بثقة.</em></h2><p>لا تحتاج إلى أدوات متفرقة. اختر الأساسيات، راجع النتيجة لحظة بلحظة، ثم صدّر ما تحتاجه.</p><button class="btn btn-dark" data-open-studio>جرّب الاستوديو الآن <span aria-hidden="true">←</span></button></div><div class="steps"><div><b>01</b><span><strong>ابدأ من القالب المناسب</strong><small>أو أنشئ نظام تصميم من الصفر.</small></span></div><div><b>02</b><span><strong>خصّص هوية مشروعك</strong><small>الألوان والخطوط والشعار والمكونات.</small></span></div><div><b>03</b><span><strong>عاين وصدّر</strong><small>ملفات منظمة قابلة للتعديل والاستخدام.</small></span></div></div></section>
       <section id="about" class="ad-area wrap" aria-label="موضع إعلاني اختياري"><div><span class="ad-tag">إعلان</span><strong>مساحة إعلانية مستقبلية</strong><p>تظهر الإعلانات في صفحات الاستكشاف فقط، وليس داخل مساحة التصميم أو الملفات المُصدّرة.</p></div></section>
     </main>
@@ -66,6 +74,7 @@
     </header>
     <div class="studio-body">
       <aside class="studio-sidebar" aria-label="أدوات المحرر"><div class="sidebar-heading">مساحة العمل</div>
+        <button class="side-nav" data-panel="templates"><span class="nav-glyph">▤</span><span>قوالب البداية</span></button>
         <button class="side-nav active" data-panel="identity"><span class="nav-glyph">◈</span><span>الهوية</span></button>
         <button class="side-nav" data-panel="colors"><span class="nav-glyph">◉</span><span>الألوان</span></button>
         <button class="side-nav" data-panel="typography"><span class="nav-glyph">أ</span><span>الخطوط العربية</span></button>
@@ -74,6 +83,11 @@
         <div class="side-spacer"></div><div class="sidebar-tip"><span>✦</span><b>مساحة بلا قيود</b><p>جميع أدوات هذه النسخة مجانية، ولا توجد إعلانات داخل المحرر.</p></div>
       </aside>
       <aside class="inspector" aria-label="خصائص التصميم">
+        <div class="inspector-panel" data-inspector="templates">
+          <div class="panel-head"><div class="panel-eyebrow">مكتبة أصلية ومجانية</div><h2>قوالب انطلاق عربية</h2><p>اختر طابعًا لعلامتك، وسيُفتح كمشروع مستقل قابل للتحرير والتصدير. لن تُمسّ مشاريعك المحفوظة.</p></div>
+          <div class="template-filters template-filters-compact" role="group" aria-label="تصفية القوالب داخل المحرر" data-template-filters="studio"></div>
+          <div id="templateGalleryStudio" class="template-gallery template-gallery-studio" aria-label="اختيار قالب جديد"></div>
+        </div>
         <div class="inspector-panel active" data-inspector="identity"><div class="panel-head"><div class="panel-eyebrow">ابدأ هنا</div><h2>أساسيات الهوية</h2><p>حدّد شخصية مشروعك، وشاهد النتيجة فورًا.</p></div>
           <label class="field"><span>اسم العلامة</span><input type="text" id="brandName" value="مدار" maxlength="30"></label>
           <label class="field"><span>العبارة التعريفية</span><input type="text" id="brandTagline" value="مساحة لأفكار أكثر وضوحًا" maxlength="100"></label>
@@ -151,6 +165,7 @@
   <div class="modal-overlay" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportTitle" hidden><div class="modal"><div class="modal-head"><div><span class="panel-eyebrow">ملفات جاهزة للاستخدام</span><h2 id="exportTitle">تصدير التصميم</h2></div><button class="modal-close" id="closeExport" aria-label="إغلاق">×</button></div><p class="modal-description">حمّل نظام الألوان والخطوط أو شعارًا بصيغة SVG. التصدير مجاني ولا يتضمن علامة مائية.</p><div class="export-options"><button data-export="json"><span class="export-icon">{ }</span><span><b>Design Tokens</b><small>ملف JSON قابل للدمج في المشروع</small></span><span>↓</span></button><button data-export="css"><span class="export-icon">#</span><span><b>CSS Variables</b><small>متغيرات ألوان وخطوط وزوايا</small></span><span>↓</span></button><button data-export="svg"><span class="export-icon">◇</span><span><b>Logo SVG</b><small>شعار متجه بنص قابل للتعديل</small></span><span>↓</span></button><button data-export="outline"><span class="export-icon">〰</span><span><b>Vector Logo SVG</b><small>نصوص محوّلة إلى مسارات دون حاجة لتثبيت الخط</small></span><span>↓</span></button><button data-export="png"><span class="export-icon">▧</span><span><b>Logo PNG</b><small>شعار بخلفية شفافة بدقة 1520 × 720</small></span><span>↓</span></button></div><div class="export-note">SVG النصي يظل قابلًا لتحرير النص ويتطلب الخط؛ أما Vector SVG فيحوّل الحروف إلى مسارات، ويستخدم خط التصدير المتجهي المختار. يجب أن يتوفر الاتصال لتحميله من المصدر الرسمي.</div></div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="./fontkit-browser.js"></script>
+  <script src="./templates.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

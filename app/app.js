@@ -211,6 +211,83 @@
     $$('.side-nav').forEach(b=>b.classList.toggle('active',b===button));
     $$('.inspector-panel').forEach(p=>p.classList.toggle('active',p.dataset.inspector===panel));
   }));
+
+  // Template gallery: independent local projects, not immutable exported artwork.
+  const STARTER_TEMPLATES=Array.isArray(window.AlwasitiTemplates)?window.AlwasitiTemplates:[];
+  let templateCategory='الكل';
+  const templateCategories=['الكل','الأعمال','التجارة','الثقافة','الخدمات'];
+  function renderTemplateCatalogs(){
+    for(const slot of ['home','studio']){
+      const filters=document.querySelector('[data-template-filters="'+slot+'"]');
+      const gallery=id(slot==='home'?'templateGalleryHome':'templateGalleryStudio');
+      if(!gallery || !filters)continue;
+      filters.replaceChildren();gallery.replaceChildren();
+      for(const category of templateCategories){
+        const filter=document.createElement('button');filter.type='button';filter.className='template-filter'+(templateCategory===category?' is-active':'');
+        filter.textContent=category;filter.setAttribute('aria-pressed',String(templateCategory===category));
+        filter.addEventListener('click',()=>{templateCategory=category;renderTemplateCatalogs();});
+        filters.append(filter);
+      }
+      for(const item of STARTER_TEMPLATES){
+        if(templateCategory!=='الكل'&&item.category!==templateCategory)continue;
+        const card=document.createElement('article');card.className='template-card';
+        card.style.setProperty('--tp-primary',item.primary);
+        card.style.setProperty('--tp-accent',item.accent);
+        card.style.setProperty('--tp-secondary',item.secondary);
+        card.style.setProperty('--tp-ink',item.ink);
+        const artwork=document.createElement('div');artwork.className='template-artwork';
+        const pin=document.createElement('span');pin.className='template-pin';pin.textContent=item.industry;
+        const visual=document.createElement('div');visual.className='template-artwork-main';
+        const mark=document.createElement('span');mark.className='template-mark shape-'+item.markShape;mark.textContent=item.logoType==='wordmark'?'':item.symbolLetter;
+        const name=document.createElement('strong');name.className='template-artwork-name';name.textContent=item.brandName;name.style.fontFamily='"'+item.headingFont+'",sans-serif';
+        if(item.logoType==='wordmark'){mark.classList.add('is-wordmark');}
+        if(item.logoType==='monogram'){name.classList.add('sr-only');}
+        visual.append(mark,name);
+        const tagline=document.createElement('small');tagline.className='template-artwork-tagline';tagline.textContent=item.tagline;
+        const swatches=document.createElement('div');swatches.className='template-swatches';swatches.setAttribute('aria-hidden','true');
+        for(const color of [item.primary,item.secondary,item.accent,item.ink]){
+          const dot=document.createElement('span');dot.style.backgroundColor=color;swatches.append(dot);
+        }
+        artwork.append(pin,visual,tagline,swatches);
+        const info=document.createElement('div');info.className='template-card-info';
+        const heading=document.createElement('div');heading.className='template-card-heading';
+        const title=document.createElement('strong');title.textContent=item.brandName;
+        const tone=document.createElement('span');tone.textContent=item.tone;
+        heading.append(title,tone);
+        const rationale=document.createElement('p');rationale.textContent=item.rationale;
+        const details=document.createElement('div');details.className='template-card-details';
+        const audience=document.createElement('small');audience.textContent=item.category+' · '+item.industry;
+        const button=document.createElement('button');button.type='button';button.className='template-use';
+        button.dataset.templateId=item.id;button.textContent='استخدم القالب ←';
+        button.setAttribute('aria-label','استخدم قالب '+item.brandName+' في المحرر');
+        details.append(audience,button);info.append(heading,rationale,details);card.append(artwork,info);gallery.append(card);
+      }
+    }
+  }
+  function chooseTemplate(templateId,opener){
+    const item=STARTER_TEMPLATES.find(t=>t.id===templateId);
+    if(!item || !confirmDiscard())return;
+    clearDraft();
+    const next=normalizeProjectData({...initialState,...item});
+    Object.assign(state,next);
+    // A template never inherits the ID of an existing saved project.
+    activeProjectId=null;
+    undoStack.length=0;redoStack.length=0;selectedPart=null;syncUndoButtons();
+    render();setDirty();
+    if(!id('studio').classList.contains('active'))openStudio({currentTarget:opener});
+    else{
+      const tab=document.querySelector('.side-nav[data-panel="identity"]');
+      tab.click();id('brandName').focus();
+    }
+    toast('فُتح قالب '+item.brandName+' كمشروع جديد. عدّل تفاصيله واحفظ نسخة خاصة بك.');
+  }
+  for(const gallery of [id('templateGalleryHome'),id('templateGalleryStudio')]){
+    gallery.addEventListener('click',event=>{
+      const button=event.target.closest('button[data-template-id]');
+      if(button && gallery.contains(button))chooseTemplate(button.dataset.templateId,button);
+    });
+  }
+
   // Browser-only project portfolio. Never interprets imported JSON as HTML or code.
   function normalizeProjectData(raw){
     if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('ملف مشروع غير صالح');
@@ -660,6 +737,7 @@
       id('saveStatus').textContent='مسودة مستعادة — احفظ المشروع';
     }
   }catch(_) { /* Ignore unavailable or corrupt browser storage. */ }
+  renderTemplateCatalogs();
   render();
 })();
 
