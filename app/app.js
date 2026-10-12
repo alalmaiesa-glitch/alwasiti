@@ -17,17 +17,257 @@
     {name:"Noto Kufi Arabic",category:"كوفي للعناوين",license:'OFL-1.1',source:"https://github.com/google/fonts/blob/main/ofl/notokufiarabic/OFL.txt"},
     {name:"Amiri",category:"كلاسيكي للتحرير",license:'OFL-1.1',source:"https://github.com/google/fonts/blob/main/ofl/amiri/OFL.txt"}
   ];
-  const palettes = [
-    {name:'بنفسجي مشرق', primary:'#5947D9', secondary:'#F49C6B', accent:'#F3D998', ink:'#282842'},
-    {name:'أزرق متجدد', primary:'#295BCF', secondary:'#FF925E', accent:'#F8D67E', ink:'#202C4C'},
-    {name:'مرجاني', primary:'#D85861', secondary:'#F4A06C', accent:'#F7D9BA', ink:'#44313D'},
-    {name:'أخضر طبيعي', primary:'#246D55', secondary:'#F3A451', accent:'#DBD9A6', ink:'#243D39'}
-  ];
+  // Curated original directions: primary is AA-readable with white; ink is AA-readable on white/accent.
+  const palettes = Object.freeze([
+  {
+    "id": "p01",
+    "category": "مؤسسية",
+    "name": "كحلي ونحاسي",
+    "usage": "هويات الشركات والاستشارات",
+    "primary": "#203C60",
+    "secondary": "#C59A58",
+    "accent": "#F1E3C8",
+    "ink": "#1C2D43"
+  },
+  {
+    "id": "p02",
+    "category": "مؤسسية",
+    "name": "أخضر ملكي",
+    "usage": "مشروعات موثوقة وهوية رصينة",
+    "primary": "#14543C",
+    "secondary": "#BFA16A",
+    "accent": "#E8DECA",
+    "ink": "#17382B"
+  },
+  {
+    "id": "p03",
+    "category": "مؤسسية",
+    "name": "أزرق صخري",
+    "usage": "بيوت الخبرة والخدمات المهنية",
+    "primary": "#325A78",
+    "secondary": "#91B4C9",
+    "accent": "#E5EFF4",
+    "ink": "#20384D"
+  },
+  {
+    "id": "p04",
+    "category": "مؤسسية",
+    "name": "فحمي وكراميل",
+    "usage": "علامات الأعمال الهادئة",
+    "primary": "#373B46",
+    "secondary": "#C78352",
+    "accent": "#EFE3D8",
+    "ink": "#252934"
+  },
+  {
+    "id": "p05",
+    "category": "تقنية",
+    "name": "أزرق رقمي",
+    "usage": "التطبيقات والمنتجات الرقمية",
+    "primary": "#244BB8",
+    "secondary": "#3EBBBB",
+    "accent": "#D9F4F2",
+    "ink": "#202B49"
+  },
+  {
+    "id": "p06",
+    "category": "تقنية",
+    "name": "سيان عميق",
+    "usage": "لوحات التحكم والتقنيات الحديثة",
+    "primary": "#07566C",
+    "secondary": "#55CCD2",
+    "accent": "#DFF7F8",
+    "ink": "#183C4B"
+  },
+  {
+    "id": "p07",
+    "category": "تقنية",
+    "name": "بنفسجي تقني",
+    "usage": "الابتكار والتجارب التفاعلية",
+    "primary": "#5640A3",
+    "secondary": "#A6B0FA",
+    "accent": "#ECEBFD",
+    "ink": "#2E285A"
+  },
+  {
+    "id": "p08",
+    "category": "تقنية",
+    "name": "ليلي وكهرماني",
+    "usage": "الأدوات والمنصات الذكية",
+    "primary": "#1E3347",
+    "secondary": "#F1B24D",
+    "accent": "#F7ECD4",
+    "ink": "#1C2D3A"
+  },
+  {
+    "id": "p09",
+    "category": "تجارية",
+    "name": "مرجاني متزن",
+    "usage": "التجزئة والعلامات الاستهلاكية",
+    "primary": "#AA344C",
+    "secondary": "#E69A7A",
+    "accent": "#F9E2D6",
+    "ink": "#4B2632"
+  },
+  {
+    "id": "p10",
+    "category": "تجارية",
+    "name": "تيراكوتا",
+    "usage": "الحِرف والمنتجات المنزلية",
+    "primary": "#94472B",
+    "secondary": "#CE9270",
+    "accent": "#F7E7D5",
+    "ink": "#4B3026"
+  },
+  {
+    "id": "p11",
+    "category": "تجارية",
+    "name": "برغندي فاخر",
+    "usage": "المتاجر والعلامات الراقية",
+    "primary": "#702E46",
+    "secondary": "#D3A06D",
+    "accent": "#F8E6DB",
+    "ink": "#412836"
+  },
+  {
+    "id": "p12",
+    "category": "تجارية",
+    "name": "وردي ترابي",
+    "usage": "العناية والأزياء والمنتجات اللطيفة",
+    "primary": "#87445D",
+    "secondary": "#D7A4B6",
+    "accent": "#F5E2EA",
+    "ink": "#452736"
+  },
+  {
+    "id": "p13",
+    "category": "ثقافية",
+    "name": "حبر ومخطوط",
+    "usage": "النشر والمعرفة والتحرير",
+    "primary": "#33384E",
+    "secondary": "#AC6653",
+    "accent": "#EFE1D9",
+    "ink": "#25293D"
+  },
+  {
+    "id": "p14",
+    "category": "ثقافية",
+    "name": "نيلي وعاجي",
+    "usage": "الهوية الثقافية والمكتبات",
+    "primary": "#343D82",
+    "secondary": "#C1A76F",
+    "accent": "#F5EBD2",
+    "ink": "#292D4B"
+  },
+  {
+    "id": "p15",
+    "category": "ثقافية",
+    "name": "أرجوان عتيق",
+    "usage": "البرامج الفنية والمعارض",
+    "primary": "#65416E",
+    "secondary": "#B98188",
+    "accent": "#F0E3E9",
+    "ink": "#32283E"
+  },
+  {
+    "id": "p16",
+    "category": "ثقافية",
+    "name": "بترولي متحفي",
+    "usage": "المتاحف والجهات الإبداعية",
+    "primary": "#1F5260",
+    "secondary": "#AF7C52",
+    "accent": "#EEE0CA",
+    "ink": "#223C44"
+  },
+  {
+    "id": "p17",
+    "category": "طبيعية",
+    "name": "زيتوني وحصاد",
+    "usage": "الأغذية والزراعة المستدامة",
+    "primary": "#4A602B",
+    "secondary": "#D3A652",
+    "accent": "#F3EBCF",
+    "ink": "#30402D"
+  },
+  {
+    "id": "p18",
+    "category": "طبيعية",
+    "name": "غابة معتدلة",
+    "usage": "المنتجات العضوية والمبادرات البيئية",
+    "primary": "#216548",
+    "secondary": "#87B89A",
+    "accent": "#E4F2E8",
+    "ink": "#1C4535"
+  },
+  {
+    "id": "p19",
+    "category": "طبيعية",
+    "name": "أرض دافئة",
+    "usage": "القهوة والحِرف والضيافة",
+    "primary": "#755339",
+    "secondary": "#D1AE81",
+    "accent": "#F4E8D3",
+    "ink": "#4C3A2C"
+  },
+  {
+    "id": "p20",
+    "category": "طبيعية",
+    "name": "فيروزي هادئ",
+    "usage": "الصحة والرفاه ونمط الحياة",
+    "primary": "#176E75",
+    "secondary": "#75B9AC",
+    "accent": "#DDF0E9",
+    "ink": "#1D4649"
+  },
+  {
+    "id": "p21",
+    "category": "جريئة",
+    "name": "بنفسجي مشرق",
+    "usage": "الاستوديوهات والمبادرات الجديدة",
+    "primary": "#5947D9",
+    "secondary": "#F49C6B",
+    "accent": "#F3D998",
+    "ink": "#282842"
+  },
+  {
+    "id": "p22",
+    "category": "جريئة",
+    "name": "أزرق متجدد",
+    "usage": "المنتجات الشبابية والخدمات الحديثة",
+    "primary": "#295BCF",
+    "secondary": "#FF925E",
+    "accent": "#F8D67E",
+    "ink": "#202C4C"
+  },
+  {
+    "id": "p23",
+    "category": "جريئة",
+    "name": "موف وإشراق",
+    "usage": "المشاريع الإبداعية الشخصية",
+    "primary": "#673F8F",
+    "secondary": "#DD6D8B",
+    "accent": "#F5DBE2",
+    "ink": "#322442"
+  },
+  {
+    "id": "p24",
+    "category": "جريئة",
+    "name": "بحري وكهرماني",
+    "usage": "تطبيقات حيوية بهوية جريئة",
+    "primary": "#165E8A",
+    "secondary": "#F6A64B",
+    "accent": "#FFECC5",
+    "ink": "#20364B"
+  }
+]);
+  const paletteCategories=['الكل','مؤسسية','تقنية','تجارية','ثقافية','طبيعية','جريئة'];
+  const paletteFilters={paletteChoices:'الكل',paletteChoicesAlt:'الكل'};
   const initialState = {
     projectName:'هوية مشروع جديد', brandName:'مدار', tagline:'مساحة لأفكار أكثر وضوحًا', cta:'ابدأ الآن',
     primary:'#5947D9', secondary:'#F49C6B', accent:'#F3D998', ink:'#282842',
     headingFont:'Alexandria', bodyFont:'IBM Plex Sans Arabic', headingWeight:700,
     logoType:'symbol', symbolLetter:'م', markShape:'rounded',markSize:108,wordSize:61,markX:590,markY:185,wordX:286,wordY:205,markRotation:0,wordRotation:0,radius:16, buttonStyle:'filled', shadow:true,
+    layoutVariant:'default',markMotif:'basic',headline:'أفكارنا تصنع الفرق كل يوم.',cardOne:'رؤية واضحة',cardTwo:'تصميم متقن',cardThree:'تجربة متكاملة',
     vectorFont:'noto',theme:'light', device:'desktop',fontPreviewText:'جمال الحرف العربي يبدأ من هنا'
   };
   const state = {...initialState};
@@ -86,24 +326,101 @@
   id('backHome').addEventListener('click',closeStudio);
   function renderPalettes() {
     ['paletteChoices','paletteChoicesAlt'].forEach(containerId => {
-      const root = id(containerId);
+      const root=id(containerId);
+      if(!root)return;
+      root.classList.add('palette-library');
       root.replaceChildren();
-      palettes.forEach((p) => {
-        const button = document.createElement('button');
-        button.className = 'palette-pick'+(p.primary.toUpperCase() === state.primary.toUpperCase() ? ' active' : '');
-        button.innerHTML = `<b>${htmlSafe(p.name)}</b><span class="palette-dots"><i style="background:${p.primary}"></i><i style="background:${p.secondary}"></i><i style="background:${p.accent}"></i><i style="background:${p.ink}"></i></span>`;
-        button.addEventListener('click',() => {['primary','secondary','accent','ink'].forEach(key=>state[key]=p[key]);render();setDirty();});
-        root.appendChild(button);
+      const category=paletteFilters[containerId]||'الكل';
+      const shown=palettes.filter(p=>category==='الكل'||p.category===category);
+      const status=document.createElement('p');status.className='palette-library-count';
+      status.textContent=category==='الكل'?palettes.length+' لوحة منتقاة · 6 فئات':shown.length+' لوحات في فئة '+category+' · من أصل '+palettes.length;
+      const filters=document.createElement('div');filters.className='palette-library-filters';
+      filters.setAttribute('role','group');filters.setAttribute('aria-label','تصفية لوحات الألوان');
+      paletteCategories.forEach(group=>{
+        const filter=document.createElement('button');filter.type='button';filter.className='palette-category'+(category===group?' selected':'');
+        filter.dataset.paletteCategory=group;filter.textContent=group;filter.setAttribute('aria-pressed',String(category===group));
+        filter.addEventListener('click',()=>{
+          paletteFilters[containerId]=group;
+          renderPalettes();
+          const next=[...root.querySelectorAll('[data-palette-category]')].find(b=>b.dataset.paletteCategory===group);
+          next?.focus({preventScroll:true});
+        });
+        filters.append(filter);
       });
+      const grid=document.createElement('div');grid.className='palette-library-grid';
+      grid.setAttribute('role','region');grid.setAttribute('aria-label','لوحات الألوان المتاحة');
+      grid.tabIndex=0;
+      shown.forEach(p=>{
+        const active=['primary','secondary','accent','ink'].every(key=>state[key].toUpperCase()===p[key].toUpperCase());
+        const button=document.createElement('button');button.type='button';button.className='palette-pick'+(active?' active':'');
+        button.dataset.paletteId=p.id;button.setAttribute('aria-pressed',String(active));
+        button.setAttribute('aria-label','تطبيق لوحة '+p.name+'، '+p.category+'؛ '+p.usage);
+        const info=document.createElement('span');info.className='palette-description';
+        const name=document.createElement('strong');name.textContent=p.name;
+        const purpose=document.createElement('small');purpose.textContent=p.usage;
+        info.append(name,purpose);
+        const dots=document.createElement('span');dots.className='palette-dots';dots.setAttribute('aria-hidden','true');
+        const labels={primary:'أساسي',secondary:'ثانوي',accent:'مساعد',ink:'نص'};
+        ['primary','secondary','accent','ink'].forEach(key=>{
+          const dot=document.createElement('i');dot.style.backgroundColor=p[key];dot.title=labels[key]+': '+p[key];dots.append(dot);
+        });
+        button.append(info,dots);
+        button.addEventListener('click',()=>{
+          ['primary','secondary','accent','ink'].forEach(key=>state[key]=p[key]);
+          render();setDirty();
+          root.querySelector('[data-palette-id="'+p.id+'"]')?.focus({preventScroll:true});
+          toast('تم تطبيق لوحة '+p.name+'؛ يمكنك الآن تعديل كل لون على حدة.');
+        });
+        grid.append(button);
+      });
+      root.append(status,filters,grid);
     });
   }
+
+  // Every motif is authored as original geometric SVG paths, never an external image.
+  const BRAND_MOTIFS = window.AlwasitiMotifs || {};
+  const SCENE_MARKUP = {
+  "consult": "<div class=\"scene scene-consult\"><span class=\"scene-overline\">STRATEGY / 01</span><div class=\"scene-consult-frame\"><i></i><i></i><i></i><span>01</span></div><strong>رؤية<br>وأثر.</strong></div>",
+  "studio": "<div class=\"scene scene-studio\"><div class=\"scene-studio-type\">نـ</div><span class=\"scene-studio-ring\"></span><span class=\"scene-studio-label\">Creative / Arabic</span><i class=\"scene-studio-dot\"></i></div>",
+  "saas": "<div class=\"scene scene-saas\"><div class=\"scene-app-top\"><i></i><i></i><i></i><span>analytics</span></div><div class=\"scene-app-chart\"><b></b><b></b><b></b><b></b><b></b></div><div class=\"scene-app-footer\"><span></span><span></span></div></div>",
+  "coffee": "<div class=\"scene scene-coffee\"><div class=\"scene-coffee-steam\">〰<span>〰</span></div><div class=\"scene-coffee-cup\"><i></i><b></b></div><span class=\"scene-coffee-caption\">ROASTED / DAILY</span></div>",
+  "beauty": "<div class=\"scene scene-beauty\"><div class=\"scene-beauty-arch\"></div><div class=\"scene-beauty-bottle\"><i></i><span>هالة</span></div><span class=\"scene-beauty-small\">care with calm</span></div>",
+  "market": "<div class=\"scene scene-market\"><span class=\"scene-market-sun\"></span><div class=\"scene-market-leaf\">✦</div><div class=\"scene-market-ticket\"><b>طازج</b><span>LOCAL / FRESH</span></div></div>",
+  "publishing": "<div class=\"scene scene-publishing\"><div class=\"scene-book scene-book-r\"><span>س</span></div><div class=\"scene-book scene-book-l\"><b>01</b><span>READ / THINK</span></div><span class=\"scene-book-note\">سرد × معرفة</span></div>",
+  "art": "<div class=\"scene scene-art\"><span class=\"scene-art-piece one\"></span><span class=\"scene-art-piece two\"></span><span class=\"scene-art-piece three\"></span><span class=\"scene-art-title\">تكوين</span></div>",
+  "education": "<div class=\"scene scene-education\"><div class=\"scene-edu-card back\"><span>02</span></div><div class=\"scene-edu-card front\"><b>أبجـد</b><span>تعلّم / اِكتشف</span></div><span class=\"scene-edu-sun\">✳</span></div>",
+  "architecture": "<div class=\"scene scene-architecture\"><div class=\"scene-building back\"></div><div class=\"scene-building front\"><i></i><i></i><i></i></div><span class=\"scene-arch-label\">SPACE / FORM</span></div>",
+  "wellness": "<div class=\"scene scene-wellness\"><div class=\"scene-well-ring first\"></div><div class=\"scene-well-ring second\"></div><div class=\"scene-well-ring third\"></div><span class=\"scene-well-breathe\">هدوء</span></div>",
+  "logistics": "<div class=\"scene scene-logistics\"><div class=\"scene-route\"><span class=\"route-pin first\"></span><span class=\"route-line\"></span><span class=\"route-pin second\"></span></div><div class=\"scene-route-ticket\"><b>من هنا</b><small>إلى هناك ↗</small></div><span class=\"scene-route-coords\">24.7°N / 46.6°E</span></div>"
+};
+  function motifSVG(key,color,size){
+    const paths=BRAND_MOTIFS[key];if(!paths)return '';
+    return '<svg aria-hidden="true" focusable="false" width="'+size+'" height="'+size+'" viewBox="-50 -50 100 100" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">'+paths.map(p=>'<path d="'+p+'"/>').join('')+'</svg>';
+  }
+  function activeScene(){
+    const key=state.layoutVariant;
+    const graphic=id('previewScene');
+    if(!graphic)return;
+    graphic.innerHTML=SCENE_MARKUP[key]||'';
+    const preview=id('preview');
+    preview.dataset.variant=SCENE_MARKUP[key]?key:'default';
+  }
+
   function logoHTML() {
     const text = htmlSafe(state.brandName || 'علامتك');
     const letter = htmlSafe(state.symbolLetter || 'م');
     if (state.logoType === 'wordmark') return `<span>${text}</span>`;
-    return `<span class="pv-logo-icon${state.logoType==='monogram'?' monogram':''}">${letter}</span>${state.logoType==='symbol'?`<span>${text}</span>`:''}`;
+    const emblem=BRAND_MOTIFS[state.markMotif]?motifSVG(state.markMotif,'currentColor','35'):`<span class="pv-logo-icon${state.logoType==='monogram'?' monogram':''}">${letter}</span>`;
+    return `<span class="pv-logo-emblem">${emblem}</span>${state.logoType==='symbol'?`<span>${text}</span>`:''}`;
   }
   function render() {
+    id('layoutVariant').value=state.layoutVariant;
+    id('markMotif').value=state.markMotif;
+    id('heroHeadline').value=state.headline;
+    for(const field of ['cardOne','cardTwo','cardThree'])id(field).value=state[field];
+    id('previewHeadline').textContent=state.headline;
+    ['cardOne','cardTwo','cardThree'].forEach((key,i)=>id('previewCard'+(i+1)).textContent=state[key]);
+    activeScene();
     id('projectName').value = state.projectName;
     id('brandName').value = state.brandName;
     id('brandTagline').value = state.tagline;
@@ -173,7 +490,7 @@
       card.append(title,sample,controls,license);root.appendChild(card);
     }
   }
-  const LOGO_KEYS=['logoType','brandName','symbolLetter','markShape','markSize','wordSize','markX','markY','wordX','wordY','markRotation','wordRotation','headingFont','headingWeight'];
+  const LOGO_KEYS=['logoType','markMotif','brandName','symbolLetter','markShape','markSize','wordSize','markX','markY','wordX','wordY','markRotation','wordRotation','headingFont','headingWeight'];
   const undoStack=[],redoStack=[];
   let selectedPart=null,gridVisible=false,snapEnabled=false;
   function snapshotLogo(){return Object.fromEntries(LOGO_KEYS.map(k=>[k,state[k]]));}
@@ -184,7 +501,7 @@
   function undoLogo(){if(!undoStack.length)return;redoStack.push(snapshotLogo());restoreLogo(undoStack.pop());}
   function redoLogo(){if(!redoStack.length)return;undoStack.push(snapshotLogo());restoreLogo(redoStack.pop());}
   id('undoLogo').addEventListener('click',undoLogo);id('redoLogo').addEventListener('click',redoLogo);
-  const EDITABLE_LOGO_KEYS=new Set(['logoType','brandName','symbolLetter','markShape','markSize','wordSize','markRotation','wordRotation','headingFont','headingWeight']);
+  const EDITABLE_LOGO_KEYS=new Set(['logoType','markMotif','brandName','symbolLetter','markShape','markSize','wordSize','markRotation','wordRotation','headingFont','headingWeight']);
   function setValueFrom(idName, key, parser) {
     id(idName).addEventListener('input', event => {
       if(EDITABLE_LOGO_KEYS.has(key))captureLogo();
@@ -194,7 +511,7 @@
       render(); setDirty();
     });
   }
-  [['fontPreviewText','fontPreviewText'],['projectName','projectName'],['brandName','brandName'],['brandTagline','tagline'],['ctaLabel','cta'],['symbolLetter','symbolLetter'],['headingFont','headingFont'],['bodyFont','bodyFont'],['buttonStyle','buttonStyle'],['markShape','markShape']].forEach(([field,key])=>setValueFrom(field,key));
+  [['layoutVariant','layoutVariant'],['markMotif','markMotif'],['heroHeadline','headline'],['cardOne','cardOne'],['cardTwo','cardTwo'],['cardThree','cardThree'],['fontPreviewText','fontPreviewText'],['projectName','projectName'],['brandName','brandName'],['brandTagline','tagline'],['ctaLabel','cta'],['symbolLetter','symbolLetter'],['headingFont','headingFont'],['bodyFont','bodyFont'],['buttonStyle','buttonStyle'],['markShape','markShape']].forEach(([field,key])=>setValueFrom(field,key));
   [['primaryColor','primary'],['secondaryColor','secondary'],['accentColor','accent'],['inkColor','ink']].forEach(([field,key])=>setValueFrom(field,key));
   setValueFrom('headingWeight','headingWeight',Number);
   setValueFrom('cornerRadius','radius',Number);
@@ -211,6 +528,87 @@
     $$('.side-nav').forEach(b=>b.classList.toggle('active',b===button));
     $$('.inspector-panel').forEach(p=>p.classList.toggle('active',p.dataset.inspector===panel));
   }));
+
+  // Template gallery: independent local projects, not immutable exported artwork.
+  const STARTER_TEMPLATES=Array.isArray(window.AlwasitiTemplates)?window.AlwasitiTemplates:[];
+  let templateCategory='الكل';
+  const templateCategories=['الكل','الأعمال','التجارة','الثقافة','الخدمات'];
+  function renderTemplateCatalogs(){
+    for(const slot of ['home','studio']){
+      const filters=document.querySelector('[data-template-filters="'+slot+'"]');
+      const gallery=id(slot==='home'?'templateGalleryHome':'templateGalleryStudio');
+      if(!gallery || !filters)continue;
+      filters.replaceChildren();gallery.replaceChildren();
+      for(const category of templateCategories){
+        const filter=document.createElement('button');filter.type='button';filter.className='template-filter'+(templateCategory===category?' is-active':'');
+        filter.textContent=category;filter.setAttribute('aria-pressed',String(templateCategory===category));
+        filter.addEventListener('click',()=>{templateCategory=category;renderTemplateCatalogs();});
+        filters.append(filter);
+      }
+      for(const item of STARTER_TEMPLATES){
+        if(templateCategory!=='الكل'&&item.category!==templateCategory)continue;
+        const card=document.createElement('article');card.className='template-card';card.dataset.variant=item.layoutVariant;
+        card.style.setProperty('--tp-primary',item.primary);
+        card.style.setProperty('--tp-accent',item.accent);
+        card.style.setProperty('--tp-secondary',item.secondary);
+        card.style.setProperty('--tp-ink',item.ink);
+        const artwork=document.createElement('div');artwork.className='template-artwork';artwork.dataset.variant=item.layoutVariant;
+        const decorative=document.createElement('div');decorative.className='template-decor';decorative.setAttribute('aria-hidden','true');for(let i=0;i<3;i++){decorative.appendChild(document.createElement('i'));}
+        artwork.appendChild(decorative);
+        const pin=document.createElement('span');pin.className='template-pin';pin.textContent=item.industry;
+        const visual=document.createElement('div');visual.className='template-artwork-main';
+        const mark=document.createElement('span');mark.className='template-mark shape-'+item.markShape;
+        if(BRAND_MOTIFS[item.markMotif]){mark.classList.add('has-motif');mark.innerHTML=motifSVG(item.markMotif,'currentColor',52);}
+        else mark.textContent=item.logoType==='wordmark'?'':item.symbolLetter;
+        const name=document.createElement('strong');name.className='template-artwork-name';name.textContent=item.brandName;name.style.fontFamily='"'+item.headingFont+'",sans-serif';
+        if(item.logoType==='wordmark'&&!BRAND_MOTIFS[item.markMotif]){mark.classList.add('is-wordmark');}
+        if(item.logoType==='monogram'){name.classList.add('sr-only');}
+        visual.append(mark,name);
+        const tagline=document.createElement('small');tagline.className='template-artwork-tagline';tagline.textContent=item.tagline;
+        const swatches=document.createElement('div');swatches.className='template-swatches';swatches.setAttribute('aria-hidden','true');
+        for(const color of [item.primary,item.secondary,item.accent,item.ink]){
+          const dot=document.createElement('span');dot.style.backgroundColor=color;swatches.append(dot);
+        }
+        artwork.append(pin,visual,tagline,swatches);
+        const info=document.createElement('div');info.className='template-card-info';
+        const heading=document.createElement('div');heading.className='template-card-heading';
+        const title=document.createElement('strong');title.textContent=item.brandName;
+        const tone=document.createElement('span');tone.textContent=item.tone;
+        heading.append(title,tone);
+        const rationale=document.createElement('p');rationale.textContent=item.rationale;
+        const details=document.createElement('div');details.className='template-card-details';
+        const audience=document.createElement('small');audience.textContent=item.category+' · '+item.industry;
+        const button=document.createElement('button');button.type='button';button.className='template-use';
+        button.dataset.templateId=item.id;button.textContent='استخدم القالب ←';
+        button.setAttribute('aria-label','استخدم قالب '+item.brandName+' في المحرر');
+        details.append(audience,button);info.append(heading,rationale,details);card.append(artwork,info);gallery.append(card);
+      }
+    }
+  }
+  function chooseTemplate(templateId,opener){
+    const item=STARTER_TEMPLATES.find(t=>t.id===templateId);
+    if(!item || !confirmDiscard())return;
+    clearDraft();
+    const next=normalizeProjectData({...initialState,...item});
+    Object.assign(state,next);
+    // A template never inherits the ID of an existing saved project.
+    activeProjectId=null;
+    undoStack.length=0;redoStack.length=0;selectedPart=null;syncUndoButtons();
+    render();setDirty();
+    if(!id('studio').classList.contains('active'))openStudio({currentTarget:opener});
+    else{
+      const tab=document.querySelector('.side-nav[data-panel="identity"]');
+      tab.click();id('brandName').focus();
+    }
+    toast('فُتح قالب '+item.brandName+' كمشروع جديد. عدّل تفاصيله واحفظ نسخة خاصة بك.');
+  }
+  for(const gallery of [id('templateGalleryHome'),id('templateGalleryStudio')]){
+    gallery.addEventListener('click',event=>{
+      const button=event.target.closest('button[data-template-id]');
+      if(button && gallery.contains(button))chooseTemplate(button.dataset.templateId,button);
+    });
+  }
+
   // Browser-only project portfolio. Never interprets imported JSON as HTML or code.
   function normalizeProjectData(raw){
     if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('ملف مشروع غير صالح');
@@ -220,14 +618,15 @@
     }
     for(const key of ['primary','secondary','accent','ink'])data[key]=validHex(data[key],initialState[key]);
     for(const key of ['headingFont','bodyFont'])if(!ALLOWED_FONTS.includes(data[key]))data[key]=initialState[key];
-    for(const key of ['projectName','brandName','tagline','cta','symbolLetter','fontPreviewText']){
-      const limits={projectName:56,brandName:30,tagline:100,cta:28,symbolLetter:2,fontPreviewText:90};
+    for(const key of ['projectName','brandName','tagline','cta','symbolLetter','fontPreviewText','headline','cardOne','cardTwo','cardThree']){
+      const limits={projectName:56,brandName:30,tagline:100,cta:28,symbolLetter:2,fontPreviewText:90,headline:70,cardOne:40,cardTwo:40,cardThree:40};
       data[key]=data[key].normalize('NFC').replace(/[\u0000-\u001f\u007f-\u009f\u202a-\u202e]/g,'').slice(0,limits[key]);
     }
     const clamp=(v,min,max,defaultValue)=>Number.isFinite(v)?Math.max(min,Math.min(max,v)):defaultValue;
     for(const [key,min,max] of [['markSize',50,170],['wordSize',24,94],['markRotation',-180,180],['wordRotation',-45,45],['markX',0,760],['wordX',0,760],['markY',0,360],['wordY',0,360],['radius',0,32],['headingWeight',400,800]]){
       data[key]=clamp(data[key],min,max,initialState[key]);
     }
+    for(const key of ['layoutVariant','markMotif'])if(data[key]!=='default'&&data[key]!=='basic'&&!Object.prototype.hasOwnProperty.call(BRAND_MOTIFS,data[key]))data[key]=initialState[key];
     for(const [key,allowed] of [['logoType',['symbol','wordmark','monogram']],['markShape',['rounded','circle','diamond','outline','hexagon','star']],['buttonStyle',['filled','soft','outlined']],['theme',['light','dark']],['device',['desktop','mobile']],['vectorFont',['noto','amiri']]]){
       if(!allowed.includes(data[key]))data[key]=initialState[key];
     }
@@ -363,6 +762,10 @@
   // V1.1 vector logo workbench. Coordinates live in a stable 760 x 360 artboard.
   function logoGeometry(logo=state) {
     const s=logo.markSize;
+    if(BRAND_MOTIFS[logo.markMotif]){
+      const d=BRAND_MOTIFS[logo.markMotif].map(p=>'<path d="'+p+'"/>').join('');
+      return '<g transform="scale('+(s/100)+')" fill="none" stroke="'+logo.primary+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">'+d+'</g>';
+    }
     const radius=logo.markShape==='circle' ? s/2 : Math.min(24,s*.22);
     if(logo.markShape==='diamond')return `<rect x="${-s/2}" y="${-s/2}" width="${s}" height="${s}" rx="${Math.round(s*.12)}" transform="rotate(45)" fill="${logo.primary}"/>`;
     if(logo.markShape==='hexagon'){const r=s*.55;return `<polygon points="${Array.from({length:6},(_,i)=>{const a=(Math.PI/3*i)-Math.PI/2;return (Math.cos(a)*r).toFixed(2)+','+(Math.sin(a)*r).toFixed(2)}).join(' ')}" fill="${logo.primary}"/>`;}
@@ -376,7 +779,7 @@
     const font=svgSafe(state.headingFont);
     const s=state.markSize;
     const color=state.markShape==='outline' ? state.primary : '#FFFFFF';
-    const symbol=state.logoType!=='wordmark' ? `<g class="logo-move" data-part="mark" ${interactive?'role="button" tabindex="0" aria-label="اسحب الرمز أو استخدم الأسهم"':''} transform="translate(${state.markX} ${state.markY}) rotate(${state.markRotation})">${logoGeometry()}<text x="0" y="${Math.round(s*.20)}" fill="${color}" text-anchor="middle" direction="rtl" font-family="${font}, sans-serif" font-size="${Math.round(s*.59)}" font-weight="700">${letter}</text></g>` : '';
+    const symbol=state.logoType!=='wordmark' ? `<g class="logo-move" data-part="mark" ${interactive?'role="button" tabindex="0" aria-label="اسحب الرمز أو استخدم الأسهم"':''} transform="translate(${state.markX} ${state.markY}) rotate(${state.markRotation})">${logoGeometry()}${BRAND_MOTIFS[state.markMotif]?'':`<text x="0" y="${Math.round(s*.20)}" fill="${color}" text-anchor="middle" direction="rtl" font-family="${font}, sans-serif" font-size="${Math.round(s*.59)}" font-weight="700">${letter}</text>`}</g>` : '';
     const word=state.logoType!=='monogram' ? `<g class="logo-move" data-part="word" ${interactive?'role="button" tabindex="0" aria-label="اسحب اسم العلامة أو استخدم الأسهم"':''} transform="translate(${state.wordX} ${state.wordY}) rotate(${state.wordRotation})"><text x="0" y="0" direction="rtl" unicode-bidi="plaintext" text-anchor="middle" fill="${state.ink}" font-family="${font}, sans-serif" font-size="${state.wordSize}" font-weight="${state.headingWeight}">${brand}</text></g>` : '';
     return expandedViewBox(`<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-label="${brand}" ${interactive?'id="editableLogoSvg"':''}><title>${brand}</title>${symbol}${word}</svg>`);
   }
@@ -469,12 +872,12 @@
     const font=await getVectorFont(logo.vectorFont);
     const rawBrand=textValue(logo.brandName), rawLetter=textValue(logo.symbolLetter);
     if(logo.logoType!=='monogram'&&!rawBrand)throw Error('اكتب اسم العلامة قبل تصدير الشعار');
-    if(logo.logoType!=='wordmark'&&!rawLetter)throw Error('اكتب الحرف الرمزي قبل تصدير الشعار');
+    if(logo.logoType!=='wordmark'&&!BRAND_MOTIFS[logo.markMotif]&&!rawLetter)throw Error('اكتب الحرف الرمزي قبل تصدير الشعار');
     const brand=svgSafe(rawBrand||'شعار');
     const s=logo.markSize;
     // Exclude unused parts from shaping, so an irrelevant unsupported character
     // cannot block the export of a valid wordmark or monogram.
-    const markText=logo.logoType==='wordmark'?'':glyphPaths(rawLetter,font,Math.round(s*.59),logo.markShape==='outline'?logo.primary:'#FFFFFF');
+    const markText=logo.logoType==='wordmark'||BRAND_MOTIFS[logo.markMotif]?'':glyphPaths(rawLetter,font,Math.round(s*.59),logo.markShape==='outline'?logo.primary:'#FFFFFF');
     const brandText=logo.logoType==='monogram'?'':glyphPaths(rawBrand,font,logo.wordSize,logo.ink);
     const symbol=logo.logoType!=='wordmark'?`<g class="logo-move" data-part="mark" ${interactive?'role="button" tabindex="0" aria-label="اسحب الرمز"':''} transform="translate(${logo.markX} ${logo.markY}) rotate(${logo.markRotation})">${logoGeometry(logo)}<g transform="translate(0 ${Math.round(s*.20)})">${markText}</g></g>`:'';
     const word=logo.logoType!=='monogram'?`<g class="logo-move" data-part="word" ${interactive?'role="button" tabindex="0" aria-label="اسحب اسم العلامة"':''} transform="translate(${logo.wordX} ${logo.wordY}) rotate(${logo.wordRotation})">${brandText}</g>`:'';
@@ -602,6 +1005,11 @@
     if(state.logoType!=='wordmark'){
       ctx.save();ctx.translate(state.markX,state.markY);
       const s=state.markSize;ctx.rotate(state.markRotation*Math.PI/180);
+      if(BRAND_MOTIFS[state.markMotif]){
+        ctx.strokeStyle=state.primary;ctx.fillStyle='transparent';
+        ctx.lineCap='round';ctx.lineJoin='round';ctx.scale(s/100,s/100);ctx.lineWidth=6;
+        for(const d of BRAND_MOTIFS[state.markMotif])ctx.stroke(new Path2D(d));
+      }else{
       ctx.fillStyle=state.primary;ctx.strokeStyle=state.primary;
       if(state.markShape==='diamond'){
         ctx.rotate(Math.PI/4);ctx.beginPath();ctx.roundRect(-s/2,-s/2,s,s,Math.round(s*.12));ctx.fill();ctx.rotate(-Math.PI/4);
@@ -613,7 +1021,9 @@
         ctx.beginPath();ctx.roundRect(-s/2,-s/2,s,s,state.markShape==='circle'?s/2:Math.min(24,s*.22));
         if(state.markShape==='outline'){ctx.lineWidth=8;ctx.stroke();}else ctx.fill();
       }
-      ctx.fillStyle=state.markShape==='outline'?state.primary:'#fff';ctx.font=`700 ${Math.round(s*.59)}px "${state.headingFont}", sans-serif`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.direction='rtl';ctx.fillText(state.symbolLetter||'م',0,Math.round(s*.20));ctx.restore();
+      ctx.fillStyle=state.markShape==='outline'?state.primary:'#fff';ctx.font=`700 ${Math.round(s*.59)}px "${state.headingFont}", sans-serif`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.direction='rtl';ctx.fillText(state.symbolLetter||'م',0,Math.round(s*.20));
+      }
+      ctx.restore();
     }
     if(state.logoType!=='monogram'){
       ctx.save();ctx.translate(state.wordX,state.wordY);ctx.rotate(state.wordRotation*Math.PI/180);ctx.direction='rtl';ctx.fillStyle=state.ink;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.font=`${state.headingWeight} ${state.wordSize}px "${state.headingFont}",sans-serif`;ctx.fillText(state.brandName||'علامتك',0,0);ctx.restore();
@@ -660,6 +1070,7 @@
       id('saveStatus').textContent='مسودة مستعادة — احفظ المشروع';
     }
   }catch(_) { /* Ignore unavailable or corrupt browser storage. */ }
+  renderTemplateCatalogs();
   render();
 })();
 
