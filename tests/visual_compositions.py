@@ -16,6 +16,14 @@ with sync_playwright() as p:
  page.set_default_timeout(12000)
  errors=[];page.on('pageerror',lambda e:errors.append(str(e)));page.on('dialog',lambda d:d.accept())
  page.set_content(html,wait_until='domcontentloaded')
+ page.evaluate("""() => {
+    const values={};
+    Object.defineProperty(window,'localStorage',{configurable:true,value:{
+      getItem:k=>values[k]??null,setItem:(k,v)=>values[k]=String(v),
+      removeItem:k=>delete values[k],clear:()=>Object.keys(values).forEach(k=>delete values[k])
+    }});
+    window.__compositionStorage=values;
+ }""")
  for name in ['fontkit-browser','templates','app']:
   page.add_script_tag(content=(app/(name+'.js')).read_text(encoding='utf8'))
  items=page.evaluate('window.AlwasitiTemplates')
@@ -79,7 +87,7 @@ with sync_playwright() as p:
  png=d.value.path().read_bytes()
  assert png[:8]==b'\x89PNG\r\n\x1a\n' and len(png)>8000,'PNG must contain actual graphics'
  page.locator('#saveProject').click()
- saved=page.evaluate('JSON.parse(localStorage.getItem("alwasiti-projects-v1"))')
+ saved=page.evaluate('JSON.parse(window.__compositionStorage["alwasiti-projects-v1"])')
  assert saved['projects'][0]['data']['layoutVariant']=='architecture'
  assert saved['projects'][0]['data']['markMotif']=='wellness'
  assert saved['projects'][0]['data']['headline'].startswith('عنوان مختلف')
