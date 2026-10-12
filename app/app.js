@@ -82,7 +82,7 @@
     document.body.style.overflow = '';
     if (studioReturnFocus?.isConnected) studioReturnFocus.focus();
   }
-  $('[data-open-studio]').forEach(b => b.addEventListener('click',openStudio));
+  $$('[data-open-studio]').forEach(b => b.addEventListener('click',openStudio));
   id('backHome').addEventListener('click',closeStudio);
   function renderPalettes() {
     ['paletteChoices','paletteChoicesAlt'].forEach(containerId => {
