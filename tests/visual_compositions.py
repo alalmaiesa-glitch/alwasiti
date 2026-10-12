@@ -69,6 +69,7 @@ with sync_playwright() as p:
  assert 'M-40 5H-23' in svg,'Changing mark independently must change real SVG export'
  page.locator('.side-nav[data-panel="identity"]').click()
  page.locator('#brandName').fill('هوية مستقلة')
+ page.locator('.side-nav[data-panel="logo"]').click()
  with page.expect_download(timeout=16000) as output:
   page.locator('#quickDownloadLogo').click()
  assert 'هوية مستقلة' in output.value.path().read_text()
