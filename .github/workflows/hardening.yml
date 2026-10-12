@@ -1,7 +1,7 @@
 name: alWasiti V1.4 production-hardening gate
 on:
   push:
-    branches: [hardening/v1.4]
+    branches: [hardening/v1.4, content/v1.4-templates]
   pull_request:
     branches: [main]
   workflow_dispatch:
