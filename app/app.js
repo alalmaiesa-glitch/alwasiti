@@ -69,16 +69,20 @@
     event.preventDefault();event.returnValue='';
   });
   window.addEventListener('pagehide',persistDraft);
-  function openStudio() {
+  let studioReturnFocus = null;
+  function openStudio(event) {
+    studioReturnFocus = event?.currentTarget || document.activeElement;
     id('landing').classList.remove('active'); id('studio').classList.add('active');
     document.body.style.overflow = 'hidden';
     window.scrollTo(0,0);
+    id('backHome').focus();
   }
   function closeStudio() {
     id('studio').classList.remove('active'); id('landing').classList.add('active');
     document.body.style.overflow = '';
+    if (studioReturnFocus?.isConnected) studioReturnFocus.focus();
   }
-  $$('[data-open-studio]').forEach(b => b.addEventListener('click',openStudio));
+  $('[data-open-studio]').forEach(b => b.addEventListener('click',openStudio));
   id('backHome').addEventListener('click',closeStudio);
   function renderPalettes() {
     ['paletteChoices','paletteChoicesAlt'].forEach(containerId => {
