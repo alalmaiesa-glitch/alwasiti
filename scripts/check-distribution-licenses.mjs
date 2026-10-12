@@ -13,7 +13,7 @@ const files=new Map([
  ['LICENSES/fast-deep-equal-LICENSE',['Permission is hereby granted']],
  ['LICENSES/clone-LICENSE',['Permission is hereby granted']],
  ['LICENSES/fontkit-MIT.txt',['Permission is hereby granted']],
- ['LICENSES/tslib-LICENSE.txt',['Permission is hereby granted']],
+ ['LICENSES/tslib-LICENSE.txt',['Copyright (c) Microsoft Corporation.','Permission to use, copy, modify, and/or distribute']],
  ['LICENSES/pako-LICENSE',['Permission is hereby granted']],
 ]);
 for (const [name,required] of files){
