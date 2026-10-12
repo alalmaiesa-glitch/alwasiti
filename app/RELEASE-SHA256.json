@@ -1,7 +1,7 @@
 {
   "release": "alWasiti v1.4 Hardening Candidate",
   "files": {
-    "CONTENT-LICENSES.md": "d18058f485eaeda6fcae7913625948b45cad688efc4d5ca0ea1c3d7079f0028e",
+    "CONTENT-LICENSES.md": "882663d4ac37504da5bb6782bdb4d84b6af1ea03af826b0147bbb7684e162abd",
     "LICENSES/base64-js-LICENSE": "5b37224c080cdcc97c871ada971c224e9926370fe74f11b539aa1cf9f3b1aca1",
     "LICENSES/clone-LICENSE": "3fb0857ef0133928cf72c88dfc464e931486e88778961eedec25585e2321507f",
     "LICENSES/fast-deep-equal-LICENSE": "7bf9b2de73a6b356761c948d0e9eeb4be6c1270bd04c79cd489c1e400ffdfc1a",
@@ -15,7 +15,7 @@
     "LICENSES/unicode-trie-LICENSE": "43439dbd4f43837aadab215cdbe5a422cc6323a50c4ea84d8d6bbc3671666a1d",
     "README.md": "fd022a4561b862ca808feef3ea342f18df05ae6ff797660f93a5c988fab4f025",
     "SECURITY.md": "9798ec3f94518a2e435fbc28dcbd7d52c6d52dad231de325f0a3bbdcbc210b8d",
-    "THIRD-PARTY-NOTICES.md": "59b5957fdd620d1c2a1a927bdc74f28c61cd0f8bc4c19d0b6bc00953ab3c1fac",
+    "THIRD-PARTY-NOTICES.md": "e367f71161595cf54b367aba7379e08a6851ac971748c139cd59e7dd555e5a0c",
     "app.js": "3df1da30708024efe7ed3cf8e116d5e4ac1d29925ee7cb5c702a21b13873875f",
     "fontkit-browser.js": "5696cdeea9317d7990e4ece288af3efcbde80ce971fb45c953e29eee4361f721",
     "index.html": "3f8f3b80b65c7defcdbd33f4fa198443f261c255da4a08075b507d9eae9076cb",
@@ -26,6 +26,7 @@
     "fonts/Amiri-Regular.ttf": "ab391c4147d054c48976e98322ad0eefe1427aa0e0502a12a4c75d80a70cfcd7",
     "fonts/NotoKufiArabic-wght.ttf": "494f6b61469d7a02a2d63f0fc4930bb007388d8cfe551de5eb98354e100889f3",
     "LICENSES/OFL-Amiri.txt": "72de68e5954f4fdd24702292ef5a32f003ca960ec9330dc86e5eefb5dffb9b22",
-    "LICENSES/OFL-NotoKufiArabic.txt": "07fc70bfeb985cc1a87a8587d0a0c80bab11c86c9dc3fd95b6f0cb332f983e96"
+    "LICENSES/OFL-NotoKufiArabic.txt": "07fc70bfeb985cc1a87a8587d0a0c80bab11c86c9dc3fd95b6f0cb332f983e96",
+    "LICENSES/swc-helpers-APACHE-2.0.txt": "d96eba1f1881334d50ffc144276dfa98e147a415e7c591ecdfcb81680361dc91"
   }
 }
