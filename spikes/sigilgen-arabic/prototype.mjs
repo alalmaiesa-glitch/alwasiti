@@ -22,9 +22,10 @@ function shapeArabic(name,font){
  const size=Math.min(.255,392/width),left=802-width*size;
  let x=0;
  const glyphs=r.glyphs.map((g,i)=>{
-  const p=r.positions[i],d=g.path.toSVG();
-  if(!d.startsWith('<path ')||/<script|href=|onload=/i.test(d))throw Error('unsafe glyph');
-  const z='<g transform="translate('+(x+p.xOffset)+' '+p.yOffset+')">'+d+'</g>';x+=p.xAdvance;return z;
+  const p=r.positions[i],d=g.path.toSVG().trim();
+  // OpenType glyphs may have a legitimate empty outline (e.g. whitespace/marks).
+  if(d && (!/^<path\\b/.test(d)||/<script|href=|onload=/i.test(d)))throw Error('unsafe glyph: '+name+' '+i+' '+JSON.stringify(d.slice(0,110)));
+  const z=d?'<g transform="translate('+(x+p.xOffset)+' '+p.yOffset+')">'+d+'</g>':'';x+=p.xAdvance;return z;
  });
  return {paths:'<g fill="#193245" transform="translate('+left+' 287) scale('+size+' '+(-size)+')">'+glyphs.join('')+'</g>',glyphs:r.glyphs.length};
 }
