@@ -29,28 +29,40 @@ with sync_playwright() as p:
  page.locator('#saveProject').click()
  saved=page.evaluate('JSON.parse(window.__templateStorage["alwasiti-projects-v1"])')
  saved_id=saved['activeId'];assert saved_id and saved['projects'][0]['data']['brandName']==first['brandName']
+ # Separate browser contexts avoid Chromium's automatic-multiple-download blocking;
+ # each template must independently create correct SVG, design tokens and CSS.
  for item in data:
-  page.locator('.side-nav[data-panel="templates"]').click()
-  page.locator('#templateGalleryStudio [data-template-id="'+item['id']+'"]').click()
-  assert page.locator('#brandName').input_value()==item['brandName'],item['id']+' brand not applied'
-  assert page.locator('#primaryColor').input_value().lower()==item['primary'].lower(),item['id']+' palette not applied'
-  assert page.locator('#headingFont').input_value()==item['headingFont'],item['id']+' typography not applied'
-  assert page.locator('#markShape').input_value()==item['markShape']
-  page.locator('.side-nav[data-panel="logo"]').click()
-  with page.expect_download() as download:
-   page.locator('#quickDownloadLogo').click()
+  ctx=browser.new_context(viewport={'width':1280,'height':850},accept_downloads=True)
+  sample=ctx.new_page()
+  sample.set_default_timeout(12000)
+  sample.set_content(html,wait_until='domcontentloaded')
+  for script in ('fontkit-browser','templates','app'):
+   sample.add_script_tag(content=(root/(script+'.js')).read_text(encoding='utf-8'))
+  assert sample.locator('#templateGalleryHome .template-card').count()==12
+  sample.locator('#templateGalleryHome [data-template-id="'+item['id']+'"]').click()
+  assert sample.locator('#brandName').input_value()==item['brandName'],item['id']+' brand not applied'
+  assert sample.locator('#primaryColor').input_value().lower()==item['primary'].lower(),item['id']+' palette not applied'
+  assert sample.locator('#headingFont').input_value()==item['headingFont'],item['id']+' typography not applied'
+  assert sample.locator('#markShape').input_value()==item['markShape']
+  sample.locator('.side-nav[data-panel="logo"]').click()
+  with sample.expect_download(timeout=18000) as download:
+   sample.locator('#quickDownloadLogo').click()
   svg=download.value.path().read_text(encoding='utf-8')
   assert '<svg' in svg and item['brandName'] in svg and '<script' not in svg,item['id']+' SVG'
-  page.locator('#showExport').click()
-  with page.expect_download() as d:
-   page.locator('[data-export="json"]').click()
+  sample.locator('#showExport').click()
+  with sample.expect_download(timeout=18000) as d:
+   sample.locator('[data-export="json"]').click()
   tokens=json.loads(d.value.path().read_text())
   assert tokens['color']['brand']['primary']['$value']==item['primary'],item['id']+' JSON token'
-  page.locator('#showExport').click()
-  with page.expect_download() as d:
-   page.locator('[data-export="css"]').click()
+  sample.locator('#showExport').click()
+  with sample.expect_download(timeout=18000) as d:
+   sample.locator('[data-export="css"]').click()
   assert '--brand-primary: '+item['primary'] in d.value.path().read_text(),item['id']+' CSS'
   print('PASS',item['id'],'editable + SVG + JSON + CSS',flush=True)
+  ctx.close()
+ # Original first project must remain untouched by using a different template.
+ page.locator('.side-nav[data-panel="templates"]').click()
+ page.locator('#templateGalleryStudio [data-template-id="logistics"]').click()
  assert page.evaluate('JSON.parse(window.__templateStorage["alwasiti-projects-v1"]).activeId')==saved_id,'Template must not overwrite saved project ID'
  assert page.evaluate('JSON.parse(window.__templateStorage["alwasiti-projects-v1"]).projects[0].data.brandName')==first['brandName'],'Original must be immutable'
  page.locator('#brandName').fill('تجربة فريدة')
