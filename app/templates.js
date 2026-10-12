@@ -1,4 +1,4 @@
-/* alWasiti: twelve original RTL-first launch templates. No third-party artwork or image assets. */
+/* Twelve independent composition families and hand-authored original vector symbols. */
 'use strict';
 window.AlwasitiTemplates = Object.freeze([
   {
@@ -35,7 +35,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "مِحور — قرارات أوضح. أثر أبقى."
+    "fontPreviewText": "مِحور — قرارات أوضح. أثر أبقى.",
+    "layoutVariant": "consult",
+    "markMotif": "consult",
+    "headline": "رؤية تُترجم إلى نتائج",
+    "cardOne": "وضوح الرؤية",
+    "cardTwo": "منهج عملي",
+    "cardThree": "أثر مستدام"
   },
   {
     "id": "studio",
@@ -71,7 +77,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "نَسَق — نمنح التفاصيل حضورًا."
+    "fontPreviewText": "نَسَق — نمنح التفاصيل حضورًا.",
+    "layoutVariant": "studio",
+    "markMotif": "studio",
+    "headline": "نصنع المختلف من التفاصيل",
+    "cardOne": "فكرة جريئة",
+    "cardTwo": "تكوين متقن",
+    "cardThree": "نتيجة مختلفة"
   },
   {
     "id": "saas",
@@ -107,7 +119,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "وَصل — كل عمل في مكانه."
+    "fontPreviewText": "وَصل — كل عمل في مكانه.",
+    "layoutVariant": "saas",
+    "markMotif": "saas",
+    "headline": "كل خطوة أبسط وأكثر ذكاءً",
+    "cardOne": "لوحة موحدة",
+    "cardTwo": "تدفق أسرع",
+    "cardThree": "قرار أذكى"
   },
   {
     "id": "coffee",
@@ -143,7 +161,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "رَشفة — نكهة تُروى بهدوء."
+    "fontPreviewText": "رَشفة — نكهة تُروى بهدوء.",
+    "layoutVariant": "coffee",
+    "markMotif": "coffee",
+    "headline": "لحظة قهوة تستحق أن تُعاش",
+    "cardOne": "حبوب منتقاة",
+    "cardTwo": "تحميص يومي",
+    "cardThree": "نكهة متوازنة"
   },
   {
     "id": "beauty",
@@ -179,7 +203,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "هالة — عناية تشبهك."
+    "fontPreviewText": "هالة — عناية تشبهك.",
+    "layoutVariant": "beauty",
+    "markMotif": "beauty",
+    "headline": "طقوس عناية تمنحك صفاءً",
+    "cardOne": "عناية لطيفة",
+    "cardTwo": "مكونات منتقاة",
+    "cardThree": "تفاصيل هادئة"
   },
   {
     "id": "market",
@@ -215,7 +245,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "غَلّة — من الأرض إلى مائدتك."
+    "fontPreviewText": "غَلّة — من الأرض إلى مائدتك.",
+    "layoutVariant": "market",
+    "markMotif": "market",
+    "headline": "خير الأرض يصل إلى بيتك",
+    "cardOne": "مصادر محلية",
+    "cardTwo": "جودة طازجة",
+    "cardThree": "توصيل موثوق"
   },
   {
     "id": "publishing",
@@ -251,7 +287,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "سَرْد — الحكاية تبدأ هنا."
+    "fontPreviewText": "سَرْد — الحكاية تبدأ هنا.",
+    "layoutVariant": "publishing",
+    "markMotif": "publishing",
+    "headline": "كل كتاب نافذة إلى عالم",
+    "cardOne": "إصدارات منتقاة",
+    "cardTwo": "معرفة ممتدة",
+    "cardThree": "قراءات ملهمة"
   },
   {
     "id": "art",
@@ -287,7 +329,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 45,
     "wordRotation": 0,
-    "fontPreviewText": "أَثَر — تفاصيل تحمل بصمتك."
+    "fontPreviewText": "أَثَر — تفاصيل تحمل بصمتك.",
+    "layoutVariant": "art",
+    "markMotif": "art",
+    "headline": "حيث تتحول الفكرة إلى أثر",
+    "cardOne": "حس تجريبي",
+    "cardTwo": "خامة وتكوين",
+    "cardThree": "تفرد بصري"
   },
   {
     "id": "education",
@@ -323,7 +371,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "فَسْحة — مساحة للفضول والمعرفة."
+    "fontPreviewText": "فَسْحة — مساحة للفضول والمعرفة.",
+    "layoutVariant": "education",
+    "markMotif": "education",
+    "headline": "نتعلّم لنرى أبعد",
+    "cardOne": "مسارات تعلم",
+    "cardTwo": "تجربة تفاعلية",
+    "cardThree": "خطوة إلى الأمام"
   },
   {
     "id": "architecture",
@@ -359,7 +413,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "إِيوان — نصوغ المساحات للحياة."
+    "fontPreviewText": "إِيوان — نصوغ المساحات للحياة.",
+    "layoutVariant": "architecture",
+    "markMotif": "architecture",
+    "headline": "مساحات تنبض بالحياة",
+    "cardOne": "توازن الكتل",
+    "cardTwo": "تفاصيل ذكية",
+    "cardThree": "رؤية للمستقبل"
   },
   {
     "id": "wellness",
@@ -395,7 +455,13 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "رِواء — تفاصيل صغيرة لحياة أفضل."
+    "fontPreviewText": "رِواء — تفاصيل صغيرة لحياة أفضل.",
+    "layoutVariant": "wellness",
+    "markMotif": "wellness",
+    "headline": "مساحة للتوازن كل يوم",
+    "cardOne": "هدوء متجدد",
+    "cardTwo": "حركة واعية",
+    "cardThree": "عناية متكاملة"
   },
   {
     "id": "logistics",
@@ -431,6 +497,86 @@ window.AlwasitiTemplates = Object.freeze([
     "device": "desktop",
     "markRotation": 0,
     "wordRotation": 0,
-    "fontPreviewText": "مَسار — نربط الاحتياج بالحل."
+    "fontPreviewText": "مَسار — نربط الاحتياج بالحل.",
+    "layoutVariant": "logistics",
+    "markMotif": "logistics",
+    "headline": "من احتياجك إلى وجهته",
+    "cardOne": "تنسيق أسرع",
+    "cardTwo": "تتبع أوضح",
+    "cardThree": "شركاء موثوقون"
   }
 ]);
+window.AlwasitiMotifs = Object.freeze({
+  "consult": [
+    "M-38 34V-35H30",
+    "M-35 26L-12 2L7 16L35 -25",
+    "M-8 -34H34V-2"
+  ],
+  "studio": [
+    "M-29 -27H4V7H-29Z",
+    "M7 -8H37V29H7Z",
+    "M-38 27H-3",
+    "M25 -40V-19",
+    "M14 -30H36"
+  ],
+  "saas": [
+    "M-30 -15H30V25H-30Z",
+    "M-30 -2H30",
+    "M-22 -25V-35H-7",
+    "M5 -25V-35H25",
+    "M-19 11H-4",
+    "M5 11H18"
+  ],
+  "coffee": [
+    "M-12 -37C-40 -27 -39 18 -13 37C13 52 44 17 31 -13C23 -38 4 -48 -12 -37Z",
+    "M12 -36C-6 -9 14 3 -10 35"
+  ],
+  "beauty": [
+    "M0 -36C-20 -12 -11 9 0 18C11 9 20 -12 0 -36Z",
+    "M0 18C-34 -10 -43 15 -22 30C-8 39 1 26 0 18Z",
+    "M0 18C34 -10 43 15 22 30C8 39 -1 26 0 18Z"
+  ],
+  "market": [
+    "M-3 34V-22",
+    "M-3 -8C-25 -39 -44 -27 -36 -11C-27 6 -10 1 -3 -8Z",
+    "M-3 9C14 -25 40 -16 34 4C28 20 11 19 -3 9Z",
+    "M-26 35H22"
+  ],
+  "publishing": [
+    "M0 -28C-14 -37 -30 -34 -40 -27V31C-27 23 -11 21 0 29C11 21 27 23 40 31V-27C30 -34 14 -37 0 -28Z",
+    "M0 -28V29",
+    "M-30 -13H-11",
+    "M11 -13H30"
+  ],
+  "art": [
+    "M-36 21L16 -33",
+    "M-18 36L35 -17",
+    "M-34 -15L10 29",
+    "M12 -31L34 -9",
+    "M-30 -32L-19 -32"
+  ],
+  "education": [
+    "M-38 -23L0 -39L38 -23L0 -6Z",
+    "M-25 -15V9C-14 27 14 27 25 9V-15",
+    "M38 -23V12",
+    "M38 15V26"
+  ],
+  "architecture": [
+    "M-37 34V-4L0 -35L37 -4V34Z",
+    "M-16 34V9H14V34",
+    "M-37 -4H37",
+    "M0 -35V-4"
+  ],
+  "wellness": [
+    "M-40 5H-23L-12 -14L0 25L12 -5L21 5H40",
+    "M-30 -28C-20 -38 -5 -36 0 -24C7 -38 26 -36 32 -22"
+  ],
+  "logistics": [
+    "M-36 -22H-5L8 -3H35",
+    "M-36 24H-4L10 6H35",
+    "M26 -13L36 -3L26 7",
+    "M27 -4L36 6L27 16",
+    "M-36 -22H-29",
+    "M-36 24H-29"
+  ]
+});

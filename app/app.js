@@ -28,6 +28,7 @@
     primary:'#5947D9', secondary:'#F49C6B', accent:'#F3D998', ink:'#282842',
     headingFont:'Alexandria', bodyFont:'IBM Plex Sans Arabic', headingWeight:700,
     logoType:'symbol', symbolLetter:'م', markShape:'rounded',markSize:108,wordSize:61,markX:590,markY:185,wordX:286,wordY:205,markRotation:0,wordRotation:0,radius:16, buttonStyle:'filled', shadow:true,
+    layoutVariant:'default',markMotif:'basic',headline:'أفكارنا تصنع الفرق كل يوم.',cardOne:'رؤية واضحة',cardTwo:'تصميم متقن',cardThree:'تجربة متكاملة',
     vectorFont:'noto',theme:'light', device:'desktop',fontPreviewText:'جمال الحرف العربي يبدأ من هنا'
   };
   const state = {...initialState};
@@ -97,13 +98,51 @@
       });
     });
   }
+
+  // Every motif is authored as original geometric SVG paths, never an external image.
+  const BRAND_MOTIFS = window.AlwasitiMotifs || {};
+  const SCENE_MARKUP = {
+  "consult": "<div class=\"scene scene-consult\"><span class=\"scene-overline\">STRATEGY / 01</span><div class=\"scene-consult-frame\"><i></i><i></i><i></i><span>01</span></div><strong>رؤية<br>وأثر.</strong></div>",
+  "studio": "<div class=\"scene scene-studio\"><div class=\"scene-studio-type\">نـ</div><span class=\"scene-studio-ring\"></span><span class=\"scene-studio-label\">Creative / Arabic</span><i class=\"scene-studio-dot\"></i></div>",
+  "saas": "<div class=\"scene scene-saas\"><div class=\"scene-app-top\"><i></i><i></i><i></i><span>analytics</span></div><div class=\"scene-app-chart\"><b></b><b></b><b></b><b></b><b></b></div><div class=\"scene-app-footer\"><span></span><span></span></div></div>",
+  "coffee": "<div class=\"scene scene-coffee\"><div class=\"scene-coffee-steam\">〰<span>〰</span></div><div class=\"scene-coffee-cup\"><i></i><b></b></div><span class=\"scene-coffee-caption\">ROASTED / DAILY</span></div>",
+  "beauty": "<div class=\"scene scene-beauty\"><div class=\"scene-beauty-arch\"></div><div class=\"scene-beauty-bottle\"><i></i><span>هالة</span></div><span class=\"scene-beauty-small\">care with calm</span></div>",
+  "market": "<div class=\"scene scene-market\"><span class=\"scene-market-sun\"></span><div class=\"scene-market-leaf\">✦</div><div class=\"scene-market-ticket\"><b>طازج</b><span>LOCAL / FRESH</span></div></div>",
+  "publishing": "<div class=\"scene scene-publishing\"><div class=\"scene-book scene-book-r\"><span>س</span></div><div class=\"scene-book scene-book-l\"><b>01</b><span>READ / THINK</span></div><span class=\"scene-book-note\">سرد × معرفة</span></div>",
+  "art": "<div class=\"scene scene-art\"><span class=\"scene-art-piece one\"></span><span class=\"scene-art-piece two\"></span><span class=\"scene-art-piece three\"></span><span class=\"scene-art-title\">تكوين</span></div>",
+  "education": "<div class=\"scene scene-education\"><div class=\"scene-edu-card back\"><span>02</span></div><div class=\"scene-edu-card front\"><b>أبجـد</b><span>تعلّم / اِكتشف</span></div><span class=\"scene-edu-sun\">✳</span></div>",
+  "architecture": "<div class=\"scene scene-architecture\"><div class=\"scene-building back\"></div><div class=\"scene-building front\"><i></i><i></i><i></i></div><span class=\"scene-arch-label\">SPACE / FORM</span></div>",
+  "wellness": "<div class=\"scene scene-wellness\"><div class=\"scene-well-ring first\"></div><div class=\"scene-well-ring second\"></div><div class=\"scene-well-ring third\"></div><span class=\"scene-well-breathe\">هدوء</span></div>",
+  "logistics": "<div class=\"scene scene-logistics\"><div class=\"scene-route\"><span class=\"route-pin first\"></span><span class=\"route-line\"></span><span class=\"route-pin second\"></span></div><div class=\"scene-route-ticket\"><b>من هنا</b><small>إلى هناك ↗</small></div><span class=\"scene-route-coords\">24.7°N / 46.6°E</span></div>"
+};
+  function motifSVG(key,color,size){
+    const paths=BRAND_MOTIFS[key];if(!paths)return '';
+    return '<svg aria-hidden="true" focusable="false" width="'+size+'" height="'+size+'" viewBox="-50 -50 100 100" fill="none" stroke="'+color+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">'+paths.map(p=>'<path d="'+p+'"/>').join('')+'</svg>';
+  }
+  function activeScene(){
+    const key=state.layoutVariant;
+    const graphic=id('previewScene');
+    if(!graphic)return;
+    graphic.innerHTML=SCENE_MARKUP[key]||'';
+    const preview=id('preview');
+    preview.dataset.variant=SCENE_MARKUP[key]?key:'default';
+  }
+
   function logoHTML() {
     const text = htmlSafe(state.brandName || 'علامتك');
     const letter = htmlSafe(state.symbolLetter || 'م');
     if (state.logoType === 'wordmark') return `<span>${text}</span>`;
-    return `<span class="pv-logo-icon${state.logoType==='monogram'?' monogram':''}">${letter}</span>${state.logoType==='symbol'?`<span>${text}</span>`:''}`;
+    const emblem=BRAND_MOTIFS[state.markMotif]?motifSVG(state.markMotif,'currentColor','35'):`<span class="pv-logo-icon${state.logoType==='monogram'?' monogram':''}">${letter}</span>`;
+    return `<span class="pv-logo-emblem">${emblem}</span>${state.logoType==='symbol'?`<span>${text}</span>`:''}`;
   }
   function render() {
+    id('layoutVariant').value=state.layoutVariant;
+    id('markMotif').value=state.markMotif;
+    id('heroHeadline').value=state.headline;
+    for(const field of ['cardOne','cardTwo','cardThree'])id(field).value=state[field];
+    id('previewHeadline').textContent=state.headline;
+    ['cardOne','cardTwo','cardThree'].forEach((key,i)=>id('previewCard'+(i+1)).textContent=state[key]);
+    activeScene();
     id('projectName').value = state.projectName;
     id('brandName').value = state.brandName;
     id('brandTagline').value = state.tagline;
@@ -173,7 +212,7 @@
       card.append(title,sample,controls,license);root.appendChild(card);
     }
   }
-  const LOGO_KEYS=['logoType','brandName','symbolLetter','markShape','markSize','wordSize','markX','markY','wordX','wordY','markRotation','wordRotation','headingFont','headingWeight'];
+  const LOGO_KEYS=['logoType','markMotif','brandName','symbolLetter','markShape','markSize','wordSize','markX','markY','wordX','wordY','markRotation','wordRotation','headingFont','headingWeight'];
   const undoStack=[],redoStack=[];
   let selectedPart=null,gridVisible=false,snapEnabled=false;
   function snapshotLogo(){return Object.fromEntries(LOGO_KEYS.map(k=>[k,state[k]]));}
@@ -184,7 +223,7 @@
   function undoLogo(){if(!undoStack.length)return;redoStack.push(snapshotLogo());restoreLogo(undoStack.pop());}
   function redoLogo(){if(!redoStack.length)return;undoStack.push(snapshotLogo());restoreLogo(redoStack.pop());}
   id('undoLogo').addEventListener('click',undoLogo);id('redoLogo').addEventListener('click',redoLogo);
-  const EDITABLE_LOGO_KEYS=new Set(['logoType','brandName','symbolLetter','markShape','markSize','wordSize','markRotation','wordRotation','headingFont','headingWeight']);
+  const EDITABLE_LOGO_KEYS=new Set(['logoType','markMotif','brandName','symbolLetter','markShape','markSize','wordSize','markRotation','wordRotation','headingFont','headingWeight']);
   function setValueFrom(idName, key, parser) {
     id(idName).addEventListener('input', event => {
       if(EDITABLE_LOGO_KEYS.has(key))captureLogo();
@@ -194,7 +233,7 @@
       render(); setDirty();
     });
   }
-  [['fontPreviewText','fontPreviewText'],['projectName','projectName'],['brandName','brandName'],['brandTagline','tagline'],['ctaLabel','cta'],['symbolLetter','symbolLetter'],['headingFont','headingFont'],['bodyFont','bodyFont'],['buttonStyle','buttonStyle'],['markShape','markShape']].forEach(([field,key])=>setValueFrom(field,key));
+  [['layoutVariant','layoutVariant'],['markMotif','markMotif'],['heroHeadline','headline'],['cardOne','cardOne'],['cardTwo','cardTwo'],['cardThree','cardThree'],['fontPreviewText','fontPreviewText'],['projectName','projectName'],['brandName','brandName'],['brandTagline','tagline'],['ctaLabel','cta'],['symbolLetter','symbolLetter'],['headingFont','headingFont'],['bodyFont','bodyFont'],['buttonStyle','buttonStyle'],['markShape','markShape']].forEach(([field,key])=>setValueFrom(field,key));
   [['primaryColor','primary'],['secondaryColor','secondary'],['accentColor','accent'],['inkColor','ink']].forEach(([field,key])=>setValueFrom(field,key));
   setValueFrom('headingWeight','headingWeight',Number);
   setValueFrom('cornerRadius','radius',Number);
@@ -230,17 +269,21 @@
       }
       for(const item of STARTER_TEMPLATES){
         if(templateCategory!=='الكل'&&item.category!==templateCategory)continue;
-        const card=document.createElement('article');card.className='template-card';
+        const card=document.createElement('article');card.className='template-card';card.dataset.variant=item.layoutVariant;
         card.style.setProperty('--tp-primary',item.primary);
         card.style.setProperty('--tp-accent',item.accent);
         card.style.setProperty('--tp-secondary',item.secondary);
         card.style.setProperty('--tp-ink',item.ink);
-        const artwork=document.createElement('div');artwork.className='template-artwork';
+        const artwork=document.createElement('div');artwork.className='template-artwork';artwork.dataset.variant=item.layoutVariant;
+        const decorative=document.createElement('div');decorative.className='template-decor';decorative.setAttribute('aria-hidden','true');for(let i=0;i<3;i++){decorative.appendChild(document.createElement('i'));}
+        artwork.appendChild(decorative);
         const pin=document.createElement('span');pin.className='template-pin';pin.textContent=item.industry;
         const visual=document.createElement('div');visual.className='template-artwork-main';
-        const mark=document.createElement('span');mark.className='template-mark shape-'+item.markShape;mark.textContent=item.logoType==='wordmark'?'':item.symbolLetter;
+        const mark=document.createElement('span');mark.className='template-mark shape-'+item.markShape;
+        if(BRAND_MOTIFS[item.markMotif]){mark.classList.add('has-motif');mark.innerHTML=motifSVG(item.markMotif,'currentColor',52);}
+        else mark.textContent=item.logoType==='wordmark'?'':item.symbolLetter;
         const name=document.createElement('strong');name.className='template-artwork-name';name.textContent=item.brandName;name.style.fontFamily='"'+item.headingFont+'",sans-serif';
-        if(item.logoType==='wordmark'){mark.classList.add('is-wordmark');}
+        if(item.logoType==='wordmark'&&!BRAND_MOTIFS[item.markMotif]){mark.classList.add('is-wordmark');}
         if(item.logoType==='monogram'){name.classList.add('sr-only');}
         visual.append(mark,name);
         const tagline=document.createElement('small');tagline.className='template-artwork-tagline';tagline.textContent=item.tagline;
@@ -297,14 +340,15 @@
     }
     for(const key of ['primary','secondary','accent','ink'])data[key]=validHex(data[key],initialState[key]);
     for(const key of ['headingFont','bodyFont'])if(!ALLOWED_FONTS.includes(data[key]))data[key]=initialState[key];
-    for(const key of ['projectName','brandName','tagline','cta','symbolLetter','fontPreviewText']){
-      const limits={projectName:56,brandName:30,tagline:100,cta:28,symbolLetter:2,fontPreviewText:90};
+    for(const key of ['projectName','brandName','tagline','cta','symbolLetter','fontPreviewText','headline','cardOne','cardTwo','cardThree']){
+      const limits={projectName:56,brandName:30,tagline:100,cta:28,symbolLetter:2,fontPreviewText:90,headline:70,cardOne:40,cardTwo:40,cardThree:40};
       data[key]=data[key].normalize('NFC').replace(/[\u0000-\u001f\u007f-\u009f\u202a-\u202e]/g,'').slice(0,limits[key]);
     }
     const clamp=(v,min,max,defaultValue)=>Number.isFinite(v)?Math.max(min,Math.min(max,v)):defaultValue;
     for(const [key,min,max] of [['markSize',50,170],['wordSize',24,94],['markRotation',-180,180],['wordRotation',-45,45],['markX',0,760],['wordX',0,760],['markY',0,360],['wordY',0,360],['radius',0,32],['headingWeight',400,800]]){
       data[key]=clamp(data[key],min,max,initialState[key]);
     }
+    for(const key of ['layoutVariant','markMotif'])if(data[key]!=='default'&&data[key]!=='basic'&&!Object.prototype.hasOwnProperty.call(BRAND_MOTIFS,data[key]))data[key]=initialState[key];
     for(const [key,allowed] of [['logoType',['symbol','wordmark','monogram']],['markShape',['rounded','circle','diamond','outline','hexagon','star']],['buttonStyle',['filled','soft','outlined']],['theme',['light','dark']],['device',['desktop','mobile']],['vectorFont',['noto','amiri']]]){
       if(!allowed.includes(data[key]))data[key]=initialState[key];
     }
@@ -440,6 +484,10 @@
   // V1.1 vector logo workbench. Coordinates live in a stable 760 x 360 artboard.
   function logoGeometry(logo=state) {
     const s=logo.markSize;
+    if(BRAND_MOTIFS[logo.markMotif]){
+      const d=BRAND_MOTIFS[logo.markMotif].map(p=>'<path d="'+p+'"/>').join('');
+      return '<g transform="scale('+(s/100)+')" fill="none" stroke="'+logo.primary+'" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">'+d+'</g>';
+    }
     const radius=logo.markShape==='circle' ? s/2 : Math.min(24,s*.22);
     if(logo.markShape==='diamond')return `<rect x="${-s/2}" y="${-s/2}" width="${s}" height="${s}" rx="${Math.round(s*.12)}" transform="rotate(45)" fill="${logo.primary}"/>`;
     if(logo.markShape==='hexagon'){const r=s*.55;return `<polygon points="${Array.from({length:6},(_,i)=>{const a=(Math.PI/3*i)-Math.PI/2;return (Math.cos(a)*r).toFixed(2)+','+(Math.sin(a)*r).toFixed(2)}).join(' ')}" fill="${logo.primary}"/>`;}
@@ -453,7 +501,7 @@
     const font=svgSafe(state.headingFont);
     const s=state.markSize;
     const color=state.markShape==='outline' ? state.primary : '#FFFFFF';
-    const symbol=state.logoType!=='wordmark' ? `<g class="logo-move" data-part="mark" ${interactive?'role="button" tabindex="0" aria-label="اسحب الرمز أو استخدم الأسهم"':''} transform="translate(${state.markX} ${state.markY}) rotate(${state.markRotation})">${logoGeometry()}<text x="0" y="${Math.round(s*.20)}" fill="${color}" text-anchor="middle" direction="rtl" font-family="${font}, sans-serif" font-size="${Math.round(s*.59)}" font-weight="700">${letter}</text></g>` : '';
+    const symbol=state.logoType!=='wordmark' ? `<g class="logo-move" data-part="mark" ${interactive?'role="button" tabindex="0" aria-label="اسحب الرمز أو استخدم الأسهم"':''} transform="translate(${state.markX} ${state.markY}) rotate(${state.markRotation})">${logoGeometry()}${BRAND_MOTIFS[state.markMotif]?'':`<text x="0" y="${Math.round(s*.20)}" fill="${color}" text-anchor="middle" direction="rtl" font-family="${font}, sans-serif" font-size="${Math.round(s*.59)}" font-weight="700">${letter}</text>`}</g>` : '';
     const word=state.logoType!=='monogram' ? `<g class="logo-move" data-part="word" ${interactive?'role="button" tabindex="0" aria-label="اسحب اسم العلامة أو استخدم الأسهم"':''} transform="translate(${state.wordX} ${state.wordY}) rotate(${state.wordRotation})"><text x="0" y="0" direction="rtl" unicode-bidi="plaintext" text-anchor="middle" fill="${state.ink}" font-family="${font}, sans-serif" font-size="${state.wordSize}" font-weight="${state.headingWeight}">${brand}</text></g>` : '';
     return expandedViewBox(`<svg xmlns="http://www.w3.org/2000/svg" width="760" height="360" viewBox="0 0 760 360" role="img" aria-label="${brand}" ${interactive?'id="editableLogoSvg"':''}><title>${brand}</title>${symbol}${word}</svg>`);
   }
@@ -546,12 +594,12 @@
     const font=await getVectorFont(logo.vectorFont);
     const rawBrand=textValue(logo.brandName), rawLetter=textValue(logo.symbolLetter);
     if(logo.logoType!=='monogram'&&!rawBrand)throw Error('اكتب اسم العلامة قبل تصدير الشعار');
-    if(logo.logoType!=='wordmark'&&!rawLetter)throw Error('اكتب الحرف الرمزي قبل تصدير الشعار');
+    if(logo.logoType!=='wordmark'&&!BRAND_MOTIFS[logo.markMotif]&&!rawLetter)throw Error('اكتب الحرف الرمزي قبل تصدير الشعار');
     const brand=svgSafe(rawBrand||'شعار');
     const s=logo.markSize;
     // Exclude unused parts from shaping, so an irrelevant unsupported character
     // cannot block the export of a valid wordmark or monogram.
-    const markText=logo.logoType==='wordmark'?'':glyphPaths(rawLetter,font,Math.round(s*.59),logo.markShape==='outline'?logo.primary:'#FFFFFF');
+    const markText=logo.logoType==='wordmark'||BRAND_MOTIFS[logo.markMotif]?'':glyphPaths(rawLetter,font,Math.round(s*.59),logo.markShape==='outline'?logo.primary:'#FFFFFF');
     const brandText=logo.logoType==='monogram'?'':glyphPaths(rawBrand,font,logo.wordSize,logo.ink);
     const symbol=logo.logoType!=='wordmark'?`<g class="logo-move" data-part="mark" ${interactive?'role="button" tabindex="0" aria-label="اسحب الرمز"':''} transform="translate(${logo.markX} ${logo.markY}) rotate(${logo.markRotation})">${logoGeometry(logo)}<g transform="translate(0 ${Math.round(s*.20)})">${markText}</g></g>`:'';
     const word=logo.logoType!=='monogram'?`<g class="logo-move" data-part="word" ${interactive?'role="button" tabindex="0" aria-label="اسحب اسم العلامة"':''} transform="translate(${logo.wordX} ${logo.wordY}) rotate(${logo.wordRotation})">${brandText}</g>`:'';
@@ -679,6 +727,11 @@
     if(state.logoType!=='wordmark'){
       ctx.save();ctx.translate(state.markX,state.markY);
       const s=state.markSize;ctx.rotate(state.markRotation*Math.PI/180);
+      if(BRAND_MOTIFS[state.markMotif]){
+        ctx.strokeStyle=state.primary;ctx.fillStyle='transparent';
+        ctx.lineCap='round';ctx.lineJoin='round';ctx.scale(s/100,s/100);ctx.lineWidth=6;
+        for(const d of BRAND_MOTIFS[state.markMotif])ctx.stroke(new Path2D(d));
+      }else{
       ctx.fillStyle=state.primary;ctx.strokeStyle=state.primary;
       if(state.markShape==='diamond'){
         ctx.rotate(Math.PI/4);ctx.beginPath();ctx.roundRect(-s/2,-s/2,s,s,Math.round(s*.12));ctx.fill();ctx.rotate(-Math.PI/4);
@@ -690,7 +743,9 @@
         ctx.beginPath();ctx.roundRect(-s/2,-s/2,s,s,state.markShape==='circle'?s/2:Math.min(24,s*.22));
         if(state.markShape==='outline'){ctx.lineWidth=8;ctx.stroke();}else ctx.fill();
       }
-      ctx.fillStyle=state.markShape==='outline'?state.primary:'#fff';ctx.font=`700 ${Math.round(s*.59)}px "${state.headingFont}", sans-serif`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.direction='rtl';ctx.fillText(state.symbolLetter||'م',0,Math.round(s*.20));ctx.restore();
+      ctx.fillStyle=state.markShape==='outline'?state.primary:'#fff';ctx.font=`700 ${Math.round(s*.59)}px "${state.headingFont}", sans-serif`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.direction='rtl';ctx.fillText(state.symbolLetter||'م',0,Math.round(s*.20));
+      }
+      ctx.restore();
     }
     if(state.logoType!=='monogram'){
       ctx.save();ctx.translate(state.wordX,state.wordY);ctx.rotate(state.wordRotation*Math.PI/180);ctx.direction='rtl';ctx.fillStyle=state.ink;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.font=`${state.headingWeight} ${state.wordSize}px "${state.headingFont}",sans-serif`;ctx.fillText(state.brandName||'علامتك',0,0);ctx.restore();

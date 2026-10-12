@@ -50,6 +50,7 @@ jobs:
           python tests/accessibility_gate.py
           python tests/axe_audit.py
           python tests/templates.py
+          python tests/visual_compositions.py
           node build.mjs
           python tests/self_hosted_fonts.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
