@@ -25,7 +25,7 @@ function shapeArabic(name,font){
   const p=r.positions[i],d=g.path.toSVG().trim();
   // Fontkit Path.toSVG() returns PATH DATA (M/L/C/Q...), not an SVG <path> node.
   // Restrict the drawing language to SVG path operators and numeric syntax.
-  if(d && !/^[MmLlHhVvCcSsQqTtAaZz0-9+.,Ee\\-\\s]+$/.test(d))
+  if(d && !/^[MmLlHhVvCcSsQqTtAaZz0-9+., Ee-]+$/.test(d))
     throw Error('Unsafe raw glyph path '+name+' '+i+' '+JSON.stringify(d.slice(0,80)));
   const element=d?'<path d="'+d+'"/>':'';
   const z=element?'<g transform="translate('+(x+p.xOffset)+' '+p.yOffset+')">'+element+'</g>':'';
