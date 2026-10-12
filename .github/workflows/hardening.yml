@@ -37,6 +37,8 @@ jobs:
           sudo apt-get install -y -qq fonts-hosny-amiri fonts-noto-core
           python -m pip install --disable-pip-version-check playwright==1.55.0 lxml==6.0.1 Pillow==11.3.0
           python -m playwright install --with-deps chromium firefox webkit
+      - name: Install pinned axe-core for WCAG scans
+        run: npm install --no-save --ignore-scripts --no-audit --no-fund axe-core@4.10.3
       - name: Execute all 50 browser acceptance cases
         run: |
           export ALWASITI_TEST_FONT_AMIRI="$(find /usr/share/fonts -iname 'Amiri-Regular.ttf' -print -quit)"
@@ -46,6 +48,7 @@ jobs:
           python tests/acceptance.py
           python tests/cross_browser.py
           python tests/accessibility_gate.py
+          python tests/axe_audit.py
           node build.mjs
           python tests/self_hosted_fonts.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
