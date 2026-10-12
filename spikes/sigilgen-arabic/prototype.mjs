@@ -23,9 +23,13 @@ function shapeArabic(name,font){
  let x=0;
  const glyphs=r.glyphs.map((g,i)=>{
   const p=r.positions[i],d=g.path.toSVG().trim();
-  // OpenType glyphs may have a legitimate empty outline (e.g. whitespace/marks).
-  if(d && (!/^<path\\b/.test(d)||/<script|href=|onload=/i.test(d)))throw Error('unsafe glyph: '+name+' '+i+' '+JSON.stringify(d.slice(0,110)));
-  const z=d?'<g transform="translate('+(x+p.xOffset)+' '+p.yOffset+')">'+d+'</g>':'';x+=p.xAdvance;return z;
+  // Fontkit Path.toSVG() returns PATH DATA (M/L/C/Q...), not an SVG <path> node.
+  // Restrict the drawing language to SVG path operators and numeric syntax.
+  if(d && !/^[MmLlHhVvCcSsQqTtAaZz0-9+.,Ee\\-\\s]+$/.test(d))
+    throw Error('Unsafe raw glyph path '+name+' '+i+' '+JSON.stringify(d.slice(0,80)));
+  const element=d?'<path d="'+d+'"/>':'';
+  const z=element?'<g transform="translate('+(x+p.xOffset)+' '+p.yOffset+')">'+element+'</g>':'';
+  x+=p.xAdvance;return z;
  });
  return {paths:'<g fill="#193245" transform="translate('+left+' 287) scale('+size+' '+(-size)+')">'+glyphs.join('')+'</g>',glyphs:r.glyphs.length};
 }
