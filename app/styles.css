@@ -324,3 +324,24 @@
 .preview[data-variant]:not([data-variant="default"]) .preview-graphic{transform:scale(.78);transform-origin:top center;height:210px}
 .preview[data-variant="studio"] .preview-hero h1,.preview[data-variant="publishing"] .preview-hero h1{font-size:32px}
 }
+
+/* 24 expertly selected editable palettes; filter rather than flood the inspector. */
+.palette-picks.palette-library{display:block;min-width:0}
+.palette-library-count{font-size:11px;color:#615b72;font-weight:650;margin:5px 0 10px;line-height:1.7}
+.palette-library-filters{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.palette-category{font:600 10px/1.5 'Alexandria',sans-serif;min-height:34px;padding:6px 10px;border-radius:19px;border:1px solid #d7d1e3;background:#fff;color:#49405e;cursor:pointer;transition:border-color .15s,background .15s}
+.palette-category:hover{border-color:#6a56ae;background:#f4f0fb}
+.palette-category.selected{background:#4b397f;color:#fff;border-color:#4b397f}
+.palette-library-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;max-height:335px;overflow-y:auto;overscroll-behavior:contain;padding:2px 5px 6px 2px;scrollbar-color:#bcb3d0 transparent;scrollbar-width:thin;border-radius:8px}
+.palette-library-grid:focus-visible,.palette-category:focus-visible,.palette-library-grid .palette-pick:focus-visible{outline:3px solid #8467ce;outline-offset:2px}
+.palette-library-grid .palette-pick{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:10px;min-height:108px;padding:11px;background:#fff;text-align:right;border:1px solid #ddd7e6;border-radius:11px;cursor:pointer}
+.palette-library-grid .palette-pick:hover{border-color:#7661b2;background:#faf8fd}
+.palette-library-grid .palette-pick.active{border-color:#634ab0;box-shadow:0 0 0 2px #634ab025;background:#faf8ff}
+.palette-description{display:flex;flex-direction:column;gap:5px;min-height:48px}
+.palette-description strong{font-size:11px;font-weight:750;color:#242239;line-height:1.5}
+.palette-description small{font-size:9.5px;line-height:1.6;color:#645e70}
+.palette-library-grid .palette-dots{display:flex;gap:0;overflow:hidden;border-radius:6px;border:1px solid #0000000c}
+.palette-library-grid .palette-dots i{height:22px;flex:1;width:auto;min-width:0;border-radius:0;display:block}
+.palette-library-grid .palette-dots i+i{border-right:1px solid #0000000b}
+@media(max-width:360px){.palette-library-grid{grid-template-columns:1fr}.palette-library-grid .palette-pick{min-height:86px}}
+@media(prefers-reduced-motion:reduce){.palette-category{transition:none}}

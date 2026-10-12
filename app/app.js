@@ -17,12 +17,251 @@
     {name:"Noto Kufi Arabic",category:"كوفي للعناوين",license:'OFL-1.1',source:"https://github.com/google/fonts/blob/main/ofl/notokufiarabic/OFL.txt"},
     {name:"Amiri",category:"كلاسيكي للتحرير",license:'OFL-1.1',source:"https://github.com/google/fonts/blob/main/ofl/amiri/OFL.txt"}
   ];
-  const palettes = [
-    {name:'بنفسجي مشرق', primary:'#5947D9', secondary:'#F49C6B', accent:'#F3D998', ink:'#282842'},
-    {name:'أزرق متجدد', primary:'#295BCF', secondary:'#FF925E', accent:'#F8D67E', ink:'#202C4C'},
-    {name:'مرجاني', primary:'#D85861', secondary:'#F4A06C', accent:'#F7D9BA', ink:'#44313D'},
-    {name:'أخضر طبيعي', primary:'#246D55', secondary:'#F3A451', accent:'#DBD9A6', ink:'#243D39'}
-  ];
+  // Curated original directions: primary is AA-readable with white; ink is AA-readable on white/accent.
+  const palettes = Object.freeze([
+  {
+    "id": "p01",
+    "category": "مؤسسية",
+    "name": "كحلي ونحاسي",
+    "usage": "هويات الشركات والاستشارات",
+    "primary": "#203C60",
+    "secondary": "#C59A58",
+    "accent": "#F1E3C8",
+    "ink": "#1C2D43"
+  },
+  {
+    "id": "p02",
+    "category": "مؤسسية",
+    "name": "أخضر ملكي",
+    "usage": "مشروعات موثوقة وهوية رصينة",
+    "primary": "#14543C",
+    "secondary": "#BFA16A",
+    "accent": "#E8DECA",
+    "ink": "#17382B"
+  },
+  {
+    "id": "p03",
+    "category": "مؤسسية",
+    "name": "أزرق صخري",
+    "usage": "بيوت الخبرة والخدمات المهنية",
+    "primary": "#325A78",
+    "secondary": "#91B4C9",
+    "accent": "#E5EFF4",
+    "ink": "#20384D"
+  },
+  {
+    "id": "p04",
+    "category": "مؤسسية",
+    "name": "فحمي وكراميل",
+    "usage": "علامات الأعمال الهادئة",
+    "primary": "#373B46",
+    "secondary": "#C78352",
+    "accent": "#EFE3D8",
+    "ink": "#252934"
+  },
+  {
+    "id": "p05",
+    "category": "تقنية",
+    "name": "أزرق رقمي",
+    "usage": "التطبيقات والمنتجات الرقمية",
+    "primary": "#244BB8",
+    "secondary": "#3EBBBB",
+    "accent": "#D9F4F2",
+    "ink": "#202B49"
+  },
+  {
+    "id": "p06",
+    "category": "تقنية",
+    "name": "سيان عميق",
+    "usage": "لوحات التحكم والتقنيات الحديثة",
+    "primary": "#07566C",
+    "secondary": "#55CCD2",
+    "accent": "#DFF7F8",
+    "ink": "#183C4B"
+  },
+  {
+    "id": "p07",
+    "category": "تقنية",
+    "name": "بنفسجي تقني",
+    "usage": "الابتكار والتجارب التفاعلية",
+    "primary": "#5640A3",
+    "secondary": "#A6B0FA",
+    "accent": "#ECEBFD",
+    "ink": "#2E285A"
+  },
+  {
+    "id": "p08",
+    "category": "تقنية",
+    "name": "ليلي وكهرماني",
+    "usage": "الأدوات والمنصات الذكية",
+    "primary": "#1E3347",
+    "secondary": "#F1B24D",
+    "accent": "#F7ECD4",
+    "ink": "#1C2D3A"
+  },
+  {
+    "id": "p09",
+    "category": "تجارية",
+    "name": "مرجاني متزن",
+    "usage": "التجزئة والعلامات الاستهلاكية",
+    "primary": "#AA344C",
+    "secondary": "#E69A7A",
+    "accent": "#F9E2D6",
+    "ink": "#4B2632"
+  },
+  {
+    "id": "p10",
+    "category": "تجارية",
+    "name": "تيراكوتا",
+    "usage": "الحِرف والمنتجات المنزلية",
+    "primary": "#94472B",
+    "secondary": "#CE9270",
+    "accent": "#F7E7D5",
+    "ink": "#4B3026"
+  },
+  {
+    "id": "p11",
+    "category": "تجارية",
+    "name": "برغندي فاخر",
+    "usage": "المتاجر والعلامات الراقية",
+    "primary": "#702E46",
+    "secondary": "#D3A06D",
+    "accent": "#F8E6DB",
+    "ink": "#412836"
+  },
+  {
+    "id": "p12",
+    "category": "تجارية",
+    "name": "وردي ترابي",
+    "usage": "العناية والأزياء والمنتجات اللطيفة",
+    "primary": "#87445D",
+    "secondary": "#D7A4B6",
+    "accent": "#F5E2EA",
+    "ink": "#452736"
+  },
+  {
+    "id": "p13",
+    "category": "ثقافية",
+    "name": "حبر ومخطوط",
+    "usage": "النشر والمعرفة والتحرير",
+    "primary": "#33384E",
+    "secondary": "#AC6653",
+    "accent": "#EFE1D9",
+    "ink": "#25293D"
+  },
+  {
+    "id": "p14",
+    "category": "ثقافية",
+    "name": "نيلي وعاجي",
+    "usage": "الهوية الثقافية والمكتبات",
+    "primary": "#343D82",
+    "secondary": "#C1A76F",
+    "accent": "#F5EBD2",
+    "ink": "#292D4B"
+  },
+  {
+    "id": "p15",
+    "category": "ثقافية",
+    "name": "أرجوان عتيق",
+    "usage": "البرامج الفنية والمعارض",
+    "primary": "#65416E",
+    "secondary": "#B98188",
+    "accent": "#F0E3E9",
+    "ink": "#32283E"
+  },
+  {
+    "id": "p16",
+    "category": "ثقافية",
+    "name": "بترولي متحفي",
+    "usage": "المتاحف والجهات الإبداعية",
+    "primary": "#1F5260",
+    "secondary": "#AF7C52",
+    "accent": "#EEE0CA",
+    "ink": "#223C44"
+  },
+  {
+    "id": "p17",
+    "category": "طبيعية",
+    "name": "زيتوني وحصاد",
+    "usage": "الأغذية والزراعة المستدامة",
+    "primary": "#4A602B",
+    "secondary": "#D3A652",
+    "accent": "#F3EBCF",
+    "ink": "#30402D"
+  },
+  {
+    "id": "p18",
+    "category": "طبيعية",
+    "name": "غابة معتدلة",
+    "usage": "المنتجات العضوية والمبادرات البيئية",
+    "primary": "#216548",
+    "secondary": "#87B89A",
+    "accent": "#E4F2E8",
+    "ink": "#1C4535"
+  },
+  {
+    "id": "p19",
+    "category": "طبيعية",
+    "name": "أرض دافئة",
+    "usage": "القهوة والحِرف والضيافة",
+    "primary": "#755339",
+    "secondary": "#D1AE81",
+    "accent": "#F4E8D3",
+    "ink": "#4C3A2C"
+  },
+  {
+    "id": "p20",
+    "category": "طبيعية",
+    "name": "فيروزي هادئ",
+    "usage": "الصحة والرفاه ونمط الحياة",
+    "primary": "#176E75",
+    "secondary": "#75B9AC",
+    "accent": "#DDF0E9",
+    "ink": "#1D4649"
+  },
+  {
+    "id": "p21",
+    "category": "جريئة",
+    "name": "بنفسجي مشرق",
+    "usage": "الاستوديوهات والمبادرات الجديدة",
+    "primary": "#5947D9",
+    "secondary": "#F49C6B",
+    "accent": "#F3D998",
+    "ink": "#282842"
+  },
+  {
+    "id": "p22",
+    "category": "جريئة",
+    "name": "أزرق متجدد",
+    "usage": "المنتجات الشبابية والخدمات الحديثة",
+    "primary": "#295BCF",
+    "secondary": "#FF925E",
+    "accent": "#F8D67E",
+    "ink": "#202C4C"
+  },
+  {
+    "id": "p23",
+    "category": "جريئة",
+    "name": "موف وإشراق",
+    "usage": "المشاريع الإبداعية الشخصية",
+    "primary": "#673F8F",
+    "secondary": "#DD6D8B",
+    "accent": "#F5DBE2",
+    "ink": "#322442"
+  },
+  {
+    "id": "p24",
+    "category": "جريئة",
+    "name": "بحري وكهرماني",
+    "usage": "تطبيقات حيوية بهوية جريئة",
+    "primary": "#165E8A",
+    "secondary": "#F6A64B",
+    "accent": "#FFECC5",
+    "ink": "#20364B"
+  }
+]);
+  const paletteCategories=['الكل','مؤسسية','تقنية','تجارية','ثقافية','طبيعية','جريئة'];
+  const paletteFilters={paletteChoices:'الكل',paletteChoicesAlt:'الكل'};
   const initialState = {
     projectName:'هوية مشروع جديد', brandName:'مدار', tagline:'مساحة لأفكار أكثر وضوحًا', cta:'ابدأ الآن',
     primary:'#5947D9', secondary:'#F49C6B', accent:'#F3D998', ink:'#282842',
@@ -87,15 +326,54 @@
   id('backHome').addEventListener('click',closeStudio);
   function renderPalettes() {
     ['paletteChoices','paletteChoicesAlt'].forEach(containerId => {
-      const root = id(containerId);
+      const root=id(containerId);
+      if(!root)return;
+      root.classList.add('palette-library');
       root.replaceChildren();
-      palettes.forEach((p) => {
-        const button = document.createElement('button');
-        button.className = 'palette-pick'+(p.primary.toUpperCase() === state.primary.toUpperCase() ? ' active' : '');
-        button.innerHTML = `<b>${htmlSafe(p.name)}</b><span class="palette-dots"><i style="background:${p.primary}"></i><i style="background:${p.secondary}"></i><i style="background:${p.accent}"></i><i style="background:${p.ink}"></i></span>`;
-        button.addEventListener('click',() => {['primary','secondary','accent','ink'].forEach(key=>state[key]=p[key]);render();setDirty();});
-        root.appendChild(button);
+      const category=paletteFilters[containerId]||'الكل';
+      const shown=palettes.filter(p=>category==='الكل'||p.category===category);
+      const status=document.createElement('p');status.className='palette-library-count';
+      status.textContent=category==='الكل'?palettes.length+' لوحة منتقاة · 6 فئات':shown.length+' لوحات في فئة '+category+' · من أصل '+palettes.length;
+      const filters=document.createElement('div');filters.className='palette-library-filters';
+      filters.setAttribute('role','group');filters.setAttribute('aria-label','تصفية لوحات الألوان');
+      paletteCategories.forEach(group=>{
+        const filter=document.createElement('button');filter.type='button';filter.className='palette-category'+(category===group?' selected':'');
+        filter.dataset.paletteCategory=group;filter.textContent=group;filter.setAttribute('aria-pressed',String(category===group));
+        filter.addEventListener('click',()=>{
+          paletteFilters[containerId]=group;
+          renderPalettes();
+          const next=[...root.querySelectorAll('[data-palette-category]')].find(b=>b.dataset.paletteCategory===group);
+          next?.focus({preventScroll:true});
+        });
+        filters.append(filter);
       });
+      const grid=document.createElement('div');grid.className='palette-library-grid';
+      grid.setAttribute('role','region');grid.setAttribute('aria-label','لوحات الألوان المتاحة');
+      grid.tabIndex=0;
+      shown.forEach(p=>{
+        const active=['primary','secondary','accent','ink'].every(key=>state[key].toUpperCase()===p[key].toUpperCase());
+        const button=document.createElement('button');button.type='button';button.className='palette-pick'+(active?' active':'');
+        button.dataset.paletteId=p.id;button.setAttribute('aria-pressed',String(active));
+        button.setAttribute('aria-label','تطبيق لوحة '+p.name+'، '+p.category+'؛ '+p.usage);
+        const info=document.createElement('span');info.className='palette-description';
+        const name=document.createElement('strong');name.textContent=p.name;
+        const purpose=document.createElement('small');purpose.textContent=p.usage;
+        info.append(name,purpose);
+        const dots=document.createElement('span');dots.className='palette-dots';dots.setAttribute('aria-hidden','true');
+        const labels={primary:'أساسي',secondary:'ثانوي',accent:'مساعد',ink:'نص'};
+        ['primary','secondary','accent','ink'].forEach(key=>{
+          const dot=document.createElement('i');dot.style.backgroundColor=p[key];dot.title=labels[key]+': '+p[key];dots.append(dot);
+        });
+        button.append(info,dots);
+        button.addEventListener('click',()=>{
+          ['primary','secondary','accent','ink'].forEach(key=>state[key]=p[key]);
+          render();setDirty();
+          root.querySelector('[data-palette-id="'+p.id+'"]')?.focus({preventScroll:true});
+          toast('تم تطبيق لوحة '+p.name+'؛ يمكنك الآن تعديل كل لون على حدة.');
+        });
+        grid.append(button);
+      });
+      root.append(status,filters,grid);
     });
   }
 
