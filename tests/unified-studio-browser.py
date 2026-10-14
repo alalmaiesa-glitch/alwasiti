@@ -1,5 +1,6 @@
 """Browser acceptance for isolated unified design studio. No network/back-end needed."""
 import json
+import unicodedata
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 root=Path(__file__).resolve().parents[1]/'app/creative-studio'
@@ -28,12 +29,11 @@ with sync_playwright() as p:
  page.locator('#layers .layer-item').first.click()
  page.locator('#layerText').fill('بناءٌ عربيٌّ أصيل')
  page.locator('#layerText').press('Tab')
- print('DEBUG edit:',page.evaluate("JSON.stringify({selected:window.WasitiUnifiedLab.getSelected(),layers:window.WasitiUnifiedLab.getProject().pages[0].layers.map(x=>[x.name,x.text]),svg:window.WasitiUnifiedLab.getSVG().slice(-450)})"),flush=True)
- assert 'بناءٌ عربيٌّ أصيل' in page.evaluate('window.WasitiUnifiedLab.getSVG()')
+ assert unicodedata.normalize('NFC','بناءٌ عربيٌّ أصيل') in page.evaluate('window.WasitiUnifiedLab.getSVG()')
  with page.expect_download() as download:
   page.locator('[data-action="export-svg"]').click()
  exported=download.value.path().read_text(encoding='utf-8')
- assert exported.startswith('<svg') and 'بناءٌ عربيٌّ أصيل' in exported
+ assert exported.startswith('<svg') and unicodedata.normalize('NFC','بناءٌ عربيٌّ أصيل') in exported
  with page.expect_download() as download:
   page.locator('[data-action="export-png"]').click()
  png=download.value.path().read_bytes()
