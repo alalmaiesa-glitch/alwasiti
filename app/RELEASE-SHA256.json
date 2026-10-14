@@ -1,5 +1,5 @@
 {
-  "release": "alWasiti v1.4 Hardening Candidate",
+  "release": "alWasiti V1.4 + Isolated Unified Studio V0.1 Prototype (NOT for production)",
   "files": {
     "CONTENT-LICENSES.md": "d18058f485eaeda6fcae7913625948b45cad688efc4d5ca0ea1c3d7079f0028e",
     "LICENSES/base64-js-LICENSE": "5b37224c080cdcc97c871ada971c224e9926370fe74f11b539aa1cf9f3b1aca1",
@@ -27,6 +27,10 @@
     "fonts/NotoKufiArabic-wght.ttf": "494f6b61469d7a02a2d63f0fc4930bb007388d8cfe551de5eb98354e100889f3",
     "LICENSES/OFL-Amiri.txt": "72de68e5954f4fdd24702292ef5a32f003ca960ec9330dc86e5eefb5dffb9b22",
     "LICENSES/OFL-NotoKufiArabic.txt": "07fc70bfeb985cc1a87a8587d0a0c80bab11c86c9dc3fd95b6f0cb332f983e96",
-    "templates.js": "f4f0bc234c883775c025343e265136b06f35c2cc5377b4792c3f85e79afd11ac"
+    "templates.js": "f4f0bc234c883775c025343e265136b06f35c2cc5377b4792c3f85e79afd11ac",
+    "creative-studio/index.html": "6c13b071e2b8e5dd14e2a550c8152aa6365af4f0a5721f355fb757e0c1b67ce6",
+    "creative-studio/styles.css": "fcf60a10af487439702949d05ae8c583491c2560b4d6ec9fb17ab776bee820ed",
+    "creative-studio/model.js": "883ac54a9c933bb5389f0992626f5f82d8856058dafadf3285751c01fc76ca81",
+    "creative-studio/editor.js": "cd1dbc695a53ea37fd228c9f384c7a784de74274f5bfdaaec46f71fd0abd5177"
   }
 }
