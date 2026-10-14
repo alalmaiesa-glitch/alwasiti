@@ -60,6 +60,9 @@ with sync_playwright() as p:
  return [...svg.querySelectorAll('text')].map(el=>{const box=el.getBBox();return {text:el.textContent,x:box.x,right:box.x+box.width,limit:pg.width}})}""")
  assert bounds and all(x['x']>=-8 and x['right']<=x['limit']+8 for x in bounds),'RTL text overflow: '+str(bounds)
  assert 'text-anchor="start"' in page.evaluate('window.WasitiUnifiedLab.getSVG()'),'RTL SVG export must use correct anchor'
+ visual=page.evaluate("""() => {const svg=document.getElementById('artboard'),bar=svg.querySelector('rect[data-layer-id]'),headline=[...svg.querySelectorAll('text[data-layer-id]')].find(x=>x.textContent.includes('الجمال'));
+ const x=bar.getBBox(),t=headline.getBBox();return {ornamentEnd:x.x+x.width,textLeft:t.x}}""")
+ assert visual['textLeft']>=visual['ornamentEnd']+20,'Quote must not overlap side ornament: '+str(visual)
  with page.expect_download() as download:
   page.locator('[data-action="export-project"]').click()
  backup=json.loads(download.value.path().read_text(encoding='utf-8'))
