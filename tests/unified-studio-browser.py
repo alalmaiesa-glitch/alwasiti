@@ -55,6 +55,11 @@ with sync_playwright() as p:
   current=project['pages'][project['pageIndex']]
   pgs.append((current['background'],tuple((l['type'],l['text']) for l in current['layers'])))
  assert len(set(map(str,pgs)))==4,'Presets were only recolors'
+ # Visual test: Arabic RTL line must fit INSIDE the page, not be clipped on the right.
+ bounds=page.evaluate("""() => {const svg=document.getElementById('artboard'),p=window.WasitiUnifiedLab.getProject(),pg=p.pages[p.pageIndex];
+ return [...svg.querySelectorAll('text')].map(el=>{const box=el.getBBox();return {text:el.textContent,x:box.x,right:box.x+box.width,limit:pg.width}})}""")
+ assert bounds and all(x['x']>=-8 and x['right']<=x['limit']+8 for x in bounds),'RTL text overflow: '+str(bounds)
+ assert 'text-anchor="start"' in page.evaluate('window.WasitiUnifiedLab.getSVG()'),'RTL SVG export must use correct anchor'
  with page.expect_download() as download:
   page.locator('[data-action="export-project"]').click()
  backup=json.loads(download.value.path().read_text(encoding='utf-8'))
