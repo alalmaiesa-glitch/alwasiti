@@ -22,7 +22,7 @@ for(const l of p.layers){
 if(!l.visible)continue;
 let node;
 const common={opacity:l.opacity,'data-layer-id':l.id,style:'cursor:'+(l.locked?'not-allowed':'move')};
-if(l.type==='text'){node=svgEl('text',Object.assign({x:l.x+l.w,y:l.y+l.fontSize,fill:l.fill,'font-size':l.fontSize,'font-family':l.fontFamily,direction:'rtl','unicode-bidi':'plaintext','text-anchor':'end'},common));node.textContent=l.text}
+if(l.type==='text'){node=svgEl('text',Object.assign({x:l.x+l.w,y:l.y+l.fontSize,fill:l.fill,'font-size':l.fontSize,'font-family':l.fontFamily,direction:'rtl','unicode-bidi':'plaintext','text-anchor':'start'},common));node.textContent=l.text}
 if(l.type==='rect')node=svgEl('rect',Object.assign({x:l.x,y:l.y,width:l.w,height:l.h,rx:l.radius,fill:l.fill},common));
 if(l.type==='ellipse')node=svgEl('ellipse',Object.assign({cx:l.x+l.w/2,cy:l.y+l.h/2,rx:l.w/2,ry:l.h/2,fill:l.fill},common));
 if(l.type==='image'){node=svgEl('image',Object.assign({x:l.x,y:l.y,width:l.w,height:l.h,href:l.src||'','preserveAspectRatio':'xMidYMid meet'},common));}
