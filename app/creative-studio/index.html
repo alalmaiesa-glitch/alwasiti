@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الواسطي الشامل — مختبر التصميم العربي</title>
+<meta name="theme-color" content="#f7f4f0">
+<meta name="description" content="مختبر تصميم عربي متعدد الصفحات والطبقات، يعمل محليًا">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app">
+<header class="header">
+ <a class="brand" href="../" aria-label="العودة إلى الواسطي"><span class="mark">و</span><span><b>الواسطي</b><small>استوديو التصميم الشامل</small></span></a>
+ <div class="project-name"><label class="sr" for="projectTitle">اسم المشروع</label><input id="projectTitle" maxlength="80" aria-label="اسم المشروع"><span class="save-indicator" id="saveStatus" aria-live="polite">محفوظ محليًا</span></div>
+ <div class="header-actions">
+ <button data-action="undo" title="تراجع Ctrl+Z">↶ تراجع</button><button data-action="redo" title="إعادة Ctrl+Y">↷ إعادة</button>
+ <button data-action="export-project">JSON</button><button data-action="export-svg">SVG</button>
+ <button class="primary" data-action="export-png">تصدير PNG</button>
+ </div>
+</header>
+<div class="notice">نسخة تطوير تجريبية مستقلة — لا تنسخ تجربة أندلسي أو أصوله، ولا ترفع مشروعك إلى خادم.</div>
+<main class="workspace">
+<aside class="sidebar" aria-label="الأدوات والصفحات">
+ <div class="headline"><small>الإبداع يبدأ هنا</small><h1>الصفحات والعناصر</h1></div>
+ <h2>اختر مقاس التصميم</h2>
+ <label class="sr" for="format">المقاس</label>
+ <select id="format"><option value="square">منشور 1080 × 1080</option><option value="story">ستوري 1080 × 1920</option><option value="landscape">عرض 1920 × 1080</option><option value="a4">A4 للطباعة</option></select>
+ <button class="wide" data-action="add-page">+ صفحة جديدة</button>
+ <div class="section-title"><h2>الصفحات</h2><button class="minor" data-action="duplicate-page">نسخ الصفحة</button></div>
+ <div id="pages" class="list" aria-label="صفحات المشروع"></div>
+ <div class="section-title"><h2>أضف عنصرًا</h2></div>
+ <div class="tools">
+ <button data-action="add-text"><b>حـ</b><span>نص</span></button>
+ <button data-action="add-rect"><b>▭</b><span>مستطيل</span></button>
+ <button data-action="add-ellipse"><b>◯</b><span>دائرة</span></button>
+ <button data-action="upload-photo"><b>▧</b><span>صورة</span></button>
+ </div>
+ <div class="section-title"><h2>الطبقات</h2><button class="minor" data-action="delete-page">حذف الصفحة</button></div>
+ <div id="layers" class="list" aria-label="طبقات الصفحة"></div>
+ <div class="section-title"><h2>تكوينات أصلية</h2></div>
+ <p class="hint">نماذج تجريبية مختلفة في ترتيب العناصر، لا تبديل ألوان فقط.</p>
+ <div class="presets"><button data-preset="poster">ملصق ثقافي</button><button data-preset="invite">دعوة</button><button data-preset="sale">إعلان تجاري</button><button data-preset="quote">اقتباس عربي</button></div>
+</aside>
+<section class="design-area" aria-label="مساحة التصميم">
+ <div class="canvas-top"><strong id="canvasTitle">صفحة التصميم</strong><small id="canvasDimensions"></small><span>اسحب العناصر لتغيير مواقعها</span></div>
+ <div class="canvas-wrap"><div class="sheet"><svg id="artboard" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080" role="img" aria-label="معاينة التصميم"></svg></div></div>
+ <div class="canvas-bottom">تخزين محلي فقط · بدون علامة مائية <span>النص في SVG الأولي ليس Outlines بعد.</span></div>
+</section>
+<aside class="sidebar property-sidebar" aria-label="خصائص العنصر">
+ <div class="headline"><small>تحكّم بالتفاصيل</small><h2>خصائص التصميم</h2></div>
+ <div class="field"><label for="pageBackground">خلفية الصفحة</label><input id="pageBackground" type="color"></div>
+ <div id="inspectorEmpty" class="empty">حدد طبقة من التصميم أو القائمة لتعديلها.</div>
+ <div id="inspector" hidden>
+  <div class="field"><label for="layerName">اسم العنصر</label><input id="layerName" data-field="name" maxlength="60"></div>
+  <div id="textField" class="field"><label for="layerText">النص</label><textarea id="layerText" data-field="text" rows="3" maxlength="250"></textarea></div>
+  <div class="pair"><div class="field"><label for="layerX">X</label><input id="layerX" data-field="x" type="number"></div><div class="field"><label for="layerY">Y</label><input id="layerY" data-field="y" type="number"></div></div>
+  <div class="pair"><div class="field"><label for="layerW">العرض</label><input id="layerW" data-field="w" type="number" min="2"></div><div class="field"><label for="layerH">الارتفاع</label><input id="layerH" data-field="h" type="number" min="2"></div></div>
+  <div class="field"><label for="layerFill">لون العنصر</label><input id="layerFill" data-field="fill" type="color"></div>
+  <div id="fontSizeField" class="field"><label for="layerFontSize">حجم الخط</label><input id="layerFontSize" data-field="fontSize" type="number" min="10" max="350"></div>
+  <div id="fontField" class="field"><label for="layerFontFamily">الخط</label><select id="layerFontFamily" data-field="fontFamily"><option>Cairo</option><option>Tahoma</option><option>Arial</option><option>Amiri</option><option>Noto Kufi Arabic</option></select></div>
+  <div class="field"><label for="layerOpacity">شفافية العنصر</label><input id="layerOpacity" data-field="opacity" type="range" min="0" max="1" step=".05"></div>
+  <div class="edit-actions"><button data-action="clone-layer">نسخ العنصر</button><button data-action="layer-up">للأمام</button><button data-action="layer-down">للخلف</button><button class="danger" data-action="delete-layer">حذف</button></div>
+ </div>
+ <div class="divider"></div>
+ <h2>ملفات التصميم</h2>
+ <div class="file-actions"><button data-action="import-project">استيراد JSON</button><button data-action="new-project">مشروع جديد</button></div>
+ <p class="hint">لا توجد مزامنة سحابية بعد. صدّر المشروع لتحتفظ بنسخة مستقلة عن متصفحك.</p>
+</aside>
+</main>
+<input type="file" id="photoFile" accept="image/png,image/jpeg,image/webp" hidden>
+<input type="file" id="projectFile" accept=".json,application/json" hidden>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+</div>
+<script src="./model.js"></script><script src="./editor.js"></script>
+</body></html>
