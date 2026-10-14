@@ -53,7 +53,7 @@ function serializeSVG(page){
   const common=' opacity="'+l.opacity+'"';
   if(l.type==='rect')s.push('<rect x="'+l.x+'" y="'+l.y+'" width="'+l.w+'" height="'+l.h+'" rx="'+l.radius+'" fill="'+l.fill+'"'+common+'/>');
   if(l.type==='ellipse')s.push('<ellipse cx="'+(l.x+l.w/2)+'" cy="'+(l.y+l.h/2)+'" rx="'+(l.w/2)+'" ry="'+(l.h/2)+'" fill="'+l.fill+'"'+common+'/>');
-  if(l.type==='text')s.push('<text x="'+(l.x+l.w)+'" y="'+(l.y+l.fontSize)+'" fill="'+l.fill+'" font-family="'+escapeXML(l.fontFamily)+'" font-size="'+l.fontSize+'" direction="rtl" unicode-bidi="plaintext" text-anchor="start''+common+'>'+escapeXML(l.text)+'</text>');
+  if(l.type==='text')s.push('<text x="'+(l.x+l.w)+'" y="'+(l.y+l.fontSize)+'" fill="'+l.fill+'" font-family="'+escapeXML(l.fontFamily)+'" font-size="'+l.fontSize+'" direction="rtl" unicode-bidi="plaintext" text-anchor="start"' +common+'>'+escapeXML(l.text)+'</text>');
   if(l.type==='image'&&l.src)s.push('<image x="'+l.x+'" y="'+l.y+'" width="'+l.w+'" height="'+l.h+'" href="'+escapeXML(l.src)+'" preserveAspectRatio="xMidYMid meet"'+common+'/>');
  }
  s.push('</svg>');return s.join('\n');
