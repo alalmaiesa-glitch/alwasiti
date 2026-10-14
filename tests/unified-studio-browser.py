@@ -28,6 +28,7 @@ with sync_playwright() as p:
  page.locator('#layers .layer-item').first.click()
  page.locator('#layerText').fill('بناءٌ عربيٌّ أصيل')
  page.locator('#layerText').press('Tab')
+ print('DEBUG edit:',page.evaluate("JSON.stringify({selected:window.WasitiUnifiedLab.getSelected(),layers:window.WasitiUnifiedLab.getProject().pages[0].layers.map(x=>[x.name,x.text]),svg:window.WasitiUnifiedLab.getSVG().slice(-450)})"),flush=True)
  assert 'بناءٌ عربيٌّ أصيل' in page.evaluate('window.WasitiUnifiedLab.getSVG()')
  with page.expect_download() as download:
   page.locator('[data-action="export-svg"]').click()
