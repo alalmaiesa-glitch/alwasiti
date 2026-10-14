@@ -57,7 +57,7 @@ $('layerFill').closest('.field').hidden=l.type==='image';
 function render(){draw();renderLists();inspect()}
 function addLayer(type){mutate(()=>{const l=M.newLayer(type);page().layers.push(l);selected=l.id});toast('أُضيف العنصر؛ اسحبه أو غيّر خصائصه')}
 function saveBlob(data,name,type){const blob=new Blob([data],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000)}
-function name(ext){return (doc.title||'alwasiti').replace(/[^a-zA-Z0-9\u0600-\u06ff-_ ]/g,'').slice(0,50)||'alwasiti'} 
+function name(ext){return (doc.title||'alwasiti').replace(/[^a-zA-Z0-9\u0600-\u06ff_ -]/g,'').slice(0,50)||'alwasiti'} 
 function svgText(){return M.serializeSVG(page())}
 async function exportPNG(){
 try{const p=page(),source=svgText(),url=URL.createObjectURL(new Blob([source],{type:'image/svg+xml;charset=utf-8'}));
