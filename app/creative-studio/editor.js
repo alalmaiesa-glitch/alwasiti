@@ -76,7 +76,7 @@ let layers=[],background='#FBF8F2',title='تكوين أصلي';
 if(kind==='poster'){background='#25263D';title='ملصق ثقافي';layers=[rect(65,70,W-130,12,'#E4AA69'),text('حروفٌ لها حضور',65,H*.2,W-130,160,88,'#F4EBD8'),rect(65,H*.52,W*.38,H*.25,'#B96B51',18),text('لقاءٌ مع المعنى',W*.44,H*.54,W*.49,100,49,'#F4EBD8')]}
 if(kind==='invite'){background='#F7E8E6';title='بطاقة دعوة';layers=[ellipse(W*.11,H*.1,W*.78,H*.8,'#E8D1C6'),rect(W*.17,H*.19,W*.66,H*.62,'#FFF9F0',100),text('يسرّنا حضوركم',W*.23,H*.33,W*.54,150,72,'#7B4961'),text('أمسية استثنائية',W*.25,H*.55,W*.5,90,42,'#7B4961')]}
 if(kind==='sale'){background='#FEECDA';title='إعلان تجاري';layers=[rect(0,0,W,H*.3,'#2D5A47'),text('عرض خاص',W*.13,H*.12,W*.74,120,105,'#FFFFFF'),ellipse(W*.16,H*.39,W*.68,H*.45,'#D6AA60'),text('خصم ٣٠٪',W*.22,H*.49,W*.56,160,100,'#273A31')]}
-if(kind==='quote'){background='#E0EDF2';title='اقتباس عربي';layers=[rect(W*.09,H*.12,W*.08,H*.76,'#3D7791'),text('«الجمال في وضوح الفكرة»',W*.19,H*.31,W*.65,160,74,'#24465E'),text('الواسطي · من الحرف إلى التصميم',W*.2,H*.64,W*.6,100,34,'#456278')]}
+if(kind==='quote'){background='#E0EDF2';title='اقتباس عربي';layers=[rect(W*.09,H*.12,W*.08,H*.76,'#3D7791'),text('«الجمال في وضوح الفكرة»',W*.23,H*.31,W*.65,160,54,'#24465E'),text('الواسطي · من الحرف إلى التصميم',W*.2,H*.64,W*.6,100,34,'#456278')]}
 if(!layers.length)return;
 mutate(()=>{p.background=background;p.name=title;p.layers=layers;selected=null});toast('تكوين '+title+' جاهز للتعديل')}
 function action(key){
